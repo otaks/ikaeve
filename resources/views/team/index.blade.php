@@ -49,12 +49,12 @@
                                     </td>
                                     <td>{{ $data->id }}</td>
                                     <td><a href="{{ route('team.detail', ['id' => $data->id]) }}">{{ $data->name }}</a>@if($data->abstention == 1) (棄権) @endif</td>
-                                    <td>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }}-{{ substr($data->friend_code, 12, 4) }} @endif</td>
+                                    <td>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }} @endif</td>
                                     @auth
                                         <td class="text-center">
                                           @if($data->approval == 1)
                                               <!--<a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 0]) }}" class="btn btn-danger" style="width:70px;">取消</a>-->
-                                              済み
+                                              済
                                           @else
                                               <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 1]) }}" class="btn btn-success" style="width:70px;">承認</a>
                                           @endif
