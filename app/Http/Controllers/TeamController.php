@@ -47,6 +47,12 @@ class TeamController extends Controller
         return view('team.index', compact('datas', 'events', 'search'));
     }
 
+    public function regist()
+    {
+        FlashMessageService::error('まだできてないよ');
+        return view('team.regist');
+    }
+
     public function edit(Request $request)
     {
         $data = Team::find($request->id);
