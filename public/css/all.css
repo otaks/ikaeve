@@ -7,6 +7,10 @@
     color: #E00;
 }
 
+.friend_code:after {
+    content: "-";
+}
+
 .btn-primary {
   color: #fff;
   background-color: #2E7AA0;

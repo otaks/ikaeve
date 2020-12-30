@@ -43,6 +43,8 @@ class EventController extends Controller
                 $data->to_recruit_date = $request->to_recruit_date;
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
+                $data->team_member = $request->team_member;
+                $data->header_color = $request->header_color;
                 $data->save();
 
             });
@@ -76,6 +78,8 @@ class EventController extends Controller
                 $data->to_recruit_date = $request->to_recruit_date;
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
+                $data->team_member = $request->team_member;
+                $data->header_color = $request->header_color;
                 $data->save();
 
             });
@@ -95,6 +99,9 @@ class EventController extends Controller
         $request->session()->put('event', $request->id);
         $data = Event::find($request->id);
         $request->session()->put('eventName', $data->name);
+        if ($data->header_color) {
+            $request->session()->put('headerColor', $data->header_color);
+        }
         return view('event.detail', compact('data'));
     }
 }

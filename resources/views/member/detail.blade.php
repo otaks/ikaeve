@@ -13,11 +13,7 @@
                           <a href="https://twitter.com/{{ $data->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                       @endif
                     </tr>
-                    <tr><th>discord</th><td>
-                    @if($data->discord)
-                        <a href="https://discord.com/{{ $data->discord }}" target="_blank"><i class="fab fa-discord fa-2x"></i></a>
-                    @endif
-                  </tr>
+                    <tr><th>xp</th><td>{{ $data->xp }}</tr>
                 </table>
               </div>
           </div>

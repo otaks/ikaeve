@@ -57,7 +57,7 @@ class WantedController extends Controller
     public function editStore(WantedRequest $request)
     {
         $data = Wanted::find($request->id);
-        if ($data->pass != $request->pass) {
+        if ($data->pass != $request->pass && !Auth::check()) {
             FlashMessageService::error('パスワードが違います');
             return redirect()->route('wanted.edit', ['id' => $request->id]);
         } else {
@@ -89,7 +89,7 @@ class WantedController extends Controller
     public function deleteStore(Request $request)
     {
         $data = Wanted::find($request->id);
-        if ($data->pass != $request->pass) {
+        if ($data->pass != $request->pass && !Auth::check()) {
             FlashMessageService::error('パスワードが違います');
         } else {
             try {

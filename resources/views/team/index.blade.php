@@ -11,6 +11,9 @@
                         <div class="col-md-3">
                             <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名部分一致">
                         </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名部分一致">
+                        </div>
                         <div class="col-md-2">
                             <select class="form-control" name="approval">
                                 <option></option>
@@ -33,12 +36,11 @@
                                 <th>No</th>
                                 <th>チーム名</th>
                                 <th>フレンドコード</th>
+                                <th>メンバー</th>
                                 @auth
                                     <th>承認</th>
                                     <th>棄権</th>
                                 @endauth
-                                <th>ブロック</th>
-                                <th>登録日時</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -50,6 +52,15 @@
                                     <td>{{ $data->id }}</td>
                                     <td><a href="{{ route('team.detail', ['id' => $data->id]) }}">{{ $data->name }}</a>@if($data->abstention == 1) (棄権) @endif</td>
                                     <td>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }} @endif</td>
+                                    <td>
+                                        @foreach($data::members($data->id) as $v => $member)
+                                            <a href="{{ route('member.detail', ['id' => $member->id]) }}">{{ $member->name }}</a>@if($member->id == $data->member_id)（代表）@endif
+                                            @if($member->twitter)
+                                                &nbsp;<a href="https://twitter.com/{{ $member->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-lg"></i></a>
+                                            @endif
+                                            <br>
+                                        @endforeach
+                                    </td>
                                     @auth
                                         <td class="text-center">
                                           @if($data->approval == 1)
@@ -67,8 +78,6 @@
                                           @endif
                                         </td>
                                     @endauth
-                                    <td></td>
-                                    <td>{{ $data->created_at }}</td>
                                 </tr>
                               @endforeach
                             </tbody>

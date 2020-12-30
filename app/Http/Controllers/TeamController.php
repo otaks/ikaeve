@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
-use App\Http\Requests\EventRequest;
+use App\Http\Requests\TeamRequest;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\Team;
+use App\Models\Member;
 
 class TeamController extends Controller
 {
@@ -30,39 +31,87 @@ class TeamController extends Controller
     {
         $search['event'] = $request->session()->get('event');
         $search['name'] = $request->name;
+        $search['member_name'] = $request->member_name;
         $search['approval'] = $request->approval;
 
         $query = Team::query();
+        $query->select('teams.*');
+        $query->join('members', 'members.team_id', '=', 'teams.id');
         if ($search['event']) {
             $query->where('event_id', $search['event']);
         }
         if ($search['name']) {
-            $query->where('name', 'LIKE', '%'.$search['name'].'%');
+            $query->where('teams.name', 'LIKE', '%'.$search['name'].'%');
+        }
+        if ($search['member_name']) {
+            $query->where('members.name', 'LIKE', '%'.$search['member_name'].'%');
         }
         if (isset($search['approval'])) {
             $query->where('approval', $search['approval']);
         }
-        $datas = $query->orderBy('id', 'DESC')->get();
-        $events = Event::orderBy('id', 'DESC')->get();
-        return view('team.index', compact('datas', 'events', 'search'));
+        $datas = $query->groupBy('teams.id')->orderBy('teams.id', 'DESC')->get();
+        return view('team.index', compact('datas', 'search'));
     }
 
-    public function regist()
+    public function regist(Request $request)
     {
-        FlashMessageService::error('まだできてないよ');
-        return view('team.regist');
+        $event_id = $request->session()->get('event');
+        $event = Event::find($event_id);
+        $member_num = $event->team_member;
+        return view('team.regist', compact('member_num'));
+    }
+
+    public function registStore(TeamRequest $request)
+    {
+        try {
+            \DB::transaction(function() use($request) {
+
+                $data = new Team();
+                $data->name = $request->name;
+                $data->friend_code = $request->friend_code;
+                $data->note = $request->note;
+                $data->event_id = $request->session()->get('event');
+                $data->save();
+
+                $names = $request->member_name;
+                $twitters = $request->twitter;
+                $xps = $request->xp;
+                $ids = $request->member_id;
+                foreach ($ids as $k => $val) {
+                    $member = new Member();
+                    $member->team_id = $data->id;
+                    $member->name = $names[$k];
+                    $member->twitter = $twitters[$k];
+                    $member->xp = $xps[$k];
+                    $member->save();
+                }
+
+            });
+
+            FlashMessageService::success('編集が完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('編集が失敗しました');
+        }
+
+        return redirect()->route('team.index');
     }
 
     public function edit(Request $request)
     {
+        $event_id = $request->session()->get('event');
+        $event = Event::find($event_id);
+        $member_num = $event->team_member;
         $data = Team::find($request->id);
-        return view('team.edit', compact('data'));
+        $members = $data::members($request->id);
+        return view('team.edit', compact('data', 'members', 'member_num'));
     }
 
-    public function editStore(EventRequest $request)
+    public function editStore(TeamRequest $request)
     {
         $data = Team::find($request->id);
-        if ($data->pass != $request->pass) {
+        if ($data->pass != $request->pass && !Auth::check()) {
             FlashMessageService::error('パスワードが違います');
             return redirect()->route('team.edit', ['id' => $request->id]);
         } else {
@@ -70,7 +119,21 @@ class TeamController extends Controller
                 \DB::transaction(function() use($request, $data) {
 
                     $data->name = $request->name;
+                    $data->friend_code = $request->friend_code;
+                    $data->note = $request->note;
                     $data->save();
+
+                    $names = $request->member_name;
+                    $twitters = $request->twitter;
+                    $xps = $request->xp;
+                    $ids = $request->member_id;
+                    foreach ($ids as $k => $val) {
+                        $data = Member::find($val);
+                        $data->name = $names[$k];
+                        $data->twitter = $twitters[$k];
+                        $data->xp = $xps[$k];
+                        $data->update();
+                    }
 
                 });
 

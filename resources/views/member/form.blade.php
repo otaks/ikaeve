@@ -25,15 +25,6 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="discord" class="col-md-4 col-form-label text-md-right">discord</label>
-
-    <div class="col-md-6">
-        <input id="discord" type="text" class="form-control @error('discord') is-invalid @enderror" name="discord"
-        value="{{ old('discord', isset($data) ? $data->discord : '') }}" required autocomplete="discord" autofocus>
-        @if($errors->has('discord')) <span class="text-danger">{{ $errors->first('discord') }}</span> @endif
-    </div>
-</div>
-<div class="form-group row">
     <label for="xp" class="col-md-4 col-form-label text-md-right">xp</label>
 
     <div class="col-md-6">

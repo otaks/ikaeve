@@ -57,7 +57,7 @@ class MemberController extends Controller
     public function editStore(MemberRequest $request)
     {
         $data = Member::find($request->id);
-        if ($data->team->pass != $request->pass) {
+        if ($data->team->pass != $request->pass && !Auth::check()) {
             FlashMessageService::error('パスワードが違います');
             return redirect()->route('member.edit', ['id' => $request->id]);
         } else {

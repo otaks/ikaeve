@@ -15,12 +15,10 @@
                         @if($member->twitter)
                             &nbsp;<a href="https://twitter.com/{{ $member->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                         @endif
-                        @if($member->discord)
-                            &nbsp;<a href="https://discord.com/{{ $member->discord }}" target="_blank"><i class="fab fa-discord fa-2x"></i></a>
-                        @endif</tr>
+                      </tr>
                     @endforeach
                     <tr><th>意気込みなど</th><td>{{ $data->note }}</tr>
-                    <tr><th>申請日時</th><td>{{ $data->created_at }}</tr>
+                    <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i')  }}</tr>
                 </table>
               </div>
           </div>

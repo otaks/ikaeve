@@ -28,7 +28,7 @@
                                 <th>No</th>
                                 <th>チーム名</th>
                                 <th>メンバー名</th>
-                                <th>twiiter<br>discord</th>
+                                <th>twiiter</th>
                                 <th>xp</th>
                                 <th>登録日時</th>
                             </tr>
@@ -46,13 +46,10 @@
                                       @if($data->twitter)
                                           <a href="https://twitter.com/{{ $data->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                                       @endif
-                                      @if($data->discord)
-                                          <a href="https://twitter.com/{{ $data->discord }}" target="_blank"><i class="fab fa-discord fa-2x"></i></a>
-                                      @endif
                                     </td>
 
                                     <td>{{ $data->xp }}</td>
-                                    <td>{{ $data->created_at }}</td>
+                                    <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
                                 </tr>
                               @endforeach
                             </tbody>

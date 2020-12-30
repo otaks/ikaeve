@@ -40,8 +40,16 @@
 
     <div class="col-md-6">
         <select name="team_member" class="form-control">
-            <option value="2">2</option>
-            <option value="4">4</option>
+            <option value="2" {{ old('team_member', isset($data->team_member) && $data->team_member == 2 ? 'selected' : '') }}>2</option>
+            <option value="4" {{ old('team_member', isset($data->team_member) && $data->team_member == 4 ? 'selected' : '') }}>4</option>
         </select>
+    </div>
+</div>
+<div class="form-group row">
+    <label for="name" class="col-md-4 col-form-label text-md-right required">ヘッダー色</label>
+
+    <div class="col-md-6">
+        <input type="color" name="header_color" class="form-control"
+         value="#{{ old('header_color', isset($data->header_color) ? $data->header_color : 'FFFFFF') }}">
     </div>
 </div>
