@@ -26,7 +26,7 @@ class TeamRequest extends FormRequest
     {
         $return = [
             'name' => 'required|max:50',
-            'friend_code.*' => 'integer|required|max:4',
+            'friend_code.*' => 'integer|required|digits:4',
             'pass' => 'integer|digits:4',
         ];
         return $return;
