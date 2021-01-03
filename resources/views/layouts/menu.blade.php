@@ -1,13 +1,22 @@
-<div class="col-md-2">
-    <div class="card">
-        <div class="card-header">MENU</div>
-        <div class="card-body">
-            <div class="panel panel-default">
-              <ul class="nav nav-pills nav-stacked" style="display:block;">
-                    <li><i class="fas fa-gamepad"></i>&nbsp;&nbsp;<a href="{{ route('event.index') }}">大会</a></li>
-                    <li><i class="fas fa-user"></i>&nbsp;&nbsp;<a href="#">チーム</a></li>
-              </ul>
-            </div>
-        </div>
-    </div>
-</div>
+    <ul class="nav nav-pills nav-stacked noto" style="display:block;">
+      @auth
+        <li class="nav-item">
+            <a href="{{ route('event.index') }}">大会一覧</a>
+        </li>
+      @endauth
+      @if (session('event'))
+        <li><a href="{{ route('event.detail', ['id' => session('event')]) }}">大会詳細</a></li>
+        <li><a href="{{ route('team.index') }}">チーム</a></li>
+        <li><a href="{{ route('wanted.index') }}">メンバー募集</a></li>
+      @endif
+      @auth
+        <li class="nav-item">
+          <a href="{{ route('logout') }}" onclick="event.preventDefault();
+            document.getElementById('logout-form').submit();">logout</a>
+        </li>
+      @endauth
+    </ul>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>

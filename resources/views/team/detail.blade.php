@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="card-header">チーム詳細</div>
         <div class="card-body">
             <div class="container-fluid">
                 <table class="table table-bordered">
@@ -17,7 +16,17 @@
                         @endif
                       </tr>
                     @endforeach
-                    <tr><th>意気込みなど</th><td>{{ $data->note }}</tr>
+                    @if ($data->answer)
+                        @foreach($data->answer as $v => $val)
+                          @if (!$val->question)
+                            @continue
+                          @endif
+                          <tr><th>{{ $val->question->title }}</th>
+                            <td>{{ $val->note }}</a></td>
+                          </tr>
+                        @endforeach
+                    @endif
+                    <tr><th>意気込みなど</th><td>{!! nl2br(e($data->note)) !!}</tr>
                     <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i')  }}</tr>
                 </table>
               </div>

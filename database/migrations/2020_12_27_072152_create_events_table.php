@@ -19,7 +19,6 @@ class CreateEventsTable extends Migration
             $table->unsignedInteger('user_id')->comment('主催者ID')->nullable();
             $table->unsignedInteger('kind')->comment('種別')->nullable();
             $table->text('note')->comment('概要')->nullable();
-            $table->string('header_color', 6)->comment('ヘッダー色')->nullable();
             $table->datetime('from_date')->comment('開催開始日時')->nullable();
             $table->datetime('to_date')->comment('開催終了日時')->nullable();
             $table->datetime('from_recruit_date')->comment('募集開始日時')->nullable();

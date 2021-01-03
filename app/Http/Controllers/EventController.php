@@ -44,7 +44,7 @@ class EventController extends Controller
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
-                $data->header_color = $request->header_color;
+                $data->note = $request->note;
                 $data->save();
 
             });
@@ -79,7 +79,7 @@ class EventController extends Controller
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
-                $data->header_color = $request->header_color;
+                $data->note = $request->note;
                 $data->save();
 
             });

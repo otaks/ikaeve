@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="card-header">大会詳細</div>
         <div class="card-body">
             <div class="container-fluid">
-                <table class="table table-bordered">
+                <div class="col-md-6">
+                    <a href="{{ route('team.regist') }}" class="btn btn-primary w-25">参加申請</a>
+                    @auth
+                        <a href="{{ route('team.regist') }}" class="btn btn-success">対戦表作成</a>
+                    @endauth
+                </div>
+                <table class="table table-bordered mt-3">
                     <tr>
                       <th>大会名</th>
                       <td>{{ $data->name }}</td>
@@ -25,9 +30,9 @@
                     </tr>
                     <tr><th>チーム申請数</th><td>{{ count($data->team) }}</tr>
                     <tr><th>チーム承認数</th><td>{{ $data::approved_team($data->id) }}</tr>
+                    <tr><th>チーム人数</th><td>{{ $data->team_member }}</tr>
+                    <tr><th>概要</th><td>{!! nl2br(e($data->note)) !!}</tr>
                 </table>
-                <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
-                <a href="{{ route('team.index') }}" class="btn btn-success">チーム一覧</a>
               </div>
           </div>
 @endsection

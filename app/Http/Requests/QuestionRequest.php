@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
-class TeamRequest extends FormRequest
+class QuestionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,7 @@ class TeamRequest extends FormRequest
     public function rules(Request $request)
     {
         $return = [
-            'name' => 'required|max:50',
-            'friend_code.*' => 'integer|required|digits:4',
-            'pass' => 'integer|digits:4',
-            'member_name.*' => 'required|max:50',
-            'twitter.*' => 'required|max:20',
-            'xp.*' => 'required|max:20',
+            'title.*' => 'required|max:255',
         ];
         return $return;
     }
@@ -38,12 +33,7 @@ class TeamRequest extends FormRequest
     public function attributes()
     {
         return [
-            'name' => 'チーム名',
-            'pass' => 'パスワード',
-            'friend_code.*' => 'フレンドコード',
-            'member_name.*' => 'メンバー名',
-            'twitter.*' => 'twitter',
-            'xp.*' => 'xp',
+            'title.*' => '項目',
         ];
     }
 }

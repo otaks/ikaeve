@@ -1,5 +1,24 @@
-.btn {
-  width: 100px;
+a {
+     color: #2E7AA0;
+     text-decoration: none;
+}
+
+.noto {
+    font-family: 'Noto Sans JP';
+    font-weight: 200;
+}
+
+.sidemenu {
+    margin: 0;
+    font-family: 'Noto Sans JP';
+    font-size: 1rem;
+    font-weight: 200;
+    color: #212529;
+    line-height: 3em;
+}
+
+.table {
+  background-color: #ffffff;
 }
 
 .required:after {

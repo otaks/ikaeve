@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="card-header">メンバー詳細</div>
         <div class="card-body">
             <div class="container-fluid">
                 <table class="table table-bordered">

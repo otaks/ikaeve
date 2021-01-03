@@ -33,6 +33,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{id}', 'EventController@editStore')->where('id', '[0-9]+');
     });
 
+    // 入力項目
+    Route::prefix('question')->name('question.')
+    ->group(function() {
+        Route::get('edit/{id}', 'QuestionController@edit')->name('edit')->where('id', '[0-9]+');
+        Route::post('edit/{id}', 'QuestionController@editStore')->where('id', '[0-9]+');
+    });
+
     // メンバー
     Route::prefix('member')->name('member.')
     ->group(function() {
@@ -80,4 +87,11 @@ Route::prefix('wanted')->name('wanted.')
     Route::post('edit/{id}', 'WantedController@editStore')->where('id', '[0-9]+');
     Route::get('detail/{id}', 'WantedController@detail')->name('detail')->where('id', '[0-9]+');
     Route::post('delete/{id}', 'WantedController@deleteStore')->name('delete')->where('id', '[0-9]+');
+});
+
+// twitter auth
+Route::prefix('memberlogin')->name('memberlogin.')
+->group(function() {
+    Route::get('twitter', 'MemberLoginController@twitter')->name('twitter');
+    Route::get('callback', 'MemberLoginController@callBack')->name('callback');
 });

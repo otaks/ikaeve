@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-        @include('share/event_tab')
         <div class="card-body">
             <div class="container-fluid">
                 @include('elements.flash_message')
@@ -27,7 +26,7 @@
                                     <td>{{ $data->id }}</td>
                                     <td><a href="{{ route('wanted.detail', ['id' => $data->id]) }}">{{ $data->name }}</a></td>
                                     <td>{{ $data->note }}</td>
-                                    <td>{{ $data->created_at }}</td>
+                                    <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
                                 </tr>
                               @endforeach
                             </tbody>

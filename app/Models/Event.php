@@ -32,4 +32,9 @@ class Event extends BaseModel
     {
         return Team::where('event_id', $id)->where('approval', 1)->count();
     }
+
+    public function question()
+    {
+        return $this->hasMany('App\Models\Question');
+    }
 }

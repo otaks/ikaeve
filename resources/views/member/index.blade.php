@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-        @include('share/event_tab')
         <div class="card-body">
             <div class="container-fluid">
                 @include('elements.flash_message')

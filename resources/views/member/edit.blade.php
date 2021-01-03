@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="card-header">チーム編集</div>
         <div class="card-body">
             <div class="container-fluid">
                     <form method="POST">

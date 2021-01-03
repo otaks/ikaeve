@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\Team;
 use App\Models\Member;
+use App\Models\Answer;
 
 class TeamController extends Controller
 {
@@ -57,8 +58,7 @@ class TeamController extends Controller
     {
         $event_id = $request->session()->get('event');
         $event = Event::find($event_id);
-        $member_num = $event->team_member;
-        return view('team.regist', compact('member_num'));
+        return view('team.regist', compact('event'));
     }
 
     public function registStore(TeamRequest $request)
@@ -68,7 +68,7 @@ class TeamController extends Controller
 
                 $data = new Team();
                 $data->name = $request->name;
-                $data->friend_code = $request->friend_code;
+                $data->friend_code = join('', $request->friend_code);
                 $data->note = $request->note;
                 $data->event_id = $request->session()->get('event');
                 $data->save();
@@ -84,6 +84,19 @@ class TeamController extends Controller
                     $member->twitter = $twitters[$k];
                     $member->xp = $xps[$k];
                     $member->save();
+                    if ($k == 0) {
+                        $data->member_id = $member->id;
+                        $data->update();
+                    }
+                }
+                $questions = $request->question;
+                $answers = $request->answer;
+                foreach ($questions as $k => $val) {
+                    $answer = new Answer();
+                    $answer->team_id = $data->id;
+                    $answer->question_id = $val;
+                    $answer->note = $answers[$k];
+                    $answer->save();
                 }
 
             });
@@ -102,10 +115,10 @@ class TeamController extends Controller
     {
         $event_id = $request->session()->get('event');
         $event = Event::find($event_id);
-        $member_num = $event->team_member;
         $data = Team::find($request->id);
+        $answer = Answer::getArray($data->answer);
         $members = $data::members($request->id);
-        return view('team.edit', compact('data', 'members', 'member_num'));
+        return view('team.edit', compact('data', 'members', 'event', 'answer'));
     }
 
     public function editStore(TeamRequest $request)
@@ -118,21 +131,36 @@ class TeamController extends Controller
             try {
                 \DB::transaction(function() use($request, $data) {
 
+                    $ids = $request->member_id;
                     $data->name = $request->name;
-                    $data->friend_code = $request->friend_code;
+                    $data->friend_code = join('', $request->friend_code);
                     $data->note = $request->note;
+                    $data->member_id = $ids[0];
                     $data->save();
 
                     $names = $request->member_name;
                     $twitters = $request->twitter;
                     $xps = $request->xp;
-                    $ids = $request->member_id;
                     foreach ($ids as $k => $val) {
                         $data = Member::find($val);
                         $data->name = $names[$k];
                         $data->twitter = $twitters[$k];
                         $data->xp = $xps[$k];
                         $data->update();
+                    }
+
+                    $questions = $request->question;
+                    $answers = $request->answer;
+                    $aIds = $request->answer_id;
+                    foreach ($questions as $k => $val) {
+                        $answer = Answer::find($aIds[$k]);
+                        if (!$answer) {
+                            $answer = new Answer();
+                        }
+                        $answer->team_id = $request->id;
+                        $answer->question_id = $val;
+                        $answer->note = $answers[$k];
+                        $answer->save();
                     }
 
                 });
