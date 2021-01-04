@@ -98,6 +98,9 @@ class EventController extends Controller
     {
         $request->session()->put('event', $request->id);
         $data = Event::find($request->id);
+        if (!$data) {
+          return redirect()->route('event.index');
+        }
         $request->session()->put('eventName', $data->name);
         if ($data->header_color) {
             $request->session()->put('headerColor', $data->header_color);

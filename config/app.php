@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Jenssegers\Agent\AgentServiceProvider::class, //追加
+        Laravel\Socialite\SocialiteServiceProvider::class,
 
     ],
 
@@ -229,6 +230,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,  //追加
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
     ],
 

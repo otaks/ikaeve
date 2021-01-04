@@ -41,7 +41,7 @@
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                     <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
+                                        保存
                                     </label>
                                 </div>
                             </div>
@@ -55,11 +55,16 @@
 
                                 @if (Route::has('password.request'))
                                     <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        Forgot?
+                                        パスワード忘れた
                                     </a>
                                 @endif
                             </div>
                         </div>
                     </form>
+                </div>
+                <hr>
+                <div class="text-center m-5">
+                  ※大会参加はこちらから<br><br>
+                  <a class="btn btn-outline-info w-25" href="{{ route('login/twitter') }}"><i class="fab fa-twitter mr-1"></i>Twitterでログイン</a>
                 </div>
 @endsection

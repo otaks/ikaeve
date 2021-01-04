@@ -20,6 +20,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('login/twitter', 'Auth\LoginController@redirectToTwitterProvider')->name('login/twitter');
+Route::get('login/twitter/callback', 'Auth\LoginController@handleTwitterProviderCallback')->name('login/twitter/callback');
 
 Route::group(['middleware' => ['auth']], function () {
 
@@ -87,11 +89,4 @@ Route::prefix('wanted')->name('wanted.')
     Route::post('edit/{id}', 'WantedController@editStore')->where('id', '[0-9]+');
     Route::get('detail/{id}', 'WantedController@detail')->name('detail')->where('id', '[0-9]+');
     Route::post('delete/{id}', 'WantedController@deleteStore')->name('delete')->where('id', '[0-9]+');
-});
-
-// twitter auth
-Route::prefix('memberlogin')->name('memberlogin.')
-->group(function() {
-    Route::get('twitter', 'MemberLoginController@twitter')->name('twitter');
-    Route::get('callback', 'MemberLoginController@callBack')->name('callback');
 });
