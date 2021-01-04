@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Laravel\Socialite\Facades\Socialite;
@@ -49,32 +50,32 @@ class LoginController extends Controller
 
     public function handleTwitterProviderCallback(Request $request){
 
-       try {
-           $user = Socialite::with("twitter")->user();
-       }
-       catch (\Exception $e) {
-            FlashMessageService::error('ログインに失敗しました');
-            return redirect('/');
-           // エラーならログイン画面へ転送
-       }
-      $myinfo = User::where('twitter_id', $user->id)->where('role', config('user.role.member'))->first();
-      if (!$myinfo) {
-             $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
-                       [
-                         'name' => $user->nickname,
-                         'twitter_nickname' => $user->nickname,
-                         'twitter_auth' => 1
-                        ]
-                     );
-      } else {
-        if ($myinfo->twitter_auth == 0) {
-            $myinfo->twitter_auth = 1;
-            $myinfo->update();
+         try {
+             $user = Socialite::with("twitter")->user();
+         }
+         catch (\Exception $e) {
+              FlashMessageService::error('ログインに失敗しました');
+              return redirect('/');
+             // エラーならログイン画面へ転送
+         }
+        $myinfo = User::where('twitter_id', $user->id)->where('role', config('user.role.member'))->first();
+        if (!$myinfo) {
+               $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
+                         [
+                           'name' => $user->nickname,
+                           'twitter_nickname' => $user->nickname,
+                           'twitter_auth' => 1
+                          ]
+                       );
+        } else {
+          if ($myinfo->twitter_auth == 0) {
+              $myinfo->twitter_auth = 1;
+              $myinfo->update();
+          }
         }
-      }
-      Auth::login($myinfo);
-      $request->session()->put('nickname', $user->nickname);
-      return redirect()->to('/event/index'); // homeへ転送
-
+        Auth::login($myinfo);
+        $request->session()->put('name', $user->name);
+        $request->session()->put('nickname', $user->nickname);
+        return redirect()->to('/event/index'); // homeへ転送
     }
 }

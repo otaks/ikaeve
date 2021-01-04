@@ -56,9 +56,13 @@ class TeamController extends Controller
 
     public function regist(Request $request)
     {
-        $nickname = $request->session()->get('nickname');
         if(!\old('name')) {
-            $request->session()->flash('_old_input', ['member_name.0' => $nickname, 'twitter.0' => $nickname]);
+            $user = Auth::user();
+            $request->session()->flash('_old_input', [
+              'member_name.0' => $user->name,
+              'twitter.0' => $user->twitter_nickname,
+              'twitter_id.0' => $user->twitter_id
+            ]);
         }
         $event_id = $request->session()->get('event');
         $event = Event::find($event_id);

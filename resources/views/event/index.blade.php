@@ -3,9 +3,9 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-              @if (Auth::user()->role == config('user.role.admin'))
-                  <div class="text-right mb-2"><a href="{{ route('event.regist') }}" class="btn btn-primary">登録</a></div>
-              @endif
+                @if (Auth::user()->role == config('user.role.admin'))
+                    <div class="text-right mb-2"><a href="{{ route('event.regist') }}" class="btn btn-primary">登録</a></div>
+                @endif
                 @include('elements.flash_message')
                 @if (0 < count($datas))
                 <div class="table-responsive">
