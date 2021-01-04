@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Service\FlashMessageService;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -52,16 +53,17 @@ class LoginController extends Controller
            $user = Socialite::with("twitter")->user();
        }
        catch (\Exception $e) {
-           return redirect('/login')->with('oauth_error', 'ログインに失敗しました');
+            FlashMessageService::error('ログインに失敗しました');
+           return redirect('/login');
            // エラーならログイン画面へ転送
        }
-       // print_r($user);
-       // exit;
-
-       $myinfo = User::firstOrCreate(['twitter_id' => $user->token ],
-                 ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
-                 Auth::login($myinfo);
-                 return redirect()->to('/event/index'); // homeへ転送
+      $myinfo = User::where('twitter_id', $user->token)->('role', 3)->first();
+      if (!$myinfo) {
+             $myinfo = User::firstOrCreate(['twitter_id' => $user->token ],
+                       ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
+      }
+      Auth::login($myinfo);
+      return redirect()->to('/event/index'); // homeへ転送
 
     }
 }

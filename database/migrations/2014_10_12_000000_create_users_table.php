@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->unsignedInteger('twitter_id')->comment('twitterId')->nullable();
             $table->string('twitter_nickname', 50)->comment('twitterニックネーム')->nullable();
-            $table->unsignedInteger('role')->comment('権限(0:admin/1:staff/2:member)')->default(1);
+            $table->unsignedInteger('role')->comment('権限(1:admin/2:staff/3:member)')->default(3);
             $table->unsignedInteger('point')->comment('ポイント')->default(0);
             $table->rememberToken();
             $table->timestamps();
