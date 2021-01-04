@@ -54,10 +54,10 @@ class LoginController extends Controller
        }
        catch (\Exception $e) {
             FlashMessageService::error('ログインに失敗しました');
-           return redirect('/login');
+            return redirect('/login');
            // エラーならログイン画面へ転送
        }
-      $myinfo = User::where('twitter_id', $user->token)->('role', 3)->first();
+      $myinfo = User::where('twitter_id', $user->token)->where('role', 3)->first();
       if (!$myinfo) {
              $myinfo = User::firstOrCreate(['twitter_id' => $user->token ],
                        ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
