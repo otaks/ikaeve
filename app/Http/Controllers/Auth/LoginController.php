@@ -57,9 +57,9 @@ class LoginController extends Controller
             return redirect('/login');
            // エラーならログイン画面へ転送
        }
-      $myinfo = User::where('twitter_id', $user->token)->where('role', 3)->first();
+      $myinfo = User::where('twitter_id', $user->id)->where('role', 3)->first();
       if (!$myinfo) {
-             $myinfo = User::firstOrCreate(['twitter_id' => $user->token ],
+             $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
                        ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
       }
       Auth::login($myinfo);
