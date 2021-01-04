@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Models\Member;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -54,13 +54,13 @@ class LoginController extends Controller
            return redirect('/login')->with('oauth_error', 'ログインに失敗しました');
            // エラーならログイン画面へ転送
        }
-       print_r($user);
-       exit;
+       // print_r($user);
+       // exit;
 
-       $myinfo = Member::firstOrCreate(['twitter_id' => $user->token ],
-                 ['name' => $user->nickname,'twitter_id_str' => $user->nickname]);
+       $myinfo = User::firstOrCreate(['twitter_id' => $user->token ],
+                 ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
                  Auth::login($myinfo);
-                 return redirect()->to('/'); // homeへ転送
+                 return redirect()->to('/event/index'); // homeへ転送
 
     }
 }

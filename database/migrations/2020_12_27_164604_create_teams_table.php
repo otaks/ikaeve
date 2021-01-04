@@ -23,11 +23,10 @@ class CreateTeamsTable extends Migration
 
         Schema::create('members', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('team_id')->comment('チームID')->nullable();
+            $table->unsignedInteger('user_id')->comment('user_id');
+            $table->unsignedInteger('team_id')->comment('チームID');
             $table->string('name', 8)->comment('名前')->nullable();
             $table->string('twitter_id_str', 255)->comment('ツイッターID（可変）')->nullable();
-            $table->unsignedInteger('twitter_id')->comment('ツイッターID（固定）')->nullable();
-            $table->string('discord', 255)->comment('discordID')->nullable();
             $table->unsignedInteger('xp')->comment('xp')->nullable();
             $table->unsignedInteger('weapon_id')->comment('使用武器')->nullable();
             $table->text('note')->comment('備考')->nullable();
@@ -37,6 +36,7 @@ class CreateTeamsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('weapon_id')->references('id')->on('weapons')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('teams', function (Blueprint $table) {
