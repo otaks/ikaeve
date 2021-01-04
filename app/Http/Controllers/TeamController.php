@@ -15,10 +15,10 @@ use App\Models\Answer;
 
 class TeamController extends Controller
 {
-    // public function __construct()
-    // {
-    //    $this->middleware('auth');
-    // }
+    public function __construct()
+    {
+       $this->middleware('auth');
+    }
 
     public function index(Request $request)
     {
@@ -56,6 +56,10 @@ class TeamController extends Controller
 
     public function regist(Request $request)
     {
+        $nickname = $request->session()->get('nickname');
+        if(!\old('name')) {
+            $request->session()->flash('_old_input', ['member_name.0' => $nickname, 'twitter.0' => $nickname]);
+        }
         $event_id = $request->session()->get('event');
         $event = Event::find($event_id);
         return view('team.regist', compact('event'));
@@ -75,13 +79,21 @@ class TeamController extends Controller
 
                 $names = $request->member_name;
                 $twitters = $request->twitter;
+                $twitterIds = $request->twitter_id;
                 $xps = $request->xp;
                 $ids = $request->member_id;
                 foreach ($ids as $k => $val) {
                     $member = new Member();
+                    $user = User::where('twitter_id', $twitterIds[$k])->first();
+                    if (!$user) {
+                        $user = new User();
+                        $user->twitter_id = $twitterIds[$k];
+                        $user->twitter_nickname = $twitters[$k];
+                        $user->save();
+                    }
+                    $member->user_id = $user->id;
                     $member->team_id = $data->id;
                     $member->name = $names[$k];
-                    $member->twitter = $twitters[$k];
                     $member->xp = $xps[$k];
                     $member->save();
                     if ($k == 0) {
@@ -91,14 +103,15 @@ class TeamController extends Controller
                 }
                 $questions = $request->question;
                 $answers = $request->answer;
-                foreach ($questions as $k => $val) {
-                    $answer = new Answer();
-                    $answer->team_id = $data->id;
-                    $answer->question_id = $val;
-                    $answer->note = $answers[$k];
-                    $answer->save();
+                if ($request->question) {
+                    foreach ($questions as $k => $val) {
+                        $answer = new Answer();
+                        $answer->team_id = $data->id;
+                        $answer->question_id = $val;
+                        $answer->note = $answers[$k];
+                        $answer->save();
+                    }
                 }
-
             });
 
             FlashMessageService::success('編集が完了しました');
@@ -140,11 +153,19 @@ class TeamController extends Controller
 
                     $names = $request->member_name;
                     $twitters = $request->twitter;
+                    $twitterIds = $request->twitter_id;
                     $xps = $request->xp;
                     foreach ($ids as $k => $val) {
                         $data = Member::find($val);
+                        $user = User::where('twitter_id', $twitterIds[$k])->first();
+                        if (!$user) {
+                            $user = new User();
+                            $user->twitter_id = $twitterIds[$k];
+                            $user->twitter_nickname = $twitters[$k];
+                            $user->save();
+                        }
+                        $data->user_id = $user->id;
                         $data->name = $names[$k];
-                        $data->twitter = $twitters[$k];
                         $data->xp = $xps[$k];
                         $data->update();
                     }
@@ -152,17 +173,18 @@ class TeamController extends Controller
                     $questions = $request->question;
                     $answers = $request->answer;
                     $aIds = $request->answer_id;
-                    foreach ($questions as $k => $val) {
-                        $answer = Answer::find($aIds[$k]);
-                        if (!$answer) {
-                            $answer = new Answer();
+                    if ($request->question) {
+                        foreach ($questions as $k => $val) {
+                            $answer = Answer::find($aIds[$k]);
+                            if (!$answer) {
+                                $answer = new Answer();
+                            }
+                            $answer->team_id = $request->id;
+                            $answer->question_id = $val;
+                            $answer->note = $answers[$k];
+                            $answer->save();
                         }
-                        $answer->team_id = $request->id;
-                        $answer->question_id = $val;
-                        $answer->note = $answers[$k];
-                        $answer->save();
                     }
-
                 });
 
                 FlashMessageService::success('編集が完了しました');
@@ -178,7 +200,6 @@ class TeamController extends Controller
 
     public function update($id, $column, $value)
     {
-        $this->middleware('auth');
         try {
             \DB::transaction(function() use($id, $column, $value) {
 

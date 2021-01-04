@@ -26,12 +26,10 @@ class CreateTeamsTable extends Migration
             $table->unsignedInteger('user_id')->comment('user_id');
             $table->unsignedInteger('team_id')->comment('チームID');
             $table->string('name', 8)->comment('名前')->nullable();
-            $table->string('twitter_id_str', 255)->comment('ツイッターID（可変）')->nullable();
             $table->unsignedInteger('xp')->comment('xp')->nullable();
             $table->unsignedInteger('weapon_id')->comment('使用武器')->nullable();
             $table->text('note')->comment('備考')->nullable();
             $table->boolean('ban')->comment('拒否')->default(0);
-            $table->boolean('twitter_auth')->comment('認証(0:未認証,1:認証済)')->default(0);
 
             $table->timestamps();
             $table->softDeletes();

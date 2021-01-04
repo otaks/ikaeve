@@ -7,33 +7,41 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
 use App\Http\Requests\EventRequest;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Event;
 
 class EventController extends Controller
 {
-    // public function __construct()
-    // {
-    //    $this->middleware('auth');
-    // }
+    public function __construct()
+    {
+       $this->middleware('auth');
+    }
 
     public function index(Request $request)
     {
-        $this->middleware('auth');
         $request->session()->forget('event');
-        $datas = Event::orderBy('id', 'DESC')->get();
+        if (Auth::user()->role != config('user.role.member')) {
+            $datas = Event::orderBy('id', 'DESC')->get();
+        } else {
+            $dt = new Carbon();
+            $datas = Event::where('from_recruit_date', '<=', $dt)
+            ->where('to_date', '>=', $dt)
+            ->orderBy('id', 'DESC')->get();
+        }
         return view('event.index', compact('datas'));
     }
 
     public function regist()
     {
-        $this->middleware('auth');
+        if (!$this->checkAdmin()) {
+            return redirect()->route('event.index');
+        }
         return view('event.regist');
     }
 
     public function registStore(EventRequest $request)
     {
-        $this->middleware('auth');
         try {
             \DB::transaction(function() use($request) {
 
@@ -61,14 +69,15 @@ class EventController extends Controller
 
     public function edit(Request $request)
     {
-        $this->middleware('auth');
+        if (!$this->checkAdmin()) {
+            return redirect()->route('event.index');
+        }
         $data = Event::find($request->id);
         return view('event.edit', compact('data'));
     }
 
     public function editStore(EventRequest $request)
     {
-        $this->middleware('auth');
         try {
             \DB::transaction(function() use($request) {
 
@@ -105,6 +114,9 @@ class EventController extends Controller
         if ($data->header_color) {
             $request->session()->put('headerColor', $data->header_color);
         }
-        return view('event.detail', compact('data'));
+        $dt = new Carbon();
+        $recruitBtnView = Carbon::parse($dt)->between($data->to_recruit_date, $data->from_recruit_date);
+        $makeBtnView = Carbon::parse($dt)->between($data->from_recruit_date, $data->from_date);
+        return view('event.detail', compact('data', 'recruitBtnView', 'makeBtnView'));
     }
 }

@@ -18,6 +18,24 @@ $(function(){
     }
   });
 
+  // twitter入力
+  $('input[name^="twitter[]"]').change(function() {
+    name = $(this).val();
+    num = $('input[name^="twitter[]"]').index(this);
+    $('input[name^="twitter_id[]"]').eq(num).val('');
+    axios.get('/api/getId/'+name).then((res) => {
+      if(res.data.status == 400) {
+        alert(res.data.message);
+        $('input[name^="twitter[]"]').eq(num).val('');
+      } else {
+        $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
+      }
+    }).catch(error => {
+      alert('エラーが発生しました');
+      console.log(error);
+    });
+  });
+
   $('#addTrBtn').click(function() {
     var new_row = $('#questionTable tbody tr:last-child').clone(true).appendTo('#questionTable tbody');
     new_row.find("input[type='text']").val('');

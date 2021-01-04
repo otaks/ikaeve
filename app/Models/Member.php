@@ -18,4 +18,9 @@ class Member extends BaseModel
     {
         return $this->belongsTo('App\Models\Team');
     }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 }

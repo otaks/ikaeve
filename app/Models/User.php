@@ -22,6 +22,8 @@ class User extends Authenticatable
         'password',
         'twitter_id',
         'twitter_nickname',
+        'twitter_auth',
+        'role',
     ];
 
     /**

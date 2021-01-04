@@ -46,7 +46,7 @@
                             </thead>
                             <tbody>
                               @foreach ($datas as $data)
-                                <tr>
+                                <tr @if($data->abstention == 1) class="table-secondary" @endif>
                                     @auth
                                       <td class="text-center">
                                         <a href="{{ route('team.edit', ['id' => $data->id]) }}"><i class="fas fa-edit fa-lg"></i></a>
@@ -58,8 +58,8 @@
                                     <td>
                                         @foreach($data::members($data->id) as $v => $member)
                                             <a href="{{ route('member.detail', ['id' => $member->id]) }}">{{ $member->name }}</a>
-                                            @if($member->twitter)
-                                                &nbsp;<a href="https://twitter.com/{{ $member->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-lg"></i></a>
+                                            @if($member->user->twitter_nickname)
+                                                &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-lg"></i></a>
                                             @endif
                                             <br>
                                         @endforeach
@@ -68,7 +68,7 @@
                                       <td class="text-center">
                                         @if($data->approval == 1)
                                             <!--<a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 0]) }}" class="btn btn-danger" style="width:70px;">取消</a>-->
-                                            済
+                                            <b>済</b>
                                         @else
                                             <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 1]) }}" class="btn btn-success" style="width:70px;">承認</a>
                                         @endif

@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('index', 'EventController@index')->name('index');
         Route::get('regist', 'EventController@regist')->name('regist');
         Route::post('regist', 'EventController@registStore');
+        Route::get('detail/{id}', 'EventController@detail')->name('detail')->where('id', '[0-9]+');
         Route::get('edit/{id}', 'EventController@edit')->name('edit')->where('id', '[0-9]+');
         Route::post('edit/{id}', 'EventController@editStore')->where('id', '[0-9]+');
     });
@@ -45,48 +46,38 @@ Route::group(['middleware' => ['auth']], function () {
     // メンバー
     Route::prefix('member')->name('member.')
     ->group(function() {
+        Route::get('index', 'MemberController@index')->name('index');
+        Route::post('index', 'MemberController@indexStore');
+        Route::get('detail/{id}', 'MemberController@detail')->name('detail')->where('id', '[0-9]+');
+        Route::get('edit/{id}', 'MemberController@edit')->name('edit')->where('id', '[0-9]+');
+        Route::post('edit/{id}', 'MemberController@editStore')->where('id', '[0-9]+');
         Route::get('edit/{id}', 'MemberController@edit')->name('edit')->where('id', '[0-9]+');
         Route::post('edit/{id}', 'MemberController@editStore')->where('id', '[0-9]+');
     });
-});
 
-Route::prefix('event')->name('event.')
-->group(function() {
-    Route::get('detail/{id}', 'EventController@detail')->name('detail')->where('id', '[0-9]+');
-});
-
-// チーム
-Route::prefix('team')->name('team.')
-->group(function() {
-    Route::get('index', 'TeamController@index')->name('index');
-    Route::post('index', 'TeamController@indexStore');
-    Route::get('detail/{id}', 'TeamController@detail')->name('detail')->where('id', '[0-9]+');
-    Route::get('regist', 'TeamController@regist')->name('regist');
-    Route::post('regist', 'TeamController@registStore');
-    Route::get('edit/{id}', 'TeamController@edit')->name('edit')->where('id', '[0-9]+');
-    Route::post('edit/{id}', 'TeamController@editStore')->where('id', '[0-9]+');
-    Route::get('update/{id}/{column}/{value}', 'TeamController@update')->name('update')->where('id', '[0-9]+');
-});
-
-// メンバー
-Route::prefix('member')->name('member.')
-->group(function() {
-    Route::get('index', 'MemberController@index')->name('index');
-    Route::post('index', 'MemberController@indexStore');
-    Route::get('detail/{id}', 'MemberController@detail')->name('detail')->where('id', '[0-9]+');
-    Route::get('edit/{id}', 'MemberController@edit')->name('edit')->where('id', '[0-9]+');
-    Route::post('edit/{id}', 'MemberController@editStore')->where('id', '[0-9]+');
-});
-
-// 募集
-Route::prefix('wanted')->name('wanted.')
-->group(function() {
-    Route::get('index', 'WantedController@index')->name('index');
-    Route::post('index', 'WantedController@indexStore');
-    Route::get('regist', 'WantedController@regist')->name('regist');
-    Route::post('regist', 'WantedController@registStore');
-    Route::get('edit/{id}', 'WantedController@edit')->name('edit')->where('id', '[0-9]+');
-    Route::post('edit/{id}', 'WantedController@editStore')->where('id', '[0-9]+');
-    Route::get('detail/{id}', 'WantedController@detail')->name('detail')->where('id', '[0-9]+');
-    Route::post('delete/{id}', 'WantedController@deleteStore')->name('delete')->where('id', '[0-9]+');
+    // チーム
+    Route::prefix('team')->name('team.')
+    ->group(function() {
+        Route::get('index', 'TeamController@index')->name('index');
+        Route::post('index', 'TeamController@indexStore');
+        Route::get('detail/{id}', 'TeamController@detail')->name('detail')->where('id', '[0-9]+');
+        Route::get('regist', 'TeamController@regist')->name('regist');
+        Route::post('regist', 'TeamController@registStore');
+        Route::get('edit/{id}', 'TeamController@edit')->name('edit')->where('id', '[0-9]+');
+        Route::post('edit/{id}', 'TeamController@editStore')->where('id', '[0-9]+');
+        Route::get('update/{id}/{column}/{value}', 'TeamController@update')->name('update')->where('id', '[0-9]+');
+    });
+    
+    // 募集
+    Route::prefix('wanted')->name('wanted.')
+    ->group(function() {
+        Route::get('index', 'WantedController@index')->name('index');
+        Route::post('index', 'WantedController@indexStore');
+        Route::get('regist', 'WantedController@regist')->name('regist');
+        Route::post('regist', 'WantedController@registStore');
+        Route::get('edit/{id}', 'WantedController@edit')->name('edit')->where('id', '[0-9]+');
+        Route::post('edit/{id}', 'WantedController@editStore')->where('id', '[0-9]+');
+        Route::get('detail/{id}', 'WantedController@detail')->name('detail')->where('id', '[0-9]+');
+        Route::post('delete/{id}', 'WantedController@deleteStore')->name('delete')->where('id', '[0-9]+');
+    });
 });

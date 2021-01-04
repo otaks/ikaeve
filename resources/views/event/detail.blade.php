@@ -4,10 +4,12 @@
         <div class="card-body">
             <div class="container-fluid">
                 <div class="col-md-6">
-                    <a href="{{ route('team.regist') }}" class="btn btn-primary w-25">参加申請</a>
-                    @auth
+                    @if ($recruitBtnView)
+                        <a href="{{ route('team.regist') }}" class="btn btn-primary w-25">参加申請</a>
+                    @endif
+                    @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
                         <a href="{{ route('team.regist') }}" class="btn btn-success">対戦表作成</a>
-                    @endauth
+                    @endif
                 </div>
                 <table class="table table-bordered mt-3">
                     <tr>
@@ -17,15 +19,15 @@
                     <tr>
                       <th>申請日時</th>
                       <td>
-                        {{ isset($data->to_recruit_date) ? $data->to_recruit_date->format('Y/m/d H:i') : '' }}〜
-                        {{ isset($data->from_recruit_date) ? $data->from_recruit_date->format('Y/m/d H:i') : '' }}
+                        {{ isset($data->from_recruit_date) ? $data->from_recruit_date->format('Y/m/d H:i') : '' }}〜
+                        {{ isset($data->to_recruit_date) ? $data->to_recruit_date->format('Y/m/d H:i') : '' }}
                       </td>
                     </tr>
                     <tr>
                       <th>開催日時</th>
                       <td>
-                        {{ isset($data->to_date) ? $data->to_date->format('Y/m/d H:i') : '' }}〜
-                        {{ isset($data->from_date) ? $data->from_date->format('Y/m/d H:i') : '' }}
+                        {{ isset($data->from_date) ? $data->from_date->format('Y/m/d H:i') : '' }}〜
+                        {{ isset($data->to_date) ? $data->to_date->format('Y/m/d H:i') : '' }}
                       </td>
                     </tr>
                     <tr><th>チーム申請数</th><td>{{ count($data->team) }}</tr>

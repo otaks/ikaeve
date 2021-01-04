@@ -25,33 +25,41 @@
     </div>
 </div>
 @if($errors->has('friend_code.*'))
-<div class="form-group row">
-    <label for="error" class="col-md-4 col-form-label text-md-right"></label>
-    <div class="col-md-6">
-        <span class="text-danger">{{ $errors->first('friend_code.*') }}</span>
-    </div>
-</div>
+  <div class="form-group row">
+      <label for="error" class="col-md-4 col-form-label text-md-right"></label>
+      <div class="col-md-6">
+          <span class="text-danger">{{ $errors->first('friend_code.*') }}</span>
+      </div>
+  </div>
 @endif
 @for ($i = 0; $i < $event->team_member; $i++)
     <input type="hidden" name="member_id[]" value="{{ isset($members[$i]) ? $members[$i]->id : '0' }}">
     <div class="form-group row">
         <label for="member_name[]" class="col-md-4 col-form-label text-md-right required">メンバー{{ ($i+1) }}</label>
-
         <div class="col-md-2">
-            <input id="member_name[]" type="text" class="form-control @error('name') is-invalid @enderror" name="member_name[]"
+            <input type="text" class="form-control @error('name') is-invalid @enderror" name="member_name[]"
             value="{{ old('member_name.'.$i, isset($members[$i]) ? $members[$i]->name : '') }}" required placeholder="メンバー名">
         </div>
         <div class="col-md-2">
-            <input id="twitter[]" type="text" class="form-control @error('twitter') is-invalid @enderror" name="twitter[]"
-            value="{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->twitter : '') }}" required placeholder="twitter">
+            <input type="text" class="form-control @error('twitter') is-invalid @enderror" name="twitter[]"
+            value="{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" required placeholder="twitter(@以降)">
+            <input type="hidden" name="twitter_id[]" value="{{ old('twitter_id.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_id : '') }}">
         </div>
 
         <div class="col-md-2">
-            <input id="xp[]" type="text" class="form-control @error('xp') is-invalid @enderror" name="xp[]"
+            <input type="text" class="form-control @error('xp') is-invalid @enderror" name="xp[]"
             value="{{ old('xp.'.$i, isset($members[$i]) ? $members[$i]->xp : '') }}" required placeholder="xp">
         </div>
     </div>
 @endfor
+@if($errors->has('twitter_id.*'))
+  <div class="form-group row">
+      <label for="error" class="col-md-4 col-form-label text-md-right"></label>
+      <div class="col-md-6">
+          <span class="text-danger">{{ $errors->first('twitter_id.*') }}</span>
+      </div>
+  </div>
+@endif
 @foreach ($event->question as $k => $question)
     <div class="form-group row">
         <label for="error" class="col-md-4 col-form-label text-md-right @if ($question->required == 1) required @endif">{{ $question->title }}</label>

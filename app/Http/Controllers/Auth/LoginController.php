@@ -47,22 +47,33 @@ class LoginController extends Controller
        return Socialite::driver('twitter')->redirect();
     }
 
-    public function handleTwitterProviderCallback(){
+    public function handleTwitterProviderCallback(Request $request){
 
        try {
            $user = Socialite::with("twitter")->user();
        }
        catch (\Exception $e) {
             FlashMessageService::error('ログインに失敗しました');
-            return redirect('/login');
+            return redirect('/');
            // エラーならログイン画面へ転送
        }
-      $myinfo = User::where('twitter_id', $user->id)->where('role', 3)->first();
+      $myinfo = User::where('twitter_id', $user->id)->where('role', config('user.role.member'))->first();
       if (!$myinfo) {
              $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
-                       ['name' => $user->nickname,'twitter_nickname' => $user->nickname]);
+                       [
+                         'name' => $user->nickname,
+                         'twitter_nickname' => $user->nickname,
+                         'twitter_auth' => 1
+                        ]
+                     );
+      } else {
+        if ($myinfo->twitter_auth == 0) {
+            $myinfo->twitter_auth = 1;
+            $myinfo->update();
+        }
       }
       Auth::login($myinfo);
+      $request->session()->put('nickname', $user->nickname);
       return redirect()->to('/event/index'); // homeへ転送
 
     }

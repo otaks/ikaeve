@@ -30,6 +30,7 @@ class TeamRequest extends FormRequest
             'pass' => 'integer|digits:4',
             'member_name.*' => 'required|max:50',
             'twitter.*' => 'required|max:20',
+            'twitter_id.*' => 'required',
             'xp.*' => 'required|max:20',
         ];
         return $return;
@@ -43,7 +44,15 @@ class TeamRequest extends FormRequest
             'friend_code.*' => 'フレンドコード',
             'member_name.*' => 'メンバー名',
             'twitter.*' => 'twitter',
+            'twitter_id.*' => 'twitterId',
             'xp.*' => 'xp',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'twitter_id.*.required' => '有効なTwitter名を入力してください。',
         ];
     }
 }
