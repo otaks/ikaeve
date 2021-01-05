@@ -11,8 +11,8 @@
                     <tr><th>代表メンバー</th><td>@if($data->member) <a href="{{ route('member.detail', ['id' => $data->member_id]) }}">{{ $data->member->name }}</a> @endif</tr>
                     @foreach($data::members($data->id) as $v => $member)
                       <tr><th>メンバー{{($v+1)}}</th><td><a href="{{ route('member.detail', ['id' => $member->id]) }}">{{ $member->name }}</a>
-                        @if($member->twitter)
-                            &nbsp;<a href="https://twitter.com/{{ $member->twitter }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
+                        @if($member->user->twitter_nickname)
+                            &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                         @endif
                       </tr>
                     @endforeach
@@ -30,5 +30,12 @@
                     <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i')  }}</tr>
                 </table>
               </div>
+              @if ($data::chkTeamMember($data->id))
+                <div class="form-group row mb-0">
+                    <div class="col-md-6 offset-md-4 text-center">
+                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                    </div>
+                </div>
+              @endif
           </div>
 @endsection

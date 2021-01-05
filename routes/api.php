@@ -18,4 +18,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('getId/{name}', 'API\TwitterController@getId');
+Route::get('getId/{name}/{event}/{team?}', 'API\TwitterController@getId');

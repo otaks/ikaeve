@@ -3,14 +3,12 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-                <div class="col-md-6">
                     @if ($recruitBtnView)
-                        <a href="{{ route('team.regist') }}" class="btn btn-primary w-25">参加申請</a>
+                        <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
                     @endif
                     @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
-                        <a href="{{ route('team.regist') }}" class="btn btn-success">対戦表作成</a>
+                        <a href="#" class="btn btn-success">対戦表作成</a>
                     @endif
-                </div>
                 <table class="table table-bordered mt-3">
                     <tr>
                       <th>大会名</th>

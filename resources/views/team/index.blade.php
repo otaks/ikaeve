@@ -31,27 +31,27 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr class="thead-light text-center">
-                                @auth
+                                @if (Auth::user()->role != config('user.role.member'))
                                   <th></th>
-                                @endauth
+                                @endif
                                 <th>No</th>
                                 <th>チーム名<br>フレンドコード</th>
                                 <th>メンバー</th>
-                                @auth
+                                @if (Auth::user()->role != config('user.role.member'))
                                   <th>承認</th>
                                   <th>棄権</th>
                                   <th>申請日時</th>
-                                @endauth
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
                               @foreach ($datas as $data)
                                 <tr @if($data->abstention == 1) class="table-secondary" @endif>
-                                    @auth
+                                    @if (Auth::user()->role != config('user.role.member'))
                                       <td class="text-center">
                                         <a href="{{ route('team.edit', ['id' => $data->id]) }}"><i class="fas fa-edit fa-lg"></i></a>
                                       </td>
-                                    @endauth
+                                    @endif
                                     <td>{{ $data->id }}</td>
                                     <td><a href="{{ route('team.detail', ['id' => $data->id]) }}">{{ $data->name }}</a>@if($data->abstention == 1) (棄権) @endif
                                       <br>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }} @endif</td>
@@ -64,7 +64,7 @@
                                             <br>
                                         @endforeach
                                     </td>
-                                    @auth
+                                    @if (Auth::user()->role != config('user.role.member'))
                                       <td class="text-center">
                                         @if($data->approval == 1)
                                             <!--<a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 0]) }}" class="btn btn-danger" style="width:70px;">取消</a>-->
@@ -81,7 +81,7 @@
                                         @endif
                                       </td>
                                       <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
-                                    @endauth
+                                    @endif
                                 </tr>
                               @endforeach
                             </tbody>

@@ -30,9 +30,9 @@ class WantedController extends Controller
 
                 $event = $request->session()->get('event');
                 $data = new Wanted();
+                $data->user_id = Auth::id();
                 $data->name = $request->name;
                 $data->note = $request->note;
-                $data->pass = $request->pass;
                 $data->event_id = $event;
                 $data->save();
 
@@ -56,28 +56,23 @@ class WantedController extends Controller
 
     public function editStore(WantedRequest $request)
     {
-        $data = Wanted::find($request->id);
-        if ($data->pass != $request->pass && !Auth::check()) {
-            FlashMessageService::error('パスワードが違います');
-            return redirect()->route('wanted.edit', ['id' => $request->id]);
-        } else {
-            try {
-                \DB::transaction(function() use($data, $request) {
+        try {
+            \DB::transaction(function() use($request) {
 
-                    $data->name = $request->name;
-                    $data->note = $request->note;
-                    $data->save();
+                $data = Wanted::find($request->id);
+                $data->name = $request->name;
+                $data->note = $request->note;
+                $data->save();
 
-                });
+            });
 
-                FlashMessageService::success('編集が完了しました');
+            FlashMessageService::success('編集が完了しました');
 
-            } catch (\Exception $e) {
-                report($e);
-                FlashMessageService::error('編集が失敗しました');
-            }
-            return redirect()->route('wanted.index');
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('編集が失敗しました');
         }
+        return redirect()->route('wanted.index');
     }
 
     public function detail(Request $request)
@@ -88,23 +83,19 @@ class WantedController extends Controller
 
     public function deleteStore(Request $request)
     {
-        $data = Wanted::find($request->id);
-        if ($data->pass != $request->pass && !Auth::check()) {
-            FlashMessageService::error('パスワードが違います');
-        } else {
-            try {
-                \DB::transaction(function() use($data) {
+        try {
+            \DB::transaction(function() use($request) {
 
-                    $data->delete();
+                $data = Wanted::find($request->id);
+                $data->delete();
 
-                });
+            });
 
-                FlashMessageService::success('削除が完了しました');
+            FlashMessageService::success('削除が完了しました');
 
-            } catch (\Exception $e) {
-                report($e);
-                FlashMessageService::error('削除が失敗しました');
-            }
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('削除が失敗しました');
         }
 
         return redirect()->route('wanted.index');

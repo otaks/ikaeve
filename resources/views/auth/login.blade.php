@@ -63,8 +63,8 @@
                     </form>
                 </div>
                 <hr>
-                <div class="text-center m-5">
+                <div class="text-center mt-5 mb-5">
                   ※大会参加はこちらから<br><br>
-                  <a class="btn btn-outline-info w-25" href="{{ route('login/twitter') }}"><i class="fab fa-twitter mr-1"></i>Twitterでログイン</a>
+                  <a class="btn btn-outline-info" href="{{ route('login/twitter') }}"><i class="fab fa-twitter mr-1"></i>Twitterでログイン</a>
                 </div>
 @endsection

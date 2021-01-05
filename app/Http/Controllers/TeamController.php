@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
 use App\Http\Requests\TeamRequest;
@@ -91,7 +92,7 @@ class TeamController extends Controller
                     $user = User::where('twitter_id', $twitterIds[$k])->first();
                     if (!$user) {
                         $user = new User();
-                        $user->twitter_id = $twitterIds[$k];
+                        $user->twitter_id = $this->getTwitterId($twitters[$k]);
                         $user->twitter_nickname = $twitters[$k];
                         $user->save();
                     }
@@ -140,66 +141,64 @@ class TeamController extends Controller
 
     public function editStore(TeamRequest $request)
     {
-        $data = Team::find($request->id);
-        if ($data->pass != $request->pass && !Auth::check()) {
-            FlashMessageService::error('パスワードが違います');
-            return redirect()->route('team.edit', ['id' => $request->id]);
-        } else {
-            try {
-                \DB::transaction(function() use($request, $data) {
+        try {
+            \DB::transaction(function() use($request) {
 
-                    $ids = $request->member_id;
-                    $data->name = $request->name;
-                    $data->friend_code = join('', $request->friend_code);
-                    $data->note = $request->note;
-                    $data->member_id = $ids[0];
-                    $data->save();
+                $data = Team::find($request->id);
+                $ids = $request->member_id;
+                $data->name = $request->name;
+                $data->friend_code = join('', $request->friend_code);
+                $data->note = $request->note;
+                $data->save();
 
-                    $names = $request->member_name;
-                    $twitters = $request->twitter;
-                    $twitterIds = $request->twitter_id;
-                    $xps = $request->xp;
-                    foreach ($ids as $k => $val) {
-                        $data = Member::find($val);
-                        $user = User::where('twitter_id', $twitterIds[$k])->first();
-                        if (!$user) {
-                            $user = new User();
-                            $user->twitter_id = $twitterIds[$k];
-                            $user->twitter_nickname = $twitters[$k];
-                            $user->save();
-                        }
-                        $data->user_id = $user->id;
-                        $data->name = $names[$k];
-                        $data->xp = $xps[$k];
+                $names = $request->member_name;
+                $twitters = $request->twitter;
+                $twitterIds = $request->twitter_id;
+                $xps = $request->xp;
+                foreach ($ids as $k => $val) {
+                    $member = Member::find($val);
+                    $user = User::where('twitter_id', $twitterIds[$k])->first();
+                    if (!$user) {
+                        $user = new User();
+                        $user->twitter_id = $this->getTwitterId($twitters[$k]);
+                        $user->twitter_nickname = $twitters[$k];
+                        $user->save();
+                    }
+                    $member->user_id = $user->id;
+                    $member->name = $names[$k];
+                    $member->xp = $xps[$k];
+                    $member->update();
+                    if ($k == 0) {
+                        $data->member_id = $member->id;
                         $data->update();
                     }
+                }
 
-                    $questions = $request->question;
-                    $answers = $request->answer;
-                    $aIds = $request->answer_id;
-                    if ($request->question) {
-                        foreach ($questions as $k => $val) {
-                            $answer = Answer::find($aIds[$k]);
-                            if (!$answer) {
-                                $answer = new Answer();
-                            }
-                            $answer->team_id = $request->id;
-                            $answer->question_id = $val;
-                            $answer->note = $answers[$k];
-                            $answer->save();
+                $questions = $request->question;
+                $answers = $request->answer;
+                $aIds = $request->answer_id;
+                if ($request->question) {
+                    foreach ($questions as $k => $val) {
+                        $answer = Answer::find($aIds[$k]);
+                        if (!$answer) {
+                            $answer = new Answer();
                         }
+                        $answer->team_id = $request->id;
+                        $answer->question_id = $val;
+                        $answer->note = $answers[$k];
+                        $answer->save();
                     }
-                });
+                }
+            });
 
-                FlashMessageService::success('編集が完了しました');
+            FlashMessageService::success('編集が完了しました');
 
-            } catch (\Exception $e) {
-                report($e);
-                FlashMessageService::error('編集が失敗しました');
-            }
-
-            return redirect()->route('team.index');
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('編集が失敗しました');
         }
+
+        return redirect()->route('team.index');
     }
 
     public function update($id, $column, $value)
@@ -231,5 +230,15 @@ class TeamController extends Controller
     {
         $data = Team::find($request->id);
         return view('team.detail', compact('data'));
+    }
+
+    private function getTwitterId($name)
+    {
+        $connection = new TwitterOAuth(
+            config('twitter.consumer_key'),
+            config('twitter.consumer_secret')
+        );
+        $userData=$connection->get("users/show", ["screen_name" => $name]);
+        return $userData->id;
     }
 }

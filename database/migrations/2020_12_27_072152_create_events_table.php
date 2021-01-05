@@ -38,6 +38,7 @@ class CreateEventsTable extends Migration
             $table->string('gameplay_name3', 255)->comment('実況者3')->nullable();
             $table->string('gameplay_url4', 255)->comment('実況URL4')->nullable();
             $table->string('gameplay_name4', 255)->comment('実況者4')->nullable();
+            $table->boolean('view')->comment('表示(0:表示/1:非表示)')->default(0);
 
             $table->timestamps();
             $table->softDeletes();

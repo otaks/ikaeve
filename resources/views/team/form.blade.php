@@ -3,6 +3,8 @@
     <label for="name" class="col-md-4 col-form-label text-md-right required">チーム名</label>
 
     <div class="col-md-6">
+        <input type="hidden" name="team_id" id="team_id" value="{{ isset($data) ? $data->id : '' }}">
+        <input type="hidden" name="event_id" id="event_id" value="{{ session('event') }}">
         <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name"
         value="{{ old('name', isset($data) ? $data->name : '') }}" required autocomplete="name">
         @if($errors->has('name')) <span class="text-danger">{{ $errors->first('name') }}</span> @endif
@@ -78,14 +80,3 @@
         <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
-@guest
-    <div class="form-group row">
-        <label for="name" class="col-md-4 col-form-label text-md-right required">修正パスワード</label>
-
-        <div class="col-md-6">
-            <input id="pass" type="password" class="form-control @error('pass') is-invalid @enderror" name="pass"
-            value="" required autocomplete="pass" placeholder="半角数字4桁">
-            @if($errors->has('pass')) <span class="text-danger">{{ $errors->first('pass') }}</span> @endif
-        </div>
-    </div>
-@endguest

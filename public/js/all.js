@@ -21,9 +21,15 @@ $(function(){
   // twitter入力
   $('input[name^="twitter[]"]').change(function() {
     name = $(this).val();
+    event_id = $('#event_id').val();
+    team_id = $('#team_id').val();
     num = $('input[name^="twitter[]"]').index(this);
     $('input[name^="twitter_id[]"]').eq(num).val('');
-    axios.get('/api/getId/'+name).then((res) => {
+    url = '/api/getId/'+name+'/'+event_id;
+    if (team_id) {
+      url += '/'+team_id;
+    }
+    axios.get(url).then((res) => {
       if(res.data.status == 400) {
         alert(res.data.message);
         $('input[name^="twitter[]"]').eq(num).val('');

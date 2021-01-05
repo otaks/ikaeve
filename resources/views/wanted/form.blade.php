@@ -1,5 +1,15 @@
 @include('elements.flash_message')
 <div class="form-group row">
+    <label for="name" class="col-md-4 col-form-label text-md-right required">募集者</label>
+
+    <div class="col-md-6">
+        {{ Auth::user()->name }}
+        @if(Auth::user()->twitter_nickname)
+            &nbsp;<a href="https://twitter.com/{{ Auth::user()->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
+        @endif
+    </div>
+</div>
+<div class="form-group row">
     <label for="name" class="col-md-4 col-form-label text-md-right required">募集名</label>
 
     <div class="col-md-6">
@@ -15,14 +25,3 @@
         <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
-@guest
-    <div class="form-group row">
-        <label for="name" class="col-md-4 col-form-label text-md-right required">修正パスワード</label>
-
-        <div class="col-md-6">
-            <input id="pass" type="password" class="form-control @error('pass') is-invalid @enderror" name="pass"
-            value="" required autocomplete="pass" autofocus placeholder="半角数字4桁">
-            @if($errors->has('pass')) <span class="text-danger">{{ $errors->first('pass') }}</span> @endif
-        </div>
-    </div>
-@endguest

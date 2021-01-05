@@ -21,11 +21,14 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $request->session()->forget('event');
-        if (Auth::user()->role != config('user.role.member')) {
+        if (Auth::user()->role == config('user.role.admin')) {
             $datas = Event::orderBy('id', 'DESC')->get();
+        } elseif (Auth::user()->role == config('user.role.staff')) {
+            $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
         } else {
             $dt = new Carbon();
-            $datas = Event::where('from_recruit_date', '<=', $dt)
+            $datas = Event::where('view', 0)
+            ->where('from_recruit_date', '<=', $dt)
             ->where('to_date', '>=', $dt)
             ->orderBy('id', 'DESC')->get();
         }
@@ -53,6 +56,7 @@ class EventController extends Controller
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
                 $data->note = $request->note;
+                $data->view = $request->view;
                 $data->save();
 
             });
@@ -89,7 +93,8 @@ class EventController extends Controller
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
                 $data->note = $request->note;
-                $data->save();
+                $data->view = $request->view;
+                $data->update();
 
             });
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Member;
 
 class Team extends BaseModel
@@ -28,6 +29,11 @@ class Team extends BaseModel
     public static function members($id)
     {
         return Member::where('team_id', $id)->get();
+    }
+
+    public static function chkTeamMember($id)
+    {
+        return Member::where('team_id', $id)->where('user_id', Auth::id())->count();
     }
 
     public function answer()
