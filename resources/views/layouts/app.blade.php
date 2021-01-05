@@ -69,12 +69,14 @@
                                 <a href="{{ route('event.index') }}">大会</a>
                             </li>
                           @endguest
-                          <li class="nav-item">
-                              <a href="{{ route('team.index') }}">チーム</a>
-                          </li>
-                          <li class="nav-item">
-                              <a href="{{ route('wanted.index') }}">メンバー募集</a>
-                          </li>
+                          @if (session('event'))
+                            <li class="nav-item">
+                                <a href="{{ route('team.index') }}">チーム</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('wanted.index') }}">メンバー募集</a>
+                            </li>
+                          @endif
                           @auth
                             <li class="nav-item">
                               <a href="{{ route('logout') }}" onclick="event.preventDefault();

@@ -62,7 +62,7 @@ class LoginController extends Controller
         if (!$myinfo) {
                $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
                          [
-                           'name' => $user->nickname,
+                           'name' => $user->name,
                            'twitter_nickname' => $user->nickname,
                            'twitter_auth' => 1
                           ]
@@ -74,8 +74,6 @@ class LoginController extends Controller
           }
         }
         Auth::login($myinfo);
-        $request->session()->put('name', $user->name);
-        $request->session()->put('nickname', $user->nickname);
         return redirect()->to('/event/index'); // homeへ転送
     }
 }

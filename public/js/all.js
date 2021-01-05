@@ -37,6 +37,7 @@ $(function(){
         $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
       }
     }).catch(error => {
+      $('input[name^="twitter[]"]').eq(num).val('');
       alert('エラーが発生しました');
       console.log(error);
     });
