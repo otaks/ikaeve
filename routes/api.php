@@ -20,5 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('twitter')->name('twitter.')
     ->group(function() {
-        Route::get('getId/{name}/{event}/{team?}', 'Api\TwitterController@getId')->name('getId');
+        Route::get('getId/{name?}/{event?}/{team?}', 'Api\TwitterController@getId')->name('getId');
 });

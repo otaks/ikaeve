@@ -80,3 +80,4 @@
         <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
+<input type="hidden" name="twitterApi" id="twitterApi" value="{{ route('twitter.getId') }}">
