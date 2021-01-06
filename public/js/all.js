@@ -25,7 +25,7 @@ $(function(){
     team_id = $('#team_id').val();
     num = $('input[name^="twitter[]"]').index(this);
     $('input[name^="twitter_id[]"]').eq(num).val('');
-    url = '/api/getId/'+name+'/'+event_id;
+    url = '/api/twitter/getId/'+name+'/'+event_id;
     if (team_id) {
       url += '/'+team_id;
     }
