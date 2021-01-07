@@ -59,12 +59,11 @@
           <span></span>
         </div>
 
-        <!--
         <div id="mask"></div>
+
         <main>
-          <h3>{{ session('eventName') ?? '' }}</h3>
+          <h4>{{ session('eventName') ?? '' }}</h4>
         </main>
-      -->
 
       </div>
     @endif
