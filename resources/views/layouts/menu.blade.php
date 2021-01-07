@@ -1,3 +1,4 @@
+<!--
     <ul class="nav nav-pills nav-stacked noto" style="display:block;">
       @auth
         <li class="nav-item">
@@ -16,7 +17,7 @@
         </li>
       @endauth
     </ul>
-
+-->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
         @csrf
     </form>

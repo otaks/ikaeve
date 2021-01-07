@@ -20,7 +20,8 @@ class WantedController extends Controller
 
     public function regist()
     {
-        return view('wanted.regist');
+        $user = Auth::user();
+        return view('wanted.regist', compact('user'));
     }
 
     public function registStore(WantedRequest $request)
@@ -51,7 +52,8 @@ class WantedController extends Controller
     public function edit(Request $request)
     {
         $data = Wanted::find($request->id);
-        return view('wanted.edit', compact('data'));
+        $user = $data->user;
+        return view('wanted.edit', compact('data', 'user'));
     }
 
     public function editStore(WantedRequest $request)

@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/all.js') }}" defer></script>
+    <script src="{{ asset('js/menu.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -32,66 +33,40 @@
     <div id="app">
       @if (!Route::is('login') && !Route::is('register') && !Route::is('home') &&
       !Route::is('password.*') && Route::currentRouteName() != '')
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-            <div class="container">
-                @if (session('eventName') && session('event'))
-                    <a class="navbar-brand noto" href="{{ route('event.detail', ['id' => session('event')]) }}">
-                        <b>{{ session('eventName') }}</b>
-                    </a>
-                @endif
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+      <div id="navArea">
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <!--
-                    <ul class="navbar-nav mr-auto">
-                        @auth
-                            <li class="mr-2"><a href="{{ route('event.index') }}">大会</a></li>
-                        @endauth
-                        @if (session('event'))
-                          <li class="mr-2"><a href="{{ route('team.index') }}">チーム</a></li>
-                        @endif
-                    </ul>
-                  -->
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                      @if ($isMobile)
-                          @guest
-                            <li class="nav-item">
-                                <a href="{{ route('event.detail', ['id' => session('event')]) }}">大会</a>
-                            </li>
-                          @else
-                            <li class="nav-item">
-                                <a href="{{ route('event.index') }}">大会</a>
-                            </li>
-                          @endguest
-                          @if (session('event'))
-                            <li class="nav-item">
-                                <a href="{{ route('team.index') }}">チーム</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('wanted.index') }}">メンバー募集</a>
-                            </li>
-                          @endif
-                          @auth
-                            <li class="nav-item">
-                              <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                                document.getElementById('logout-form').submit();">logout</a>
-                            </li>
-                          @endauth
-                      @else
-                      @endif
-                    </ul>
-                </div>
-            </div>
+        <nav>
+          <div class="inner">
+            <ul>
+              <li><a href="{{ route('event.index') }}">大会一覧</a></li>
+              @if (session('event'))
+                <li><a href="{{ route('event.detail', ['id' => session('event')]) }}">大会詳細</a></li>
+                <li><a href="{{ route('team.index') }}">チーム</a></li>
+                <li><a href="{{ route('wanted.index') }}">メンバー募集</a></li>
+              @endif
+              <li><a href="{{ route('logout') }}" onclick="event.preventDefault();
+                  document.getElementById('logout-form').submit();">logout</a></li>
+            </ul>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
+          </div>
         </nav>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-            @csrf
-        </form>
+
+        <div class="toggle_btn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <!--
+        <div id="mask"></div>
+        <main>
+          <h3>{{ session('eventName') ?? '' }}</h3>
+        </main>
+      -->
+
+      </div>
     @endif
     @if (Route::is('login') || Route::is('register') || Route::is('home') ||
      Route::is('password.*') || Route:: currentRouteName() == '')
@@ -107,7 +82,6 @@
             </div>
           </div>
         @else
-          @if ($isMobile)
             <div class="container">
               <div class="row">
                 <div class="col-12">
@@ -115,19 +89,6 @@
                 </div>
               </div>
             </div>
-          @else
-            <div class="container">
-              <div class="row">
-                <div class="col-2 sidemenu mt-2">
-                <!-- left menu -->
-                @include('layouts/menu')
-                </div>
-                <div class="col-10">
-                  @yield('content')
-                </div>
-              </div>
-            </div>
-          @endif
         @endif
     </div>
 </body>

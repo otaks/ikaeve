@@ -119,11 +119,11 @@ class TeamController extends Controller
                 }
             });
 
-            FlashMessageService::success('編集が完了しました');
+            FlashMessageService::success('登録が完了しました');
 
         } catch (\Exception $e) {
             report($e);
-            FlashMessageService::error('編集が失敗しました');
+            FlashMessageService::error('登録が失敗しました');
         }
 
         return redirect()->route('team.index');

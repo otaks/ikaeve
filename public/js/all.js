@@ -53,5 +53,4 @@ $(function(){
   $('.deleteTrBtn').click(function() {
     $(this).closest('tr').remove();
   });
-
 });
