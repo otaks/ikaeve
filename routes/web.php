@@ -67,7 +67,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{id}', 'TeamController@editStore')->where('id', '[0-9]+');
         Route::get('update/{id}/{column}/{value}', 'TeamController@update')->name('update')->where('id', '[0-9]+');
     });
-    
+
     // 募集
     Route::prefix('wanted')->name('wanted.')
     ->group(function() {
@@ -79,5 +79,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{id}', 'WantedController@editStore')->where('id', '[0-9]+');
         Route::get('detail/{id}', 'WantedController@detail')->name('detail')->where('id', '[0-9]+');
         Route::post('delete/{id}', 'WantedController@deleteStore')->name('delete')->where('id', '[0-9]+');
+    });
+
+    // トーナメント表
+    Route::prefix('tournament')->name('tournament.')
+    ->group(function() {
+        Route::get('index/{block?}/{sheet?}', 'TournamentController@index')->name('index');
+        Route::get('make', 'TournamentController@make')->name('make');
+        Route::post('make', 'TournamentController@makeStore');
+        Route::get('edit/{block?}', 'TournamentController@edit')->name('edit');
     });
 });

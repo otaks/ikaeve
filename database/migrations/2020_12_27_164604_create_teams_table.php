@@ -46,7 +46,11 @@ class CreateTeamsTable extends Migration
             $table->text('note')->comment('備考')->nullable();
             $table->boolean('approval')->comment('許可')->default(0);
             $table->boolean('abstention')->comment('棄権')->default(0);
-            $table->string('pass', 4)->comment('修正用パスワード')->nullable();
+            $table->unsignedInteger('xp_total')->comment('合計XP')->nullable();
+            $table->unsignedInteger('block')->comment('ブロック')->nullable();
+            $table->string('sheet', 1)->comment('A~P')->nullable();
+            $table->unsignedInteger('number')->comment('1~4')->nullable();
+            $table->boolean('change_flg')->comment('チェンジ対象')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
@@ -60,7 +64,6 @@ class CreateTeamsTable extends Migration
             $table->unsignedInteger('event_id')->comment('大会ID')->nullable();
             $table->string('name', 255)->comment('名前')->nullable();
             $table->text('note')->comment('内容')->nullable();
-            $table->string('pass', 4)->comment('修正用パスワード')->nullable();
             $table->boolean('end')->comment('終了')->default(0);
 
             $table->timestamps();

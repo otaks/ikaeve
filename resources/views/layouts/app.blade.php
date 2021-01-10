@@ -35,12 +35,13 @@
       !Route::is('password.*') && Route::currentRouteName() != '')
       <div id="navArea">
 
-        <nav>
+        <nav class="hamburger">
           <div class="inner">
             <ul>
               <li><a href="{{ route('event.index') }}">大会一覧</a></li>
               @if (session('event'))
                 <li><a href="{{ route('event.detail', ['id' => session('event')]) }}">大会詳細</a></li>
+                <li><a href="{{ route('tournament.index') }}">対戦表</a></li>
                 <li><a href="{{ route('team.index') }}">チーム</a></li>
                 <li><a href="{{ route('wanted.index') }}">メンバー募集</a></li>
               @endif
@@ -62,7 +63,7 @@
         <div id="mask"></div>
 
         <main>
-          <h4>{{ session('eventName') ?? '' }}</h4>
+          <h4>{{ session('eventName') ?? '' }} @if (session('block')) {{ session('block') }}ブロック @endif </h4>
         </main>
 
       </div>

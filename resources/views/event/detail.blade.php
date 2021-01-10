@@ -3,12 +3,14 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-                    @if ($recruitBtnView)
-                        <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
-                    @endif
-                    @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
-                        <a href="#" class="btn btn-success">対戦表作成</a>
-                    @endif
+                @include('elements.flash_message')
+                @if ($recruitBtnView)
+                    <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
+                @endif
+                @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
+                    <a href="{{ route('tournament.make') }}" class="btn btn-success">対戦表作成</a>
+                    <a href="{{ route('tournament.edit') }}" class="btn btn-success">対戦表編集</a>
+                @endif
                 <table class="table table-bordered mt-3">
                     <tr>
                       <th>大会名</th>
@@ -26,6 +28,30 @@
                       <td>
                         {{ isset($data->from_date) ? $data->from_date->format('Y/m/d H:i') : '' }}〜
                         {{ isset($data->to_date) ? $data->to_date->format('Y/m/d H:i') : '' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>予選通過順位</th>
+                      <td>
+                        {{ $data->passing_order ?? '' }}
+                      </td>
+                    </tr>　
+                    <tr>
+                      <th>予選先取点</th>
+                      <td>
+                        {{ $data->pre_score ?? '' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>本戦先取点</th>
+                      <td>
+                        {{ $data->main_score ?? '' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>決勝戦先取点</th>
+                      <td>
+                        {{ $data->final_score ?? '' }}
                       </td>
                     </tr>
                     <tr><th>チーム申請数</th><td>{{ count($data->team) }}</tr>

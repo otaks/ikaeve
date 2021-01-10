@@ -234,10 +234,11 @@ a {
 .show > .btn-danger.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem rgba(231, 82, 78, 0.5);
 }
+
 /*============
 nav
 =============*/
-nav {
+.hamburger {
   display: block;
   position: fixed;
   top: 0;
@@ -252,24 +253,24 @@ nav {
   z-index: 3;
   opacity: 0;
 }
-.open nav {
+.open .hamburger {
   left: 0;
   opacity: 1;
 }
-nav .inner {
+.hamburger .inner {
   padding: 25px;
 }
-nav .inner ul {
+.hamburger .inner ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-nav .inner ul li {
+.hamburger .inner ul li {
   position: relative;
   margin: 0;
   border-bottom: 1px solid #333;
 }
-nav .inner ul li a {
+.hamburger .inner ul li a {
   display: block;
   color: #333;
   font-size: 14px;
@@ -277,11 +278,11 @@ nav .inner ul li a {
   text-decoration: none;
   transition-duration: 0.2s;
 }
-nav .inner ul li a:hover {
+.hamburger .inner ul li a:hover {
   background: #e4e4e4;
 }
 @media screen and (max-width: 767px) {
-  nav {
+  .hamburger {
     left: -220px;
     width: 220px;
   }

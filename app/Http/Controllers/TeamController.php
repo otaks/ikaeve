@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\Paginator;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
@@ -24,9 +25,8 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         $search['event'] = $request->session()->get('event');
-        $datas = Team::where('event_id', $search['event'])->orderBy('id', 'DESC')->get();
-        $events = Event::orderBy('id', 'DESC')->get();
-        return view('team.index', compact('datas', 'events'));
+        $datas = Team::where('event_id', $search['event'])->orderBy('id', 'DESC')->paginate(config('common.page_num'));
+        return view('team.index', compact('datas'));
     }
 
     public function indexStore(Request $request)
@@ -51,7 +51,7 @@ class TeamController extends Controller
         if (isset($search['approval'])) {
             $query->where('approval', $search['approval']);
         }
-        $datas = $query->groupBy('teams.id')->orderBy('teams.id', 'DESC')->get();
+        $datas = $query->groupBy('teams.id')->orderBy('teams.id', 'DESC')->paginate(config('common.page_num'));
         return view('team.index', compact('datas', 'search'));
     }
 
@@ -82,6 +82,7 @@ class TeamController extends Controller
                 $data->event_id = $request->session()->get('event');
                 $data->save();
 
+                $total_xp = 0;
                 $names = $request->member_name;
                 $twitters = $request->twitter;
                 $twitterIds = $request->twitter_id;
@@ -105,7 +106,11 @@ class TeamController extends Controller
                         $data->member_id = $member->id;
                         $data->update();
                     }
+                    $total_xp += $xps[$k];
                 }
+                $data->total_xp = $total_xp;
+                $data->update();
+
                 $questions = $request->question;
                 $answers = $request->answer;
                 if ($request->question) {
@@ -151,6 +156,7 @@ class TeamController extends Controller
                 $data->note = $request->note;
                 $data->save();
 
+                $total_xp = 0;
                 $names = $request->member_name;
                 $twitters = $request->twitter;
                 $twitterIds = $request->twitter_id;
@@ -172,7 +178,10 @@ class TeamController extends Controller
                         $data->member_id = $member->id;
                         $data->update();
                     }
+                    $total_xp += $xps[$k];
                 }
+                $data->total_xp = $total_xp;
+                $data->update();
 
                 $questions = $request->question;
                 $answers = $request->answer;

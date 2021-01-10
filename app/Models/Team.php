@@ -40,4 +40,21 @@ class Team extends BaseModel
     {
         return $this->hasMany('App\Models\Answer');
     }
+
+    public static function getAllTeam($id, $rule)
+    {
+        $query = Team::query();
+        $query->select('teams.*')
+        ->where('event_id', $id)
+        ->where('approval', 1)
+        ->where('abstention', 0);
+        if ($rule == 1) {
+            $query->orderBy('xp_total', 'desc');
+        } elseif ($rule == 0) {
+            $query->inRandomOrder();
+        } elseif ($rule == 2) {
+            $query->orderBy('created_at', 'asc');
+        }
+        return $query->get()->toArray();
+    }
 }

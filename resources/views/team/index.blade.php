@@ -7,24 +7,32 @@
                 <form method="POST">
                     @csrf
                     <div class="form-group row mb-3">
-                        <div class="col-md-3 col-6">
-                            <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名部分一致">
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名部分一致">
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <select class="form-control" name="approval">
-                                <option></option>
-                                <option value="0" @if(isset($search) && $search['approval'] == '0') selected @endif>未承認</option>
-                                <option value="1" @if(isset($search) && $search['approval'] == 1) selected @endif>承認済</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 col-6">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-search fa-lg mr-1"></i>検索</button>
+                        @if (Auth::user()->role == config('user.role.admin'))
+                          <div class="col-md-3 col-4 p-1">
+                              <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">
+                          </div>
+                          <div class="col-md-3 col-4 p-1">
+                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名">
+                          </div>
+                          <div class="col-md-2 col-2 p-1">
+                              <select class="form-control" name="approval">
+                                  <option></option>
+                                  <option value="0" @if(isset($search) && $search['approval'] == '0') selected @endif>未承認</option>
+                                  <option value="1" @if(isset($search) && $search['approval'] == 1) selected @endif>承認済</option>
+                              </select>
+                          </div>
+                        @else
+                          <div class="col-md-3 col-5 p-1">
+                              <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">
+                          </div>
+                          <div class="col-md-3 col-5 p-1">
+                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名">
+                          </div>
+                        @endif
+                        <div class="col-md-2 col-1 p-1">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search fa-lg mr-1"></i></button>
                         </div>
                     </div>
-                    <input type="hidden" name="" value="">
                 </form>
                 @if (0 < count($datas))
                     <div class="table-responsive">
@@ -37,6 +45,7 @@
                                 <th>No</th>
                                 <th>チーム名<br>フレンドコード</th>
                                 <th>メンバー</th>
+                                <th>ブロック</th>
                                 @if (Auth::user()->role != config('user.role.member'))
                                   <th>承認</th>
                                   <th>棄権</th>
@@ -64,6 +73,9 @@
                                             <br>
                                         @endforeach
                                     </td>
+                                    <td>{{ $data->block }}ブロック
+                                      <br>
+                                      {{ $data->sheet }}-{{ $data->number }}</td>
                                     @if (Auth::user()->role != config('user.role.member'))
                                       <td class="text-center">
                                         @if($data->approval == 1)
@@ -87,6 +99,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {{ $datas->links() }}
                 @endif
             </div>
         </div>

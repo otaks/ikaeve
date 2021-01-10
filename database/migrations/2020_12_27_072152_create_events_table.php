@@ -38,6 +38,10 @@ class CreateEventsTable extends Migration
             $table->string('gameplay_name3', 255)->comment('実況者3')->nullable();
             $table->string('gameplay_url4', 255)->comment('実況URL4')->nullable();
             $table->string('gameplay_name4', 255)->comment('実況者4')->nullable();
+            $table->unsignedInteger('passing_order')->comment('予選通過順位')->default(0);
+            $table->unsignedInteger('pre_score')->comment('予選先取点')->default(0);
+            $table->unsignedInteger('main_score')->comment('本戦先取点')->default(0);
+            $table->unsignedInteger('final_score')->comment('決勝先取点')->default(0);
             $table->boolean('view')->comment('表示(0:表示/1:非表示)')->default(0);
 
             $table->timestamps();

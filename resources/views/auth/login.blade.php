@@ -3,7 +3,13 @@
 @section('content')
                 <div class="card-header">{{ __('Login') }}</div>
 
+                <div class="text-center mt-5 mb-5">
+                  ※大会参加はこちらから<br><br>
+                  <a class="btn btn-outline-info" href="{{ route('login/twitter') }}"><i class="fab fa-twitter mr-1"></i>Twitterでログイン</a>
+                </div>
+                <hr>
                 <div class="card-body">
+
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
@@ -61,10 +67,5 @@
                             </div>
                         </div>
                     </form>
-                </div>
-                <hr>
-                <div class="text-center mt-5 mb-5">
-                  ※大会参加はこちらから<br><br>
-                  <a class="btn btn-outline-info" href="{{ route('login/twitter') }}"><i class="fab fa-twitter mr-1"></i>Twitterでログイン</a>
                 </div>
 @endsection

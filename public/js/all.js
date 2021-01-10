@@ -53,4 +53,22 @@ $(function(){
   $('.deleteTrBtn').click(function() {
     $(this).closest('tr').remove();
   });
+
+  $('.changeTeamBtn').click(function(e) {
+    team = $(this).data('id');
+    api = $('#changeApi').val();
+    url = api+'/'+team;
+    axios.get(url).then((res) => {
+      alert(res.data.message);
+      if(res.data.status == 200) {
+        $(e.target).closest('tr').children('td,th').toggleClass('table-warning');
+      } else {
+        location.reload();
+      }
+    }).catch(error => {
+      alert('エラーが発生しました');
+      console.log(error);
+    });
+  });
+
 });

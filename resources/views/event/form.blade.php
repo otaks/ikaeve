@@ -1,5 +1,5 @@
 <div class="form-group row">
-    <label for="name" class="col-md-4 col-form-label text-md-right required">大会名</label>
+    <label for="name" class="col-md-3 col-form-label text-md-right required">大会名</label>
 
     <div class="col-md-6">
         <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name"
@@ -8,7 +8,7 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="from_recruit_date" class="col-md-4 col-form-label text-md-right required">募集日時</label>
+    <label for="recruit_date" class="col-md-3 col-form-label text-md-right required">募集日時</label>
 
     <div class="col-md-3 col-5">
       <input id="from_recruit_date" type="text" class="form-control datepicker1 @error('from_recruit_date') is-invalid @enderror" required name="from_recruit_date"
@@ -22,7 +22,7 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="name" class="col-md-4 col-form-label text-md-right required">開催日時</label>
+    <label for="date" class="col-md-3 col-form-label text-md-right required">開催日時</label>
 
     <div class="col-md-3 col-5">
       <input id="from_date" type="text" class="form-control datepicker1 @error('from_date') is-invalid @enderror" required name="from_date"
@@ -36,7 +36,7 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="name" class="col-md-4 col-form-label text-md-right">チーム人数</label>
+    <label for="team_member" class="col-md-3 col-form-label text-md-right">チーム人数</label>
 
     <div class="col-md-2 col-3">
       <select name="team_member" class="form-control">
@@ -45,15 +45,54 @@
       </select>
     </div>
 </div>
+<div class="form-group row p-1">
+    <label for="passing_order" class="col-md-3 col-form-label text-md-right">予選通過順位</label>
+
+    <div class="col-md-2 col-3">
+      <select name="passing_order" class="form-control">
+        <option value="1" {{ old('passing_order', isset($data->passing_order) && $data->passing_order == 1 ? 'selected' : '') }}>1</option>
+        <option value="2" {{ old('passing_order', isset($data->passing_order) && $data->passing_order == 2 ? 'selected' : '') }}>2</option>
+      </select>
+    </div>
+    <label for="pre_score" class="col-md-2 col-form-label text-md-right">予選先取点</label>
+
+    <div class="col-md-2 col-3">
+      <select name="pre_score" class="form-control">
+        <option value="1" {{ old('pre_score', isset($data->pre_score) && $data->pre_score == 1 ? 'selected' : '') }}>1</option>
+        <option value="2" {{ old('pre_score', isset($data->pre_score) && $data->pre_score == 2 ? 'selected' : '') }}>2</option>
+        <option value="3" {{ old('pre_score', isset($data->pre_score) && $data->pre_score == 3 ? 'selected' : '') }}>3</option>
+      </select>
+    </div>
+</div>
+<div class="form-group row p-1">
+    <label for="main_score" class="col-md-3 col-form-label text-md-right">本戦先取点</label>
+
+    <div class="col-md-2 col-3">
+      <select name="main_score" class="form-control">
+        <option value="1" {{ old('main_score', isset($data->main_score) && $data->main_score == 1 ? 'selected' : '') }}>1</option>
+        <option value="2" {{ old('main_score', isset($data->main_score) && $data->main_score == 2 ? 'selected' : '') }}>2</option>
+        <option value="3" {{ old('main_score', isset($data->main_score) && $data->main_score == 3 ? 'selected' : '') }}>3</option>
+      </select>
+    </div>
+    <label for="final_score" class="col-md-2 col-form-label text-md-right">決勝戦先取点</label>
+
+    <div class="col-md-2 col-3">
+      <select name="final_score" class="form-control">
+        <option value="1" {{ old('final_score', isset($data->final_score) && $data->final_score == 1 ? 'selected' : '') }}>1</option>
+        <option value="2" {{ old('final_score', isset($data->final_score) && $data->final_score == 2 ? 'selected' : '') }}>2</option>
+        <option value="3" {{ old('final_score', isset($data->final_score) && $data->final_score == 3 ? 'selected' : '') }}>3</option>
+      </select>
+    </div>
+</div>
 <div class="form-group row">
-    <label for="name" class="col-md-4 col-form-label text-md-right">概要</label>
+    <label for="name" class="col-md-3 col-form-label text-md-right">概要</label>
 
     <div class="col-md-6">
         <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
 <div class="form-group row">
-    <label for="name" class="col-md-4 col-form-label text-md-right">一覧表示</label>
+    <label for="name" class="col-md-3 col-form-label text-md-right">一覧表示</label>
 
     <div class="col-md-2 col-3">
       <select name="view" class="form-control">

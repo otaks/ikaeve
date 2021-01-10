@@ -22,3 +22,8 @@ Route::prefix('twitter')->name('twitter.')
     ->group(function() {
         Route::get('getId/{name?}/{event?}/{team?}', 'Api\TwitterController@getId')->name('getId');
 });
+
+Route::prefix('tournament')->name('tournament.')
+    ->group(function() {
+        Route::get('changeTeam/{team?}', 'Api\TournamentController@changeTeam')->name('changeTeam');
+});

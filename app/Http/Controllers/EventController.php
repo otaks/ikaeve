@@ -21,6 +21,8 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $request->session()->forget('event');
+        $request->session()->forget('eventName');
+        $request->session()->forget('block');
         if (Auth::user()->role == config('user.role.admin')) {
             $datas = Event::orderBy('id', 'DESC')->get();
         } elseif (Auth::user()->role == config('user.role.staff')) {
@@ -55,6 +57,10 @@ class EventController extends Controller
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
+                $data->passing_order = $request->passing_order;
+                $data->pre_score = $request->pre_score;
+                $data->main_score = $request->main_score;
+                $data->final_score = $request->final_score;
                 $data->note = $request->note;
                 $data->view = $request->view;
                 $data->save();
@@ -92,6 +98,10 @@ class EventController extends Controller
                 $data->from_date = $request->from_date;
                 $data->to_date = $request->to_date;
                 $data->team_member = $request->team_member;
+                $data->passing_order = $request->passing_order;
+                $data->pre_score = $request->pre_score;
+                $data->main_score = $request->main_score;
+                $data->final_score = $request->final_score;
                 $data->note = $request->note;
                 $data->view = $request->view;
                 $data->update();
