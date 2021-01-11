@@ -73,10 +73,14 @@
                                             <br>
                                         @endforeach
                                     </td>
-                                    <td>{{ $data->block }}ブロック
-                                      <br>
-                                      {{ $data->sheet }}-{{ $data->number }}</td>
-                                    @if (Auth::user()->role != config('user.role.member'))
+                                    <td>
+                                      @if($data->block)
+                                        {{ $data->block }}ブロック
+                                        <br>
+                                        {{ $data->sheet }}-{{ $data->number }}
+                                      @endif
+                                    </td>
+                                      @if (Auth::user()->role != config('user.role.member'))
                                       <td class="text-center">
                                         @if($data->approval == 1)
                                             <!--<a href="{{ route('team.update', ['id' => $data->id, 'column' => 'approval', 'value'=> 0]) }}" class="btn btn-danger" style="width:70px;">取消</a>-->

@@ -3,7 +3,7 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-                <table class="table table-bordered">
+                <table class="table table-bordered table-hover col-md-6 offset-md-4">
                     <tr><th>大会名</th><td>{{ $data->team->event->name }}</tr>
                     <tr><th>チーム名</th><td><a href="{{ route('team.detail', ['id' => $data->team_id]) }}">{{ $data->team->name }}</a></tr>
                     <tr><th>メンバー名</th><td>{{ $data->name }}</tr>

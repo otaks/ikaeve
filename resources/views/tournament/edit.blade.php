@@ -33,9 +33,13 @@
                               <tr>
                 @endif
                                 <td class="text-center">{{ $team->number }}</td>
-                                <td>{{ $team->name }}</td>
+                                <td>
+                                  <a href="{{ route('team.detail', ['id' => $team->id]) }}" target="_blank">{{ $team->name }}</a>
+                                  @if ($team->abstention == 1)<span class="badge badge-warning">棄権</span>@endif
+                                </td>
                                 <td class="text-center">
-                                  <button type="button" class="btn btn-sm btn-danger changeTeamBtn" data-id="{{ $team->id }}"><i class="fas fa-exchange-alt"></i></button>
+                                  <button type="button" class="btn btn-sm btn-danger changeTeamBtn"
+                                  data-id="{{ $team->id }}"><i class="fas fa-exchange-alt"></i></button>
                                 </td>
                               </tr>
                 @if (($k + 1) % 4 == 0)

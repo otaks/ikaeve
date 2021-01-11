@@ -3,7 +3,7 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-                <table class="table table-bordered">
+                <table class="table table-bordered table-hover col-md-6 offset-md-4">
                     <tr><th>大会名</th><td>{{ $data->event->name }}</tr>
                     <tr><th>チーム名</th><td>{{ $data->name }}@if($data->abstention == 1) (棄権) @endif</tr>
                     <tr><th>フレンドコード</th><td>
@@ -26,6 +26,13 @@
                           </tr>
                         @endforeach
                     @endif
+                    <tr>
+                      <th>ブロック</th>
+                      <td>
+                      @if($data->block)
+                        {{ $data->block }}ブロック&nbsp;{{ $data->sheet }}-{{ $data->number }}
+                      @endif
+                    </td>
                     <tr><th>意気込みなど</th><td>{!! nl2br(e($data->note)) !!}</tr>
                     <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i')  }}</tr>
                 </table>
@@ -34,6 +41,18 @@
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4 text-center">
                       <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                    </div>
+                </div>
+              @endif
+              @if (Auth::user()->role != config('user.role.member'))
+                <div class="form-group row mb-0">
+                    <div class="col-md-6 offset-md-4 text-center">
+                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                      @if($data->abstention == 0)
+                          <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger w-25">棄権</a>
+                      @else
+                          <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 0]) }}" class="btn btn-success w-25">棄権取消</a>
+                      @endif
                     </div>
                 </div>
               @endif

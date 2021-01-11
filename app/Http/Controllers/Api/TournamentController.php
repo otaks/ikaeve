@@ -8,15 +8,33 @@ use App\Models\Team;
 
 class TournamentController extends Controller
 {
-    public function changeTeam($team)
+    public function changeTeam($team_id)
     {
         $result = array('status' => '', 'message' => '');
         try {
-
-            $team = Team::find($team);
-            $target = Team::where('event_id', $team->event_id)
-            ->where('change_flg', 1)
-            ->first();
+            $target = null;
+            $team = Team::find($team_id);
+            if (strpos($team_id, '_') && !$team){
+                $ary = explode('_', $team_id);
+                $event_id = $ary[3];
+            } else {
+                $event_id = $team->event_id;
+            }
+            if ($event_id) {
+                $target = Team::where('event_id', $event_id)
+                ->where('change_flg', 1)
+                ->first();
+            }
+            if (strpos($team_id, '_')){
+                $ary = explode('_', $team_id);
+                $team = new Team();
+                $team->event_id = $ary[3];
+                $team->name = $ary[0].'ブロックの'.$ary[1].'のNo'.$ary[2];
+                $team->block = $ary[0];
+                $team->sheet = $ary[1];
+                $team->number = $ary[2];
+                $team->save();
+            }
             if (!$target) {
                 $team->change_flg = 1;
                 $team->update();
@@ -40,11 +58,17 @@ class TournamentController extends Controller
                 $target->number = $number;
                 $target->change_flg = 0;
                 $target->update();
+                if (!$team->friend_code) {
+                    $team->delete();
+                }
+                if (!$target->friend_code) {
+                    $target->delete();
+                }
                 $result = ['status' => 300, 'message' => $team->name.'と'.$target->name.'を入れ替えました'];
             }
         } catch (\Exception $e) {
             report($e);
-            $result = ['status' => 400, 'message' => 'twitter名が無効です'];
+            $result = ['status' => 400, 'message' => 'システムエラーです'];
         }
         return response()->json($result);
     }

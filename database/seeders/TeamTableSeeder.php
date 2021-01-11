@@ -14,9 +14,9 @@ class TeamTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('members')->delete();
-        DB::table('teams')->delete();
-        DB::table('users')->where('role', 3)->delete();
+        // DB::table('members')->delete();
+        // DB::table('teams')->delete();
+        // DB::table('users')->where('role', 3)->delete();
         $h = 1;
         $makeBlock = 11;
         $i = 0;
@@ -26,7 +26,7 @@ class TeamTableSeeder extends Seeder
             while ($i < $cnt) {
                 $num = $i + 1;
 
-                $memberName = 'メンバー('.$h.'/'.$num.')';
+                $memberName = '2メンバー('.$h.'/'.$num.')';
                 $param = [
                     ['name' => $memberName.'_1', 'created_at' => now()],
                     ['name' => $memberName.'_2', 'created_at' => now()],
@@ -36,7 +36,7 @@ class TeamTableSeeder extends Seeder
                 DB::table('users')->insert($param);
 
                 $event = DB::table('events')->first();
-                $teamName = 'チーム'.$h.'/'.$num;
+                $teamName = '2チーム'.$h.'/'.$num;
 
                 DB::table('teams')->insert([
                     [

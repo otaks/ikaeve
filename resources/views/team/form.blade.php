@@ -50,7 +50,7 @@
 
         <div class="col-md-2">
             <input type="text" class="form-control @error('xp') is-invalid @enderror" name="xp[]"
-            value="{{ old('xp.'.$i, isset($members[$i]) ? $members[$i]->xp : '') }}" required placeholder="xp">
+            value="{{ old('xp.'.$i, isset($members[$i]) ? $members[$i]->xp : '') }}" placeholder="xp">
         </div>
     </div>
 @endfor

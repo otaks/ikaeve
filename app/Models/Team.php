@@ -41,7 +41,7 @@ class Team extends BaseModel
         return $this->hasMany('App\Models\Answer');
     }
 
-    public static function getAllTeam($id, $rule)
+    public static function getAllTeam($id, $rule = null)
     {
         $query = Team::query();
         $query->select('teams.*')
@@ -52,9 +52,38 @@ class Team extends BaseModel
             $query->orderBy('xp_total', 'desc');
         } elseif ($rule == 0) {
             $query->inRandomOrder();
-        } elseif ($rule == 2) {
+        } else {
             $query->orderBy('created_at', 'asc');
         }
         return $query->get()->toArray();
+    }
+
+    public static function resetAllTeam($id)
+    {
+        $teams = Team::where('event_id', $id)->get();
+        foreach ($teams as $key => $value) {
+            $value->block = null;
+            $value->sheet = null;
+            $value->number = null;
+            $value->update();
+        }
+    }
+
+    public static function getBlocks($id)
+    {
+        return Team::where('event_id', $id)
+        ->where('block', '<>', NULL)
+        ->groupBy('block')
+        ->orderBy('block')
+        ->get();
+    }
+
+    public static function getSheets($id, $selectBlock)
+    {
+        return Team::where('event_id', $id)
+        ->where('block', $selectBlock)
+        ->groupBy('sheet')
+        ->orderBy('sheet')
+        ->get();
     }
 }

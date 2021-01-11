@@ -108,7 +108,7 @@ class TeamController extends Controller
                     }
                     $total_xp += $xps[$k];
                 }
-                $data->total_xp = $total_xp;
+                $data->xp_total = $total_xp;
                 $data->update();
 
                 $questions = $request->question;
@@ -180,7 +180,7 @@ class TeamController extends Controller
                     }
                     $total_xp += $xps[$k];
                 }
-                $data->total_xp = $total_xp;
+                $data->xp_total = $total_xp;
                 $data->update();
 
                 $questions = $request->question;
