@@ -57,11 +57,17 @@ class TournamentController extends Controller
             return redirect()->route('event.detail', ['id' => session('event')]);
         }
 
-        $teams = Team::where('event_id', $event)
+        $results = Team::where('event_id', $event)
         ->where('block', $selectBlock)
         ->where('sheet', $selectSheet)
         ->orderBy('number')
         ->get();
+        $teams = array();
+        foreach ($results as $key => $value) {
+            $teams[$value->number]['id'] = $value->id;
+            $teams[$value->number]['name'] = $value->name;
+            $teams[$value->number]['abstention'] = $value->abstention;
+        }
 
         return view('tournament.index',
         compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks'));
@@ -86,10 +92,10 @@ class TournamentController extends Controller
 
     public function makeStore(Request $request)
     {
-        // try {
+        try {
             $event_id = $request->session()->get('event');
             $event = Event::find($event_id);
-            //Team::resetAllTeam($event_id);
+            Team::resetAllTeam($event_id);
             $teams = Team::getAllTeam($event_id, $request->order_rule);
             $sheetNum = 16;
             $teamBySheet = 4;
@@ -99,10 +105,10 @@ class TournamentController extends Controller
             $teamByBlock =  floor(count($teams) / $block);
 
             // 奇数チームになるシート数
-            $theam3 = $teamBySheet - $block % $teamBySheet;
+            $theam3 = (count($teams) % $teamBySheet);
             // ブロックごとの3チーム数
             $blockTheam3 = ceil($theam3 / $block);
-            // さらに配列の初めと後で振り分け
+
             $j = 0;
             $hajime = array();
             $ato = array();
@@ -193,10 +199,10 @@ class TournamentController extends Controller
 
             FlashMessageService::success('作成が完了しました');
 
-        // } catch (\Exception $e) {
-        //     report($e);
-        //     FlashMessageService::error('作成が失敗しました');
-        // }
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('作成が失敗しました');
+        }
 
         return redirect()->route('tournament.make');
     }
@@ -301,5 +307,39 @@ class TournamentController extends Controller
 
         return view('tournament.maingame',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'gameCnt'));
+    }
+
+    public function teamlist(Request $request)
+    {
+        $event_id = $request->session()->get('event');
+        $event = Event::find($event_id);
+        // 参加している対戦表のチェック
+        $member = null;
+        if (Auth::user()->role == config('user.role.member')) {
+            $member = Member::join('teams', 'teams.id', 'members.team_id')
+            ->where('event_id', $event->id)
+            ->where('user_id', Auth::id())->first();
+        }
+        if ($member) {
+            $selectBlock = $member->team->block;
+        } else {
+            $selectBlock = $request->block;
+        }
+        if (!$selectBlock) {
+            $selectBlock = 1;
+        }
+        $selectSheet = 'teamlist';
+
+        $blocks = Team::getBlocks($event->id);
+        $sheets = Team::getSheets($event->id, $selectBlock);
+
+        $teams = Team::where('block', $selectBlock)
+        ->where('event_id', $event_id)
+        ->orderBy('sheet')
+        ->orderBy('number')
+        ->get();
+
+        return view('tournament.teamlist',
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event'));
     }
 }

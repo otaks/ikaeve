@@ -90,5 +90,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{block?}', 'TournamentController@edit')->name('edit');
         Route::get('progress/{block?}', 'TournamentController@progress')->name('progress');
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
+        Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
     });
 });

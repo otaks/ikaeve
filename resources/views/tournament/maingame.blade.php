@@ -11,7 +11,7 @@
                           @endphp
                           <tr class="boeder border-white">
                             <th class="p-2 border border-dark" style="width:30px;">{{ $team['sheet'] }}{{ $team['order'] }}</th>
-                            <td class="border border-dark" style="width:90px;"></td>
+                            <td class="border border-dark" style="width:130px;"></td>
                             @while(0 < $gameCnt)
                               @if ($gameCnt == 4)
                                 @if ($key % 2 == 1)
@@ -77,6 +77,12 @@
                                 @else
                                  <td style="width:10px;"></td>
                                  @endif
+                               @elseif ($gameCnt == 1)
+                                 @if ($key == 18)
+                                   <td style="width:10px;" class="border-top border-dark"></td>
+                                 @else
+                                   <td style="width:10px;"></td>
+                                 @endif
                               @else
                                 <td style="width:10px;"></td>
                               @endif
@@ -89,10 +95,10 @@
                                   (($key == 25 || $key == 26) && $gameCnt == 2) ||
                                   (($key == 17 || $key == 18) && $gameCnt == 1))
                                   <td class="p-2 border border-dark" style="width:30px;"></td>
-                                  <td class="border border-dark" style="width:90px;"></td>
+                                  <td class="border border-dark" style="width:130px;">あいすめきゅんです<br>1111-2222-3333</td>
                               @else
                                   <td style="width:30px;"></td>
-                                  <td style="width:90px;"></td>
+                                  <td style="width:130px;">@if($key == 16 && $gameCnt == 1) ブロック代表 @endif</td>
                               @endif
                               @php
                                 $gameCnt--;
@@ -119,26 +125,26 @@
                                 <td style="width:30px;"></td>
                                 @if ($gameCnt2 == 5)
                                   @if ($key % 4 == 0)
-                                    <td style="width:90px;"></td>
+                                    <td style="width:130px;"></td>
                                   @else
-                                    <td style="width:90px;" class="border-right border-dark"></td>
+                                    <td style="width:130px;" class="border-right border-dark"></td>
                                   @endif
                                 @elseif ($gameCnt2 == 2)
                                   @if ($key == 6 || $key == 8|| $key == 12|| $key == 10
                                   || $key == 22|| $key == 24|| $key == 26|| $key == 28)
-                                    <td style="width:90px;" class="border-left border-dark"></td>
+                                    <td style="width:130px;" class="border-left border-dark"></td>
                                   @else
-                                    <td style="width:90px;"></td>
+                                    <td style="width:130px;"></td>
                                   @endif
                                 @elseif ($gameCnt2 == 1)
                                   @if ($key == 12 || $key == 10 || $key == 14|| $key == 16
                                   || $key == 22|| $key == 24|| $key == 20|| $key == 18)
-                                    <td style="width:90px;" class="border-right border-dark"></td>
+                                    <td style="width:130px;" class="border-right border-dark"></td>
                                   @else
-                                    <td style="width:90px;"></td>
+                                    <td style="width:130px;"></td>
                                   @endif
                                 @else
-                                  <td style="width:90px;"></td>
+                                  <td style="width:130px;"></td>
                                 @endif
                                 @php
                                   $gameCnt2--;
