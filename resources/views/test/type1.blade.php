@@ -3,8 +3,16 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-              @include('tournament/nav')
-              <h5 class="mt-2">{{ $selectSheet }}ブロック総当たり表</h5>
+              <ul class="nav nav-tabs mb-1">
+                @foreach ($blocks as $block)
+                  <li class="nav-item">
+                    <a class="nav-link @if($selectBlock == $block->block) active @endif"
+                      href="{{ route('test.type1', ['block' => $block->block, 'sheet' => 'A']) }}">{{ $block->block }}</a>
+                  </li>
+                @endforeach
+              </ul>
+              @foreach ($sheets as $select)
+              <h5 class="mt-2">{{ $select->sheet }}ブロック総当たり表</h5>
               <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
                   <tr class="table-info">
                     <th class="text-center p-1 align-middle" style="width:25px;">No</th>
@@ -72,6 +80,7 @@
                   @endforeach
                 </div>
             </div>
+          @endforeach
           </div>
       </div>
 @endsection

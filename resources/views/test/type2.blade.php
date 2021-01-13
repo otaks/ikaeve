@@ -3,7 +3,24 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-              @include('tournament/nav')
+              <div class="row">
+                <div class="col-md-2 col-3">
+                  <select name="block" class="form-control">
+                    @foreach ($blocks as $val)
+                      <option value="{{ $val->block }}">{{ $val->block }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="col-md-2 col-3">
+                  <select name="sheet" class="form-control">
+                    @foreach ($blocks as $block)
+                      @foreach ($sheets as $val)
+                        <option value="{{ $val->sheet }}">{{ $val->sheet }}</option>
+                      @endforeach
+                    @endforeach
+                  </select>
+                </div>
+              </div>
               <h5 class="mt-2">{{ $selectSheet }}ブロック総当たり表</h5>
               <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
                   <tr class="table-info">

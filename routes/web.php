@@ -23,6 +23,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('login/twitter', 'Auth\LoginController@redirectToTwitterProvider')->name('login/twitter');
 Route::get('login/twitter/callback', 'Auth\LoginController@handleTwitterProviderCallback')->name('login/twitter/callback');
 
+
+// 確認ようページ
+Route::prefix('test')->name('test.')
+->group(function() {
+    Route::get('type1', 'TestController@type1')->name('type1');
+    Route::get('type2/{block?}/{sheet?}', 'TestController@type2')->name('type2');
+});
+
 Route::group(['middleware' => ['auth']], function () {
 
     // 大会
@@ -91,5 +99,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('progress/{block?}', 'TournamentController@progress')->name('progress');
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
         Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
+    });
+
+    // 対戦
+    Route::prefix('game')->name('game.')
+    ->group(function() {
+        Route::get('result/{block?}/{sheet?}', 'GameController@result')->name('result');
     });
 });
