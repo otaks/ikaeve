@@ -28,6 +28,7 @@
     <link href="{{ asset('css/jquery.datetimepicker.css') }}" rel="stylesheet">
     <script src="{{ asset('js/jquery.js') }}" defer></script>
     <script src="{{ asset('js/jquery.datetimepicker.full.js') }}" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -44,6 +45,9 @@
                 <li><a href="{{ route('tournament.index') }}">対戦表</a></li>
                 <li><a href="{{ route('team.index') }}">チーム</a></li>
                 <li><a href="{{ route('wanted.index') }}">メンバー募集</a></li>
+              @endif
+              @if (Auth::user()->role == config('user.role.admin'))
+                  <li><a href="{{ route('admin.index') }}">管理画面</a></li>
               @endif
               <li><a href="{{ route('logout') }}" onclick="event.preventDefault();
                   document.getElementById('logout-form').submit();">logout</a></li>
@@ -91,5 +95,6 @@
             </div>
         @endif
     </div>
+    <div id="page_top"><a href="#"><i class="fas fa-chevron-up fa-lg"></i></a></div>
 </body>
 </html>

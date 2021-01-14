@@ -71,4 +71,56 @@ $(function(){
     });
   });
 
+  $('#selectBlock').change(function() {
+    block = $(this).val();
+    location.href = '/tournament/index/' + block;
+  });
+  $('#selectSheet').load(function() {
+    block = $('#selectBlock').val();
+    sheet = $(this).val();
+    if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
+    } else {
+      if (!$('#'+sheet).length) {
+        location.href = '/tournament/index/' + block + '/' + sheet;
+      } else{
+        // 取得した値のid属性がついた要素の位置を取得
+        offsetTop = $('#'+sheet).offset().top;
+        // 取得した箇所に移動
+        $("html, body").animate({ scrollTop: offsetTop }, 200);
+      }
+    }
+  });
+
+  $('#selectSheet').change(function() {
+    block = $('#selectBlock').val();
+    sheet = $(this).val();
+    if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
+      location.href = '/tournament/' + sheet + '/' + block;
+    } else {
+      if (!$('#'+sheet).length) {
+        location.href = '/tournament/index/' + block + '/' + sheet + '#' + sheet;
+      } else{
+        // 取得した値のid属性がついた要素の位置を取得
+        offsetTop = $('#'+sheet).offset().top;
+        // 取得した箇所に移動
+        $("html, body").animate({ scrollTop: offsetTop }, 200);
+      }
+    }
+  });
+
+  var pagetop = $('#page_top');
+  // ボタン非表示
+  pagetop.hide();
+  // 100px スクロールしたらボタン表示
+  $(window).scroll(function () {
+     if ($(this).scrollTop() > 100) {
+          pagetop.fadeIn();
+     } else {
+          pagetop.fadeOut();
+     }
+  });
+  pagetop.click(function () {
+     $('body, html').animate({ scrollTop: 0 }, 500);
+     return false;
+  });
 });

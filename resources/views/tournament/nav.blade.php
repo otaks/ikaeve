@@ -17,12 +17,10 @@
       <a class="nav-link @if($selectSheet == 'maingame') active @endif"
         href="{{ route('tournament.maingame', ['block' => $selectBlock]) }}">本戦</a>
     </li>
-    @foreach ($sheets as $sheet)
-      <li class="nav-item">
-        <a class="nav-link @if($selectSheet == $sheet->sheet) active @endif"
-          href="{{ route('tournament.index', ['block' => $selectBlock, 'sheet' => $sheet->sheet]) }}">{{ $sheet->sheet }}</a>
-      </li>
-    @endforeach
+    <li class="nav-item">
+      <a class="nav-link @if($selectSheet == 'sheet') active @endif"
+        href="{{ route('tournament.index', ['block' => $selectBlock, 'sheet' => 'A']) }}">対戦表</a>
+    </li>
     <li class="nav-item">
       <a class="nav-link @if($selectSheet == 'progress') active @endif"
         href="{{ route('tournament.progress', ['block' => $selectBlock]) }}">進捗</a>

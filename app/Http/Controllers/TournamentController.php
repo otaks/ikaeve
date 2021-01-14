@@ -12,6 +12,7 @@ use App\Models\Team;
 use App\Models\Event;
 use App\Models\Member;
 use App\Models\MainGame;
+use App\Models\Color;
 
 class TournamentController extends Controller
 {
@@ -27,6 +28,7 @@ class TournamentController extends Controller
             return redirect()->route('event.index');
         }
         $member = null;
+
         // 参加している対戦表のチェック
         if (Auth::user()->role == config('user.role.member')) {
             $member = Member::join('teams', 'teams.id', 'members.team_id')
@@ -50,8 +52,15 @@ class TournamentController extends Controller
 
         $blocks = Team::getBlocks($event);
         $sheets = Team::getSheets($event, $selectBlock);
+        $colors = array();
+        foreach ($sheets as $key => $value) {
+            $color = Color::where('sheet', $value->sheet)->first();
+            if ($color) {
+                $colors[$value->sheet] = $color->color;
+            }
+        }
 
-        if (count($sheets) < 1) {
+        if (count($blocks) < 1) {
             $request->session()->forget('block');
             FlashMessageService::error('対戦表はまだ作成されてません');
             return redirect()->route('event.detail', ['id' => session('event')]);
@@ -59,18 +68,18 @@ class TournamentController extends Controller
 
         $results = Team::where('event_id', $event)
         ->where('block', $selectBlock)
-        ->where('sheet', $selectSheet)
+        ->orderBy('sheet')
         ->orderBy('number')
         ->get();
         $teams = array();
         foreach ($results as $key => $value) {
-            $teams[$value->number]['id'] = $value->id;
-            $teams[$value->number]['name'] = $value->name;
-            $teams[$value->number]['abstention'] = $value->abstention;
+            $teams[$value->sheet][$value->number]['id'] = $value->id;
+            $teams[$value->sheet][$value->number]['name'] = $value->name;
+            $teams[$value->sheet][$value->number]['abstention'] = $value->abstention;
         }
 
         return view('tournament.index',
-        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks'));
+        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'colors'));
     }
 
     public function make(Request $request)
@@ -113,8 +122,6 @@ class TournamentController extends Controller
             $hajime = array();
             $ato = array();
             $teamByBlock = array();
-
-
 
             while ($j < $block) {
                 $teamByBlock[$j] = floor(count($teams) / $block);

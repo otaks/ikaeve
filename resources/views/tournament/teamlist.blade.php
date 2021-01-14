@@ -3,7 +3,11 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-              @include('tournament/nav')
+              @if ($isMobile)
+                @include('tournament/nav_sp')
+              @else
+                @include('tournament/nav')
+              @endif
               <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
                   <tr class="table-info">
                     <th class="text-center p-1 align-middle" style="width:25px;">ブロック</th>

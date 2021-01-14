@@ -3,7 +3,11 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-              @include('tournament/nav')
+                @if ($isMobile)
+                  @include('tournament/nav_sp')
+                @else
+                  @include('tournament/nav')
+                @endif
                 <table class="table table-borderless mt-3" style="table-layout:fixed;">
                       @foreach ($teams as $key => $team)
                           @php

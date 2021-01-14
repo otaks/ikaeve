@@ -24,6 +24,7 @@ class TeamController extends Controller
 
     public function index(Request $request)
     {
+        $request->session()->forget('block');
         $search['event'] = $request->session()->get('event');
         $datas = Team::where('event_id', $search['event'])->orderBy('id', 'DESC')->paginate(config('common.page_num'));
         return view('team.index', compact('datas'));

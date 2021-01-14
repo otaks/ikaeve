@@ -1,3 +1,4 @@
+
 a {
      color: #2E7AA0;
      text-decoration: none;
@@ -15,6 +16,31 @@ a {
     font-weight: 200;
     color: #212529;
     line-height: 3em;
+}
+
+.sp-table {
+  margin: 0;
+  font-family: 'Noto Sans JP';
+  font-size: 0.5rem;
+  font-weight: 200;
+  color: #212529;
+  line-height: 1.5em;
+}
+
+@media screen and (max-width: 480px) {/* 640px以下でスマホ画面時*/
+  table,
+  .sidemenu,
+  .nav,
+  .btn,
+  input {
+    font-size: 0.6rem;
+  }
+  .p {
+    font-size: 0.7rem;
+  }
+  h4 {
+    font-size: 1rem;
+  }
 }
 
 .table {
@@ -363,4 +389,23 @@ main h1 {
   font-family: 'Noto Sans JP', sans-serif;
   font-weight: 100;
   text-align: left;
+}
+
+#page_top {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+}
+#page_top a {
+    background-color: salmon;
+    color: #fdcfca;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 5px;
+}
+#page_top a:hover {
+    background-color: #fdcfca;
+    text-decoration: none;
+    color: salmon;
 }
