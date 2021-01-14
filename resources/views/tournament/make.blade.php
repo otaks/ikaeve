@@ -17,9 +17,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="name" class="col-md-4 col-form-label text-md-right required">割当順</label>
+                        <label for="name" class="col-md-4 col-3 col-form-label text-md-right">割当順</label>
 
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-5">
                           <select name="order_rule" class="form-control">
                             <option value="0">ランダム</option>
                             <option value="1">XP</option>
@@ -27,8 +27,8 @@
                           </select>
                         </div>
 
-                        <div class="col-md-1">
-                          <button type="submit" class="btn btn-primary">作成</button>
+                        <div class="col-md-1 col-4">
+                          <button type="submit" class="btn btn-primary" @if($targetTeamCnt == 0) disabled @endif>作成</button>
                         </div>
                     </div>
                   </form>

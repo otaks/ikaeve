@@ -106,12 +106,4 @@ Route::group(['middleware' => ['auth']], function () {
     ->group(function() {
         Route::get('result/{block?}/{sheet?}', 'GameController@result')->name('result');
     });
-
-    // 対戦
-    Route::prefix('admin')->name('admin.')
-    ->group(function() {
-        Route::get('index', 'AdminController@index')->name('index');
-        Route::get('color', 'AdminController@color')->name('color');
-        Route::post('color', 'AdminController@colorStore');
-    });
 });

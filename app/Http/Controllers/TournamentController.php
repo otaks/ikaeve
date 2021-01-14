@@ -43,22 +43,15 @@ class TournamentController extends Controller
             $selectBlock = $request->block;
         }
         if (!$selectBlock) {
-            $selectBlock = 1;
+            $selectBlock = 'A';
         }
         $request->session()->put('block', $selectBlock);
         if (!$selectSheet) {
-            $selectSheet = 'A';
+            $selectSheet = 1;
         }
 
         $blocks = Team::getBlocks($event);
         $sheets = Team::getSheets($event, $selectBlock);
-        $colors = array();
-        foreach ($sheets as $key => $value) {
-            $color = Color::where('sheet', $value->sheet)->first();
-            if ($color) {
-                $colors[$value->sheet] = $color->color;
-            }
-        }
 
         if (count($blocks) < 1) {
             $request->session()->forget('block');
@@ -79,7 +72,7 @@ class TournamentController extends Controller
         }
 
         return view('tournament.index',
-        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'colors'));
+        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks'));
     }
 
     public function make(Request $request)
@@ -109,24 +102,24 @@ class TournamentController extends Controller
             $sheetNum = 16;
             $teamBySheet = 4;
             // ブロック数
-            $block = ceil(count($teams) / ($sheetNum * $teamBySheet));
+            $blockNum = ceil(count($teams) / ($sheetNum * $teamBySheet));
             // ブロック単位のチーム数
-            $teamByBlock =  floor(count($teams) / $block);
+            $teamByBlock =  floor(count($teams) / $blockNum);
 
             // 奇数チームになるシート数
             $theam3 = (count($teams) % $teamBySheet);
             // ブロックごとの3チーム数
-            $blockTheam3 = ceil($theam3 / $block);
+            $blockTheam3 = ceil($theam3 / $blockNum);
 
             $j = 0;
             $hajime = array();
             $ato = array();
             $teamByBlock = array();
 
-            while ($j < $block) {
-                $teamByBlock[$j] = floor(count($teams) / $block);
-                if ($j + 1 == $block) {
-                    $teamByBlock[$j] += count($teams) % $block;
+            while ($j < $blockNum) {
+                $teamByBlock[$j] = floor(count($teams) / $blockNum);
+                if ($j + 1 == $blockNum) {
+                    $teamByBlock[$j] += count($teams) % $blockNum;
                 }
                 $hajime[$j] = floor($blockTheam3 / 2);
                 $ato[$j] = floor($blockTheam3 / 2) + $blockTheam3 % 2;
@@ -134,20 +127,20 @@ class TournamentController extends Controller
             }
             // print_r($teamByBlock);
             // exit;
-            $sheet = array();
-            for ( $i = 0; $i < $sheetNum; $i++ ) {
-                $sheet[] = chr(65 + $i);
+            $block = array();
+            for ( $i = 0; $i < $blockNum; $i++ ) {
+                $block[] = chr(65 + $i);
             }
 
             $i = 0;
             $j = 0;
             $tonament = array();
-            while ($i < $block) {
-              foreach ($sheet as $key => $value) {
+            foreach ($block as $key => $value) {
+                while ($i < $sheetNum) {
                   if ($key < $sheetNum) {
-                      $sheetStr = $sheet[$key];
+                      $blockStr = $block[$key];
                   } else {
-                      $sheetStr = $sheet[($key % $sheetNum)];
+                      $blockStr = $block[($key % $sheetNum)];
                   }
                   $h = 0;
                   while ($h < $teamBySheet) {
@@ -165,13 +158,14 @@ class TournamentController extends Controller
                       }
 
                       $team = Team::find($teams[$j]['id']);
-                      $team->block = $i + 1;
-                      $team->sheet = $sheetStr;
+                      $team->sheet = $i + 1;
+                      $team->block = $blockStr;
                       $team->number = $h + 1;
                       $team->update();
                       $j++;
                       $h++;
                   }
+                  $i++;
               }
                 // $sheets = Team::getSheets($event->id, ($i + 1));
                 // $allTeam = count($sheets) * $event->passing_order;
@@ -201,7 +195,6 @@ class TournamentController extends Controller
                 // }
                 // // echo $allTeam;
                 // // exit;
-                $i++;
             }
 
             FlashMessageService::success('作成が完了しました');
@@ -211,7 +204,7 @@ class TournamentController extends Controller
             FlashMessageService::error('作成が失敗しました');
         }
 
-        return redirect()->route('tournament.make');
+        return redirect()->route('tournament.index');
     }
 
     public function edit(Request $request)

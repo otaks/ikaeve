@@ -1,6 +1,6 @@
                 @foreach ($sheets as $select)
                 <h5 class="mt-2">{{ $select->sheet }}ブロック総当たり表</h5>
-                    <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;background-color:{{ $colors[$select->sheet] ?? '#fff'}}">
+                    <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
                       <thead>
                         <tr>
                           <th class="text-center p-1 align-middle" style="width:25px;">No</th>
@@ -42,7 +42,7 @@
                         <h5 class="mt-2">対戦表</h5>
 
                         @foreach (config('game.pre') as $key => $val)
-                          <table class="table table-bordered mt-3 sheet{{ $select->sheet }}" style="width:500px;background-color:{{ $colors[$select->sheet] ?? '#fff'}}">
+                          <table class="table table-bordered mt-3 sheet{{ $select->sheet }}" style="width:500px;">
                               <colgroup>
                                 <col style="width: 200px;">
                                 <col style="width: 20px;">

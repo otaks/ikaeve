@@ -19,7 +19,7 @@
                   <div class="row">
                 @endif
                 @if ($k % 4 == 0)
-                    <div class="col-md-4 col-4">
+                    <div class="col-md-4 col-12">
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered mt-1">
                               <tr class="thead-light">

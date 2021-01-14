@@ -1,4 +1,3 @@
-@if (Auth::user()->role != config('user.role.member'))
   <ul class="nav nav-tabs mb-1">
     @foreach ($blocks as $block)
       <li class="nav-item">
@@ -26,4 +25,3 @@
         href="{{ route('tournament.progress', ['block' => $selectBlock]) }}">進捗</a>
     </li>
   </ul>
-  @endif

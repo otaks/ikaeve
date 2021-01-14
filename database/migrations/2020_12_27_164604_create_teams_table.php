@@ -47,8 +47,8 @@ class CreateTeamsTable extends Migration
             $table->boolean('approval')->comment('許可')->default(0);
             $table->boolean('abstention')->comment('棄権')->default(0);
             $table->unsignedInteger('xp_total')->comment('合計XP')->nullable();
-            $table->unsignedInteger('block')->comment('ブロック')->nullable();
-            $table->string('sheet', 1)->comment('A~P')->nullable();
+            $table->string('block', 1)->comment('A~P?ブロック')->nullable();
+            $table->unsignedInteger('sheet')->comment('シート')->nullable();
             $table->unsignedInteger('number')->comment('1~4')->nullable();
             $table->boolean('change_flg')->comment('チェンジ対象')->default(0);
 

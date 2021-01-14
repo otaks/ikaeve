@@ -15,9 +15,9 @@ class CreateMainGameTable extends Migration
     {
         Schema::create('main_games', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('block')->comment('ブロック')->nullable();
+            $table->string('block', 1)->comment('A~P?ブロック')->nullable();
             $table->unsignedInteger('turn')->comment('上から何番目か')->nullable();
-            $table->string('sheet', 1)->comment('A~P')->nullable();
+            $table->unsignedInteger('sheet')->comment('シート')->nullable();
             $table->unsignedInteger('order')->comment('通過順位(1~2)')->nullable();
             $table->unsignedInteger('team_id')->comment('チームID')->nullable();
             $table->boolean('result')->comment('勝ち負け(0:負け/1:勝ち)')->default(0);

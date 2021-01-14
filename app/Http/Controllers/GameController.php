@@ -23,14 +23,14 @@ class GameController extends Controller
     public function result(Request $request)
     {
         $search['event'] = $request->session()->get('event');
+        $event = Event::find($search['event']);
         $query = Member::query();
         $query->select('members.*')
         ->join('teams', 'teams.id', '=', 'members.team_id')
         ->where('event_id', $search['event']);
         $datas = $query->orderBy('id', 'DESC')->get();
-        $events = Event::orderBy('id', 'DESC')->get();
-        
-        return view('game.result', compact('datas', 'events'));
+
+        return view('game.result', compact('datas', 'event'));
     }
 
 }

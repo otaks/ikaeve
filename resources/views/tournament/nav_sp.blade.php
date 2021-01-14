@@ -1,4 +1,3 @@
-@if (Auth::user()->role != config('user.role.member'))
   <div class="row">
     <div class="col-4">
       <select name="block" id="selectBlock" class="form-control">
@@ -45,4 +44,3 @@
         href="{{ route('tournament.progress', ['block' => $selectBlock]) }}">進捗</a>
     </li>
   </ul> -->
-  @endif
