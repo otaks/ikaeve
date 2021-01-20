@@ -89,7 +89,7 @@ $(function(){
     if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
     } else {
       if (!$('#'+sheet).length) {
-        location.href = url + '/tournament/index/' + block + '/' + sheet;
+        location.href = url + 'tournament/index/' + block + '/' + sheet;
       // } else{
       //   // 取得した値のid属性がついた要素の位置を取得
       //   offsetTop = $('#'+sheet).offset().top;
@@ -104,9 +104,9 @@ $(function(){
     sheet = $(this).val();
     url = $('#url').val();
     if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
-      location.href = url + '/tournament/' + sheet + '/' + block;
+      location.href = url + 'tournament/' + sheet + '/' + block;
     } else {
-        location.href = url + '/tournament/index/' + block + '/' + sheet;
+        location.href = url + 'tournament/index/' + block + '/' + sheet;
       // } else{
       //   // 取得した値のid属性がついた要素の位置を取得
       //   offsetTop = $('#'+sheet).offset().top;

@@ -93,6 +93,6 @@
         @endif
     </div>
     <div id="page_top"><a href="#"><i class="fas fa-chevron-up fa-lg"></i></a></div>
-    <input type="hidden" id="url" value="{{ Config::('user.url') }}">
+    <input type="hidden" id="url" value="{{ config('user.url') }}">
 </body>
 </html>
