@@ -14,19 +14,26 @@ class TeamTableSeeder extends Seeder
      */
     public function run()
     {
-        // DB::table('members')->delete();
-        // DB::table('teams')->delete();
-        // DB::table('users')->where('role', 3)->delete();
+        DB::table('members')->delete();
+        DB::table('teams')->delete();
+        DB::table('users')->where('role', 3)->delete();
         $h = 1;
-        $makeBlock = 11;
+        $makeBlock = 4;
         $i = 0;
         $cnt = 4*16;
         // 64
+        $event = DB::table('events')->find(1);
         while ($h < $makeBlock) {
             while ($i < $cnt) {
+                $jogai = array('0');
+                $teams = DB::table('teams')->get();
+                foreach ($teams as $value) {
+                  $jogai[] = $value->name;
+                }
+                $testData = DB::table('testdatas')->whereNotIn('team_name', $jogai)->first();
+                $teamName = $testData->team_name;
                 $num = $i + 1;
-
-                $memberName = '2メンバー('.$h.'/'.$num.')';
+                $memberName = $teamName.'メンバー';
                 $param = [
                     ['name' => $memberName.'_1', 'created_at' => now()],
                     ['name' => $memberName.'_2', 'created_at' => now()],
@@ -34,9 +41,6 @@ class TeamTableSeeder extends Seeder
                     ['name' => $memberName.'_4', 'created_at' => now()],
                 ];
                 DB::table('users')->insert($param);
-
-                $event = DB::table('events')->first();
-                $teamName = '2チーム'.$h.'/'.$num;
 
                 DB::table('teams')->insert([
                     [

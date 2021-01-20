@@ -63,6 +63,7 @@ class EventController extends Controller
                 $data->final_score = $request->final_score;
                 $data->note = $request->note;
                 $data->view = $request->view;
+                $data->grade = $request->grade;
                 $data->save();
 
             });
@@ -104,6 +105,7 @@ class EventController extends Controller
                 $data->final_score = $request->final_score;
                 $data->note = $request->note;
                 $data->view = $request->view;
+                $data->grade = $request->grade;
                 $data->update();
 
             });

@@ -104,6 +104,7 @@ Route::group(['middleware' => ['auth']], function () {
     // 対戦
     Route::prefix('game')->name('game.')
     ->group(function() {
-        Route::get('result/{block?}/{sheet?}', 'GameController@result')->name('result');
+        Route::get('result/{block?}/{sheet?}/{turn?}/{num?}', 'GameController@result')->name('result');
+        Route::post('result', 'GameController@resultStore');
     });
 });

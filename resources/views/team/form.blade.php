@@ -42,12 +42,21 @@
             <input type="text" class="form-control @error('name') is-invalid @enderror" name="member_name[]"
             value="{{ old('member_name.'.$i, isset($members[$i]) ? $members[$i]->name : '') }}" required placeholder="メンバー名">
         </div>
-        <div class="col-md-2">
-            <input type="text" class="form-control @error('twitter') is-invalid @enderror" name="twitter[]"
-            value="{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" required placeholder="twitter(@以降)">
-            <input type="hidden" name="twitter_id[]" value="{{ old('twitter_id.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_id : '') }}">
+        <div class="input-group col-md-2">
+              <input type="text" class="form-control @error('twitter') is-invalid @enderror" name="twitter[]"
+              value="{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" required placeholder="twitter(@以降)">
+              <input type="hidden" name="twitter_id[]" value="{{ old('twitter_id.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_id : '') }}">
+              <div class="input-group-append">
+                <span class="input-group-text">
+                  @if(old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : ''))
+                    <div id="twitterlink{{$i}}"><a href="https://twitter.com/{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" target="_blank">
+                      <i class="fab fa-twitter fa-lg"></i></a></div>
+                  @else
+                      <div id="twitterlink{{$i}}"><a href="#" target="_blank"><i class="fab fa-twitter fa-lg"></i></a></div>
+                  @endif
+                </span>
+              </div>
         </div>
-
         <div class="col-md-2">
             <input type="text" class="form-control @error('xp') is-invalid @enderror" name="xp[]"
             value="{{ old('xp.'.$i, isset($members[$i]) ? $members[$i]->xp : '') }}" placeholder="xp">

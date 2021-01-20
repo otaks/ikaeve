@@ -11,7 +11,6 @@
               <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
                   <tr class="table-info">
                     <th class="text-center p-1" rowspan="2" style="width:50px;"></th>
-                    <th class="text-center p-1 align-middle" rowspan="2" style="width:50px;">確定</th>
                     <th class="text-center p-1" colspan="2" style="width:80px;">第1試合</th>
                     <th class="text-center p-1" colspan="2" style="width:80px;">第2試合</th>
                     <th class="text-center p-1" colspan="2" style="width:80px;">第3試合</th>
@@ -27,13 +26,12 @@
                   @foreach ($sheets as $sheet)
                     <tr>
                       <th class="text-center p-1">{{ $sheet->sheet }}</th>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
                     </tr>
                   @endforeach
               </table>

@@ -12,7 +12,7 @@ use App\Models\Team;
 use App\Models\Event;
 use App\Models\Member;
 use App\Models\MainGame;
-use App\Models\Color;
+use App\Models\Result;
 
 class TournamentController extends Controller
 {
@@ -35,7 +35,7 @@ class TournamentController extends Controller
             ->where('event_id', $event)
             ->where('user_id', Auth::id())->first();
         }
-        if ($member) {
+        if ($member && $request->sheet == '') {
             $selectSheet = $member->team->sheet;
             $selectBlock = $member->team->block;
         } else {
@@ -44,10 +44,6 @@ class TournamentController extends Controller
         }
         if (!$selectBlock) {
             $selectBlock = 'A';
-        }
-        $request->session()->put('block', $selectBlock);
-        if (!$selectSheet) {
-            $selectSheet = 1;
         }
 
         $blocks = Team::getBlocks($event);
@@ -59,20 +55,120 @@ class TournamentController extends Controller
             return redirect()->route('event.detail', ['id' => session('event')]);
         }
 
-        $results = Team::where('event_id', $event)
-        ->where('block', $selectBlock)
-        ->orderBy('sheet')
-        ->orderBy('number')
-        ->get();
+        $request->session()->put('block', $selectBlock);
+        if ($selectSheet == 'all' || $selectSheet == '') {
+            $results = Team::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->orderBy('sheet')
+            ->orderBy('number')
+            ->get();
+
+            $games = Result::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->get();
+        } else {
+            $results = Team::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->orderBy('number')
+            ->get();
+
+            $games = Result::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->get();
+        }
         $teams = array();
+        $vs = array();
         foreach ($results as $key => $value) {
             $teams[$value->sheet][$value->number]['id'] = $value->id;
+            $teams[$value->sheet][$value->number]['number'] = $value->number;
             $teams[$value->sheet][$value->number]['name'] = $value->name;
             $teams[$value->sheet][$value->number]['abstention'] = $value->abstention;
+            $teams[$value->sheet][$value->number]['win_num'] = 0;
+            $teams[$value->sheet][$value->number]['win_total'] = 0;
+            $teams[$value->sheet][$value->number]['lose_total'] = 0;
+            $teams[$value->sheet][$value->number]['created_at'] = $value->created_at;
+
+            $vs[$value->id] = array();
+            $team_id = $value->id;
+            $blockTeam = Team::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->where('sheet', $value->sheet)
+            ->where('id', '<>', $team_id)
+            ->orderBy('number')
+            ->get();
+            foreach ($blockTeam as $key => $v) {
+                $vs[$team_id][$key]['name'] = $v->name;
+                $win = Result::where('win_team_id', $team_id)
+                ->where('event_id', $event)
+                ->where('lose_team_id', $v->id)
+                ->first();
+                $lose = Result::where('lose_team_id', $team_id)
+                ->where('event_id', $event)
+                ->where('win_team_id', $v->id)
+                ->first();
+                if ($win || $lose) {
+                    if ($win) {
+                        $vs[$team_id][$key]['win'] = true;
+                        $vs[$team_id][$key]['score'] = $win->win_score.'-'.$win->lose_score;
+                        $teams[$value->sheet][$value->number]['win_num'] += 3;
+                        $teams[$value->sheet][$value->number]['win_total'] += $win->win_score;
+                        $teams[$value->sheet][$value->number]['lose_total'] += $win->lose_score;
+                    } else if($lose) {
+                        $vs[$team_id][$key]['win'] = false;
+                        $vs[$team_id][$key]['score'] = $lose->lose_score.'-'.$lose->win_score;
+                        $teams[$value->sheet][$value->number]['win_num'] += $lose->lose_score;
+                        $teams[$value->sheet][$value->number]['win_total'] += $lose->lose_score;
+                        $teams[$value->sheet][$value->number]['lose_total'] += $lose->win_score;
+                    }
+                } else {
+                    $vs[$team_id][$key]['win'] = false;
+                    $vs[$team_id][$key]['score'] = '?';
+                }
+            }
+            $winScore = $teams[$value->sheet][$value->number]['win_total'];
+            $loseScore = $teams[$value->sheet][$value->number]['lose_total'];
+            if ($winScore == 0) {
+                $teams[$value->sheet][$value->number]['percent'] = 0;
+            } else {
+                $teams[$value->sheet][$value->number]['percent'] = round($winScore / ($winScore + $loseScore) * 100, 1);
+            }
         }
 
+        $ranks = $teams;
+        // 並び替え・一位確定未実装
+        if ($selectSheet == 'all' || $selectSheet == '') {
+          foreach ($sheets as $key => $value) {
+            $keys = array_column($ranks[$value->sheet], 'win_num');
+            array_multisort($keys, SORT_DESC, $ranks[$value->sheet]);
+          }
+        } else {
+            $keys = array_column($ranks[$selectSheet], 'win_num');
+            array_multisort($keys, SORT_DESC, $ranks[$selectSheet]);
+        }
+
+        $scores = array();
+        foreach (config('game.pre') as $key => $val) {
+          foreach ($val as $k => $conf) {
+              foreach ($games as $key => $value) {
+                  if ($value->winteam->number == $conf[0] && $value->loseteam->number == $conf[1] ||
+                  $value->winteam->number == $conf[1] && $value->loseteam->number == $conf[0]) {
+                      if ($conf[0] == 1) {
+                          $num = 0;
+                      } else {
+                          $num = 1;
+                      }
+                      $scores[$value->block][$value->sheet][$value->turn][$num]['win'] = $value->winteam->number;
+                      $scores[$value->block][$value->sheet][$value->turn][$num][$value->win_team_id]['score'] = $value->win_score;
+                      $scores[$value->block][$value->sheet][$value->turn][$num][$value->lose_team_id]['score'] = $value->lose_score;
+                  }
+              }
+
+          }
+        }
         return view('tournament.index',
-        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks'));
+        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'ranks', 'scores'));
     }
 
     public function make(Request $request)
@@ -125,8 +221,6 @@ class TournamentController extends Controller
                 $ato[$j] = floor($blockTheam3 / 2) + $blockTheam3 % 2;
                 $j++;
             }
-            // print_r($teamByBlock);
-            // exit;
             $block = array();
             for ( $i = 0; $i < $blockNum; $i++ ) {
                 $block[] = chr(65 + $i);
@@ -167,34 +261,6 @@ class TournamentController extends Controller
                   }
                   $i++;
               }
-                // $sheets = Team::getSheets($event->id, ($i + 1));
-                // $allTeam = count($sheets) * $event->passing_order;
-                // foreach ($sheets as $key => $val) {
-                //     if ($event->passing_order == 1) {
-                //         $game         = new MainGame();
-                //         $game->block  = ($i + 1);
-                //         $game->sheet  = $val->sheet;
-                //         $game->turn   = ($key % 2) + 1;
-                //         $game->order  = 1;
-                //         $game->save();
-                //     } else {
-                //         $game         = new MainGame();
-                //         $game->block  = ($i + 1);
-                //         $game->sheet  = $val->sheet;
-                //         $game->turn   = ($key + 1);
-                //         $game->order  = 1;
-                //         $game->save();
-                //
-                //         $game         = new MainGame();
-                //         $game->block  = ($i + 1);
-                //         $game->sheet  = $val->sheet;
-                //         $game->turn   = ($key + 1);
-                //         $game->order  = 2;
-                //         $game->save();
-                //     }
-                // }
-                // // echo $allTeam;
-                // // exit;
             }
 
             FlashMessageService::success('作成が完了しました');
@@ -212,7 +278,7 @@ class TournamentController extends Controller
         $event = $request->session()->get('event');
         $selectBlock = $request->block;
         if (!$selectBlock) {
-            $selectBlock = 1;
+            $selectBlock = 'A';
         }
         $blocks = Team::getBlocks($event);
         $sheets = Team::getSheets($event, $selectBlock);
@@ -268,8 +334,23 @@ class TournamentController extends Controller
         $blocks = Team::getBlocks($event);
         $sheets = Team::getSheets($event, $selectBlock);
 
+        $progress = array();
+        $results = Result::where('event_id', $event)
+        ->where('block', $selectBlock)
+        ->orderBy('sheet')
+        ->orderBy('turn')
+        ->get();
+        foreach ($results as $key => $v) {
+            if ($v->winteam->number == 1 || $v->loseteam->number == 1) {
+                $num = 0;
+            } else {
+                $num = 1;
+            }
+            $progress[$v->sheet][$v->turn][$num] = true;
+        }
+
         return view('tournament.progress',
-        compact('selectBlock', 'selectSheet', 'blocks', 'sheets'));
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'progress'));
     }
 
     public function maingame(Request $request)

@@ -36,6 +36,12 @@ $(function(){
         $('input[name^="twitter[]"]').eq(num).val('');
       } else {
         $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
+        url = 'https://twitter.com/'+name;
+        alert('間違えのないようtwitterアイコンにて確認をお願いします');
+        test = $('#twitterLink1').attr("href");
+
+        alert(test);
+        $('#twitterLink1').attr('href', url);
       }
     }).catch(error => {
       $('input[name^="twitter[]"]').eq(num).val('');
@@ -75,6 +81,7 @@ $(function(){
     block = $(this).val();
     location.href = '/tournament/index/' + block;
   });
+
   $('#selectSheet').load(function() {
     block = $('#selectBlock').val();
     sheet = $(this).val();
@@ -82,11 +89,11 @@ $(function(){
     } else {
       if (!$('#'+sheet).length) {
         location.href = '/tournament/index/' + block + '/' + sheet;
-      } else{
-        // 取得した値のid属性がついた要素の位置を取得
-        offsetTop = $('#'+sheet).offset().top;
-        // 取得した箇所に移動
-        $("html, body").animate({ scrollTop: offsetTop }, 200);
+      // } else{
+      //   // 取得した値のid属性がついた要素の位置を取得
+      //   offsetTop = $('#'+sheet).offset().top;
+      //   // 取得した箇所に移動
+      //   $("html, body").animate({ scrollTop: offsetTop }, 200);
       }
     }
   });
@@ -97,14 +104,13 @@ $(function(){
     if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
       location.href = '/tournament/' + sheet + '/' + block;
     } else {
-      if (!$('#'+sheet).length) {
-        location.href = '/tournament/index/' + block + '/' + sheet + '#' + sheet;
-      } else{
-        // 取得した値のid属性がついた要素の位置を取得
-        offsetTop = $('#'+sheet).offset().top;
-        // 取得した箇所に移動
-        $("html, body").animate({ scrollTop: offsetTop }, 200);
-      }
+        location.href = '/tournament/index/' + block + '/' + sheet;
+      // } else{
+      //   // 取得した値のid属性がついた要素の位置を取得
+      //   offsetTop = $('#'+sheet).offset().top;
+      //   // 取得した箇所に移動
+      //   $("html, body").animate({ scrollTop: offsetTop }, 200);
+      // }
     }
   });
 
@@ -123,4 +129,71 @@ $(function(){
      $('body, html').animate({ scrollTop: 0 }, 500);
      return false;
   });
+
+  $('[name^="score[]"]').change(function() {
+      num = $("[name='score[]']").index(this);
+      score1 = $("[name='score[]']").eq(0).val();
+      score2 = $("[name='score[]']").eq(1).val();
+      if (score1 == score2) {
+        alert('同点で更新はできません');
+        $("#submitBtn").prop("disabled", true);
+        return false;
+      } else if(score1 < score2) {
+        $("[name='team[]']").eq(1).css("color","salmon");
+        $("[name='team[]']").eq(0).css("color","gray");
+      } else if(score2 < score1) {
+        $("[name='team[]']").eq(0).css("color","salmon");
+        $("[name='team[]']").eq(1).css("color","gray");
+      }
+      $("#submitBtn").prop("disabled", false);
+  });
+
+  $('[name^="unearned[]"]').click(function() {
+      num = $("[name='unearned[]']").index(this);
+      $("[name='unearned[]']").eq(num).css("background","#38c172");
+      $("[name='unearned[]']").eq(num).css("color","#fff");
+      if (num == 0) {
+        $("[name='score[]']").eq(0).val('2');
+        $("[name='score[]']").eq(1).val('0');
+        $("[name='team[]']").eq(0).css("color","salmon");
+        $("[name='team[]']").eq(1).css("color","gray");
+      } else if(num == 1) {
+        $("[name='score[]']").eq(1).val('2');
+        $("[name='score[]']").eq(0).val('0');
+        $("[name='team[]']").eq(1).css("color","salmon");
+        $("[name='team[]']").eq(0).css("color","gray");
+      }
+      $("#unearned_win").val('1');
+      $("#submitBtn").prop("disabled", false);
+  });
+
+  $('#resetBtn').click(function() {
+    $("#unearned_win").val('0');
+    $("[name='unearned[]']").eq(num).css("background","#fff");
+    $("[name='unearned[]']").eq(num).css("color","#38c172");
+    $("[name='team[]']").eq(0).css("color","#212529");
+    $("[name='team[]']").eq(1).css("color","#212529");
+    chk = $('#result_id').val();
+    if (chk == '') {
+      $("#submitBtn").prop("disabled", true);
+    }
+    document.resultFrm.reset();
+  });
+
+  $('#submitBtn').click(function() {
+    team1 = $("[name='team[]']").eq(0).val();
+    team2 = $("[name='team[]']").eq(1).val();
+    score1 = $("[name='score[]']").eq(0).val();
+    score2 = $("[name='score[]']").eq(1).val();
+    if (team1 == team2) {
+      alert('別のチームを選択してください');
+      return false;
+    }
+    if (score1 == score2) {
+      alert('同点で更新はできません');
+      return false;
+    }
+    document.resultFrm.submit();
+  });
+
 });

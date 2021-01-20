@@ -76,7 +76,7 @@
     </div>
     <label for="final_score" class="col-md-2 col-5 col-form-label text-md-right">決勝戦先取点</label>
 
-    <div class="col-md-2 col-6 col-3">
+    <div class="col-md-2 col-6">
       <select name="final_score" class="form-control">
         <option value="1" {{ old('final_score', isset($data->final_score) && $data->final_score == 1 ? 'selected' : '') }}>1</option>
         <option value="2" {{ old('final_score', isset($data->final_score) && $data->final_score == 2 ? 'selected' : '') }}>2</option>
@@ -85,19 +85,28 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="name" class="col-md-3 col-5 col-form-label text-md-right">概要</label>
+    <label for="note" class="col-md-3 col-5 col-form-label text-md-right">概要</label>
 
     <div class="col-md-6 col-12">
         <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
 <div class="form-group row">
-    <label for="name" class="col-md-3 col-5 col-form-label text-md-right">一覧表示</label>
+    <label for="view" class="col-md-3 col-5 col-form-label text-md-right">一覧表示</label>
 
     <div class="col-md-2 col-6">
       <select name="view" class="form-control">
         <option value="0" {{ old('view', isset($data->view) && $data->view == 0 ? 'selected' : '') }}>表示</option>
         <option value="1" {{ old('view', isset($data->view) && $data->view == 1 ? 'selected' : '') }}>非表示</option>
+      </select>
+    </div>
+    <label for="grade" class="col-md-2 col-5 col-form-label text-md-right">グレート</label>
+
+    <div class="col-md-2 col-6">
+      <select name="grade" class="form-control">
+        <option value="1" {{ old('final_score', isset($data->final_score) && $data->final_score == 1 ? 'selected' : '') }}>1</option>
+        <option value="2" {{ old('final_score', isset($data->final_score) && $data->final_score == 2 ? 'selected' : '') }}>2</option>
+        <option value="3" {{ old('final_score', isset($data->final_score) && $data->final_score == 3 ? 'selected' : '') }}>3</option>
       </select>
     </div>
 </div>

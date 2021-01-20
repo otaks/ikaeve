@@ -15,16 +15,24 @@ class CreateResultsTable extends Migration
     {
         Schema::create('results', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('event_id')->comment('イベントID')->nullable();
             $table->unsignedInteger('win_team_id')->comment('勝利チームID')->nullable();
             $table->unsignedInteger('lose_team_id')->comment('敗北チームID')->nullable();
             $table->tinyInteger('win_score')->comment('勝利点')->nullable();
             $table->tinyInteger('lose_score')->comment('敗北点')->nullable();
-            $table->tinyInteger('turn')->comment('何試合目か')->nullable();
             $table->boolean('unearned_win')->comment('不戦勝(0:なし/1:あり)')->default(0);
+            $table->string('block', 1)->comment('A~P?ブロック')->nullable();
+            $table->unsignedInteger('sheet')->comment('シート')->nullable();
+            $table->unsignedInteger('turn')->comment('1~4')->nullable();
+            $table->unsignedInteger('user_id')->comment('更新者')->nullable();
+            $table->text('memo')->comment('メモ')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
             $table->foreign('win_team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->foreign('lose_team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

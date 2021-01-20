@@ -6,7 +6,7 @@
               @include('elements.flash_message')
               @if ($isMobile)
                 @include('tournament/nav_sp')
-                @include('tournament/table_sp')
+                @include('tournament/table')
               @else
                 @include('tournament/nav')
                 @include('tournament/table')

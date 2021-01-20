@@ -43,6 +43,7 @@ class CreateEventsTable extends Migration
             $table->unsignedInteger('main_score')->comment('本戦先取点')->default(0);
             $table->unsignedInteger('final_score')->comment('決勝先取点')->default(0);
             $table->boolean('view')->comment('表示(0:表示/1:非表示)')->default(0);
+            $table->unsignedInteger('grade')->comment('大会グレード')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

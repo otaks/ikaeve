@@ -26,7 +26,7 @@
                     @endwhile
                   </tr>
                   @foreach ($teams as $k => $team)
-                    <tr>
+                    <tr class="{{($team->sheet % 2 == 0) ? 'table-info':'' }}">
                         <td class="text-center p-2">{{ $team->sheet }}</td>
                         <td class="text-center p-2">{{ $team->number }}</td>
                         <td class="text-center p-2"></td>

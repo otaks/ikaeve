@@ -4,6 +4,27 @@
   margin-top: 10px;
 }
 
+.blue_title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  padding: 7px;
+  background: #2E7AA0;
+  border-radius: 5px;
+}
+
+.win_block {
+  background: #FDCBBF;
+  font-size: 150%;
+  padding: 3px;
+  margin: 5px;
+}
+
+.lose_block {
+  background: #EEEEEE;
+  font-size: 150%;
+  padding: 3px;
+  margin: 5px;
+}
 
 a {
      color: #2E7AA0;
