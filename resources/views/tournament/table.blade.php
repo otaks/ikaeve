@@ -87,11 +87,14 @@
                                     </td>
                                   @endif
                                   <td class="p-1 align-middle text-center">
-                                    @if (Auth::user()->role != config('user.role.member') ||
-                                    (Auth::user()->role == config('user.role.member') &&
-                                      ($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
-                                      ($member->team_id == $teams[$select->sheet][$conf[1]]['id'])))
-                                      <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-secondary btn-sm">報告</a>
+                                    @if (Auth::user()->role != config('user.role.member'))
+                                        <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-secondary btn-sm">報告</a>
+                                    @endif
+                                    @if (Auth::user()->role == config('user.role.member') && isset($member))
+                                      @if(($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
+                                      ($member->team_id == $teams[$select->sheet][$conf[1]]['id']))
+                                          <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-secondary btn-sm">報告</a>
+                                      @endif
                                     @endif
                                   </td>
                                 </tr>

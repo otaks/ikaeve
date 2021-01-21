@@ -37,10 +37,10 @@ $(function(){
       } else {
         $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
         url = 'https://twitter.com/'+name;
-        alert('間違えのないようtwitterアイコンにて確認をお願いします');
+        //alert('間違えのないようtwitterアイコンにて確認をお願いします');
         test = $('#twitterLink1').attr("href");
 
-        alert(test);
+        //alert(test);
         $('#twitterLink1').attr('href', url);
       }
     }).catch(error => {

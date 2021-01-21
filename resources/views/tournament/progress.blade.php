@@ -26,12 +26,12 @@
                   @foreach ($sheets as $sheet)
                     <tr>
                       <th class="text-center p-1">{{ $sheet->sheet }}</th>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][0])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
-                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][1])) <i class="fas fa-check-circle" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][0])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][1][1])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][0])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][2][1])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][0])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
+                      <td class="text-center p-1">@if(isset($progress[$sheet->sheet][3][1])) <i class="fas fa-check" style="color:salmon;"></i> @endif</td>
                     </tr>
                   @endforeach
               </table>
