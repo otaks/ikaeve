@@ -1,5 +1,5 @@
   <div class="row">
-    <div class="col-4 ml-3">
+    <div class="col-4 ml-1">
       <select name="block" id="selectBlock" class="form-control">
         @foreach ($blocks as $val)
           <option value="{{ $val->block }}" {{ ($selectBlock == $val->block) ? 'selected' : ''}}>{{ $val->block }}</option>
