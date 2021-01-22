@@ -75,7 +75,7 @@
                                     </td>
                                     <td>
                                       @if($data->block)
-                                        {{ $data->block }}ブロック
+                                        {{ $data->block }}
                                         <br>
                                         {{ $data->sheet }}-{{ $data->number }}
                                       @endif

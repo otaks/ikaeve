@@ -23,4 +23,35 @@ class Wanted extends BaseModel
     {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function weponStr()
+    {
+        $config = config('wepons.all');
+        $wepons = array();
+        foreach ($config as $key => $value) {
+            $wepons[$key] = $value;
+        }
+
+        $str = '';
+        $db = $this->wepons;
+        $array = explode(',', $db);
+        foreach ($array as $value) {
+            $str .= $wepons[$value].', ';
+        }
+        return $str;
+    }
+
+    public function selectWepon($select)
+    {
+        $selectFlg = false;
+        $db = $this->wepons;
+        $array = explode(',', $db);
+        foreach ($array as $value) {
+            if ($value == $select) {
+                $selectFlg = true;
+                break;
+            }
+        }
+        return $selectFlg;
+    }
 }

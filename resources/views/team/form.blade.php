@@ -49,10 +49,10 @@
               <div class="input-group-append">
                 <span class="input-group-text">
                   @if(old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : ''))
-                    <div id="twitterlink{{$i}}"><a href="https://twitter.com/{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" target="_blank">
-                      <i class="fab fa-twitter fa-lg"></i></a></div>
+                      <a id="twitterlink{{$i}}" href="https://twitter.com/{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" target="_blank">
+                      <i class="fab fa-twitter fa-lg"></i></a>
                   @else
-                      <div id="twitterlink{{$i}}"><a href="#" target="_blank"><i class="fab fa-twitter fa-lg"></i></a></div>
+                      <a id="twitterlink{{$i}}" href="#"><i class="fab fa-twitter fa-lg"></i></a>
                   @endif
                 </span>
               </div>
