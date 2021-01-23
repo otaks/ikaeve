@@ -80,7 +80,8 @@ $(function(){
 
   $('#selectBlock').change(function() {
     block = $(this).val();
-    location.href = '/tournament/index/' + block;
+    url = $('#url').val();
+    location.href = url + '/tournament/index/' + block;
   });
 
   $('#selectSheet').load(function() {

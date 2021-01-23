@@ -12,8 +12,8 @@
             @include('elements.flash_message')
             <form method="POST">
                 @csrf
-                <div class="form-group row mb-3 mt-1">
-                    <div class="col-md-1 col-2">
+                <div class="form-group row mb-3 p-1">
+                    <div class="col-md-1 col-3">
                         <select class="form-control" name="searchBlock">
                             <option value="">A~</option>
                             @foreach ($blocks as $block)
@@ -21,7 +21,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1 col-2">
+                    <div class="col-md-1 col-3">
                         <select class="form-control" name="searchSheet">
                             <option value="">1~</option>
                             @foreach ($sheets as $sheet)
@@ -29,14 +29,14 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1 col-2">
+                    <div class="col-md-1 col-3">
                         <select class="form-control" name="approval">
                             <option value="">承認</option>
                             <option value="0" @if(isset($search) && $search['approval'] == '0') selected @endif>未</option>
                             <option value="1" @if(isset($search) && $search['approval'] == 1) selected @endif>済</option>
                         </select>
                     </div>
-                  <div class="col-md-2 col-1">
+                  <div class="col-md-2 col-3">
                       <button type="submit" class="btn btn-primary"><i class="fas fa-search fa-lg mr-1"></i></button>
                   </div>
                 </div>
