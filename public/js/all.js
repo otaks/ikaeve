@@ -38,10 +38,11 @@ $(function(){
         $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
         url = 'https://twitter.com/'+name;
         //alert('間違えのないようtwitterアイコンにて確認をお願いします');
-        test = $('#twitterLink1').attr("href");
+        target = '#twitterLink' + num;
+        test = $(target).attr('href');
 
-        //alert(test);
-        $('#twitterLink1').attr('href', url);
+        alert(test);
+        $(target).attr('href', url);
       }
     }).catch(error => {
       $('input[name^="twitter[]"]').eq(num).val('');
@@ -197,5 +198,29 @@ $(function(){
     }
     document.resultFrm.submit();
   });
+
+  $('#selecter').multiSelect({
+  		//ヘッダー
+   		selectableHeader: "<div class='custom-header'>武器一覧</div>",
+   		selectionHeader: "<div class='custom-header'>持ちたい武器</div>",
+  	});
+  	//選択リスト枠のスタイル
+  	$(".ms-selectable").css({
+  		width: '150px',
+  		height: '180px'
+  	});
+  	//選択済みリスト枠のスタイル
+  	$(".ms-selection").css({
+  		width: '150px',
+  		height: '180px'
+  	});
+  	//リスト内のスタイル
+  	$(".ms-list").css("height","180px");
+  	//multi-select全体のスタイル
+  	$(".ms-container").css({
+  		width: '320px',
+  		height: '180px',
+  		margin: '5px'
+  	});
 
 });

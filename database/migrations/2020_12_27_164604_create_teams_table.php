@@ -62,7 +62,8 @@ class CreateTeamsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->comment('user_id');
             $table->unsignedInteger('event_id')->comment('大会ID')->nullable();
-            $table->string('name', 255)->comment('名前')->nullable();
+            $table->string('xp', 255)->comment('xp')->nullable();
+            $table->string('wepons', 255)->comment('持ち武器')->nullable();
             $table->text('note')->comment('内容')->nullable();
             $table->boolean('end')->comment('終了')->default(0);
 

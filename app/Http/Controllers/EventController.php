@@ -33,6 +33,13 @@ class EventController extends Controller
             ->where('from_recruit_date', '<=', $dt)
             ->where('to_date', '>=', $dt)
             ->orderBy('id', 'DESC')->get();
+            if (count($datas) == 1) {
+                $event = Event::where('view', 0)
+                ->where('from_recruit_date', '<=', $dt)
+                ->where('to_date', '>=', $dt)
+                ->first();
+                return redirect()->route('event.detail', ['id' => $event->id]);
+            }
         }
         return view('event.index', compact('datas'));
     }

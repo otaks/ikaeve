@@ -15,9 +15,7 @@
                               @endif
                               <th>No</th>
                               <th>募集者</th>
-                              <th>募集名</th>
                               <th>内容</th>
-                              <th>登録日時</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -30,14 +28,15 @@
                                   @endif
                                   <td>{{ $data->id }}</td>
                                   <td>
-                                    {{ $data->user->name }}
+                                    <a href="{{ route('wanted.detail', ['id' => $data->id]) }}">{{ $data->user->name }}</a>
                                     @if($data->user->twitter_nickname)
                                         &nbsp;<a href="https://twitter.com/{{ $data->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                                     @endif
                                   </td>
-                                  <td><a href="{{ route('wanted.detail', ['id' => $data->id]) }}">{{ $data->name }}</a></td>
                                   <td>{{ $data->note }}</td>
-                                  <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
+                                </tr>
+                                <tr>
+                                  <td colspan="3">{{ $data->weponStr() }}</td>
                                 </tr>
                               @endforeach
                             </tbody>

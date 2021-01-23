@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
-use App\Http\Requests\WantedRequest;
 use App\Models\Wanted;
 
 class WantedController extends Controller
@@ -24,7 +23,7 @@ class WantedController extends Controller
         return view('wanted.regist', compact('user'));
     }
 
-    public function registStore(WantedRequest $request)
+    public function registStore(Request $request)
     {
         try {
             \DB::transaction(function() use($request) {
@@ -32,7 +31,10 @@ class WantedController extends Controller
                 $event = $request->session()->get('event');
                 $data = new Wanted();
                 $data->user_id = Auth::id();
-                $data->name = $request->name;
+                $data->xp = $request->xp;
+                if ($request->wepons) {
+                    $data->wepons = implode(',', $request->wepons);
+                }
                 $data->note = $request->note;
                 $data->event_id = $event;
                 $data->save();
@@ -56,13 +58,16 @@ class WantedController extends Controller
         return view('wanted.edit', compact('data', 'user'));
     }
 
-    public function editStore(WantedRequest $request)
+    public function editStore(Request $request)
     {
         try {
             \DB::transaction(function() use($request) {
 
                 $data = Wanted::find($request->id);
-                $data->name = $request->name;
+                $data->xp = $request->xp;
+                if ($request->wepons) {
+                    $data->wepons = implode(',', $request->wepons);
+                }
                 $data->note = $request->note;
                 $data->save();
 
