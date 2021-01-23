@@ -38,7 +38,11 @@ class EventController extends Controller
                 ->where('from_recruit_date', '<=', $dt)
                 ->where('to_date', '>=', $dt)
                 ->first();
-                return redirect()->route('event.detail', ['id' => $event->id]);
+                if ($event) {
+                    return redirect()->route('event.detail', ['id' => $event->id]);
+                } else {
+                    return redirect()->route('event.index');
+                }
             }
         }
         return view('event.index', compact('datas'));

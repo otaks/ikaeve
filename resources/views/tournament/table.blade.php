@@ -7,16 +7,11 @@
                     <h2 id="{{ ($k + 1) }}">{{ $selectBlock }}-{{ $select->sheet }}ブロック</h2>
                     <h3 class="blue_title">現在の結果</h3>
                     @foreach ($ranks[$select->sheet] as $k => $team)
-                      @if ($k+1 == 1)
-                        <p style="font-size:110%"><span class="badge badge-info">{{ $k+1 }}位</span> <b>{{ $team['number'] }}.{{ $team['name'] }}</b>&nbsp;<span class="badge badge-warning"><i class="fas fa-crown"></i>1位確定</span>
+                      <p style="font-size:110%"><span class="badge badge-info">{{ $k+1 }}位</span> <a href="{{ route('team.detail', ['id' => $team['id']]) }}" target="_blank">{{ $team['number'] }}.{{ $team['name'] }}</a>
+                        @if ($team['abstention'] == 1)<span class="badge badge-warning">棄権</span>
+                        @else
                           <br><span style="font-size:80%">（勝ち点：{{ $team['win_num'] }}、取得率：{{ $team['percent'] }}%）</span>
-                      @else
-                        <p style="font-size:110%"><span class="badge badge-info">{{ $k+1 }}位</span> {{ $team['number'] }}.{{ $team['name'] }}
-                          @if ($team['abstention'] == 1)<span class="badge badge-warning">棄権</span>
-                          @else
-                            <br><span style="font-size:80%">（勝ち点：{{ $team['win_num'] }}、取得率：{{ $team['percent'] }}%）</span>
-                          @endif
-                      @endif
+                        @endif
                       <br>
                       <span style="font-size:80%">
                       @foreach ($vs[$team['id']] as $val)
@@ -43,11 +38,27 @@
                               <col style="width: 36%">
                               <col style="width: 5%">
                               <col style="width: 36%">
-                              <col style="width: 23%">
+                              @if (Auth::user()->role != config('user.role.member'))
+                                <col style="width: 23%">
+                              @else
+                                @if (Auth::user()->role == config('user.role.member') && isset($member)
+                                    && (Auth::user()->member->team->sheet == $select->sheet))
+                                    <col style="width: 23%">
+                                @endif
+                              @endif
                             </colgroup>
                             <thead>
                               <tr style="background: #F8EEBE;white-space: nowrap;text-align: left;">
-                                <th colspan="4" class="text-center p-1">第{{ $key }}試合</th>
+                                @if (Auth::user()->role != config('user.role.member'))
+                                  <th colspan="4" class="text-center p-1">第{{ $key }}試合</th>
+                                @else
+                                  @if (Auth::user()->role == config('user.role.member') && isset($member)
+                                      && (Auth::user()->member->team->sheet == $select->sheet))
+                                      <th colspan="4" class="text-center p-1">第{{ $key }}試合</th>
+                                  @else
+                                    <th colspan="3" class="text-center p-1">第{{ $key }}試合</th>
+                                  @endif
+                                @endif
                               </tr>
                             </thead>
                             <tbody>
@@ -86,17 +97,32 @@
                                       @if ($teams[$select->sheet][$conf[1]]['abstention'] == 1)<span class="badge badge-warning">棄権</span>@endif
                                     </td>
                                   @endif
-                                  <td class="p-1 align-middle text-center">
-                                    @if (Auth::user()->role != config('user.role.member'))
-                                        <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-secondary btn-sm">報告</a>
+                                  @if (Auth::user()->role != config('user.role.member'))
+                                    <td class="p-1 align-middle text-center">
+                                      <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-outline-info btn-sm">編集</a>
+                                    </td>
+                                  @else
+                                    @if (Auth::user()->role == config('user.role.member') && isset($member)
+                                        && (Auth::user()->member->team->sheet == $select->sheet))
+                                        <td class="p-1 align-middle text-center">
+                                        @if(($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
+                                        ($member->team_id == $teams[$select->sheet][$conf[1]]['id']))
+                                        @php
+                                          $result = Auth::user()->member->chkResult($selectBlock, $select->sheet, $key);
+                                        @endphp
+                                          @if (!$result)
+                                          <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-outline-success btn-sm">報告</a>
+                                          @else
+                                            @if ($result->lose_team_id == $member->team_id && $result->approval == 0)
+                                              <a href="{{ route('game.approval', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k, 'mode' => 'app']) }}" class="btn btn-outline-info btn-sm">承認</a>
+                                            @elseif ($result->approval == 0)
+                                              <a href="#" class="btn btn-outline-info btn-sm">承認待</a>
+                                            @endif
+                                          @endif
+                                        @endif
+                                        </td>
                                     @endif
-                                    @if (Auth::user()->role == config('user.role.member') && isset($member))
-                                      @if(($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
-                                      ($member->team_id == $teams[$select->sheet][$conf[1]]['id']))
-                                          <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-secondary btn-sm">報告</a>
-                                      @endif
-                                    @endif
-                                  </td>
+                                  @endif
                                 </tr>
                               @endforeach
                             </tbody>

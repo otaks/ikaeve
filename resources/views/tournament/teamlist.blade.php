@@ -14,7 +14,7 @@
                     <th class="text-center p-1 align-middle" style="width:25px;">No</th>
                     <th class="text-center p-1 align-middle" style="width:25px;">本戦進出</th>
                     <th class="text-center p-1 align-middle" style="width:120px;">チーム名</th>
-                    <th class="text-center p-1 align-middle" style="width:120px;">フレンドコード</th>
+                    <th class="text-center p-1 align-middle" style="width:80px;">フレンドコード</th>
                     @php
                       $i = 0;
                     @endphp

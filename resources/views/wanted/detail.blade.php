@@ -14,7 +14,7 @@
                       </td>
                     </tr>
                     <tr><th>xp</th><td>{{ $data->xp ?? '' }}</td></tr>
-                    <tr><th>武器</th><td>{{ $data->weponStr() }}</td></tr>
+                    <tr><th>武器</th><td>{!! $data->weponStr() !!}</td></tr>
                     <tr><th>内容</th><td>{!! nl2br(e($data->note)) !!}</td></tr>
                     <tr><th>登録日時</th><td>{{ $data->created_at->format('Y/m/d H:i') }}</td></tr>
                   </tr>
@@ -22,8 +22,8 @@
               </div>
               @if (Auth::id() == $data->user_id)
                 <div class="form-group row mb-0">
-                    <div class="col-md-6 offset-md-4 text-center">
-                      <a href="{{ route('wanted.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                    <div class="col-md-12 text-center">
+                      <a href="{{ route('wanted.edit', ['id' => $data->id]) }}" class="btn btn-primary submit">編集</a>
                     </div>
                 </div>
               @endif

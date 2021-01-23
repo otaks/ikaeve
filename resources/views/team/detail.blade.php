@@ -30,7 +30,7 @@
                       <th>ブロック</th>
                       <td>
                       @if($data->block)
-                        {{ $data->block }}ブロック&nbsp;{{ $data->sheet }}-{{ $data->number }}
+                        {{ $data->block }}&nbsp;{{ $data->sheet }}-{{ $data->number }}
                       @endif
                     </td>
                     <tr><th>意気込みなど</th><td>{!! nl2br(e($data->note)) !!}</tr>

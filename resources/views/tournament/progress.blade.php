@@ -8,7 +8,10 @@
               @else
                 @include('tournament/nav')
               @endif
-              <table class="table table-bordered table-hover mt-3" style="table-layout:fixed;">
+              @if (Auth::user()->role != config('user.role.member'))
+                <a href="{{ route('game.resultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">報告一覧</a>
+              @endif
+              <table class="table table-bordered table-hover mt-2" style="table-layout:fixed;">
                   <tr class="table-info">
                     <th class="text-center p-1" rowspan="2" style="width:50px;"></th>
                     <th class="text-center p-1" colspan="2" style="width:80px;">第1試合</th>
@@ -16,12 +19,11 @@
                     <th class="text-center p-1" colspan="2" style="width:80px;">第3試合</th>
                   </tr>
                   <tr class="table-info">
-                    <th class="text-center p-1">1-2</th>
-                    <th class="text-center p-1">3-4</th>
-                    <th class="text-center p-1">1-2</th>
-                    <th class="text-center p-1">3-4</th>
-                    <th class="text-center p-1">1-2</th>
-                    <th class="text-center p-1">3-4</th>
+                    @foreach (config('game.pre') as $val)
+                      @foreach ($val as $conf)
+                        <th class="text-center p-1">{{ $conf[0] }}-{{ $conf[1] }}</th>
+                      @endforeach
+                    @endforeach
                   </tr>
                   @foreach ($sheets as $sheet)
                     <tr>
@@ -37,4 +39,5 @@
               </table>
           </div>
       </div>
+      <script src="{{ asset('/js/reload.js') }}"></script>
 @endsection

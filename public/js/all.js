@@ -142,29 +142,30 @@ $(function(){
         $("#submitBtn").prop("disabled", true);
         return false;
       } else if(score1 < score2) {
-        $("[name='team[]']").eq(1).css("color","salmon");
-        $("[name='team[]']").eq(0).css("color","gray");
+        $("#left_team").css("color","gray");
+        $("#right_team").css("color","salmon");
       } else if(score2 < score1) {
-        $("[name='team[]']").eq(0).css("color","salmon");
-        $("[name='team[]']").eq(1).css("color","gray");
+        $("#left_team").css("color","salmon");
+        $("#right_team").css("color","gray");
       }
       $("#submitBtn").prop("disabled", false);
   });
 
   $('[name^="unearned[]"]').click(function() {
       num = $("[name='unearned[]']").index(this);
+      max = $('#score option:last-child').val();
       $("[name='unearned[]']").eq(num).css("background","#38c172");
       $("[name='unearned[]']").eq(num).css("color","#fff");
       if (num == 0) {
-        $("[name='score[]']").eq(0).val('2');
+        $("[name='score[]']").eq(0).val(max);
         $("[name='score[]']").eq(1).val('0');
-        $("[name='team[]']").eq(0).css("color","salmon");
-        $("[name='team[]']").eq(1).css("color","gray");
+        $("#left_team").css("color","salmon");
+        $("#right_team").css("color","gray");
       } else if(num == 1) {
-        $("[name='score[]']").eq(1).val('2');
+        $("[name='score[]']").eq(1).val(max);
         $("[name='score[]']").eq(0).val('0');
-        $("[name='team[]']").eq(1).css("color","salmon");
-        $("[name='team[]']").eq(0).css("color","gray");
+        $("#left_team").css("color","gray");
+        $("#right_team").css("color","salmon");
       }
       $("#unearned_win").val('1');
       $("#submitBtn").prop("disabled", false);
@@ -174,8 +175,6 @@ $(function(){
     $("#unearned_win").val('0');
     $("[name='unearned[]']").eq(num).css("background","#fff");
     $("[name='unearned[]']").eq(num).css("color","#38c172");
-    $("[name='team[]']").eq(0).css("color","#212529");
-    $("[name='team[]']").eq(1).css("color","#212529");
     chk = $('#result_id').val();
     if (chk == '') {
       $("#submitBtn").prop("disabled", true);
