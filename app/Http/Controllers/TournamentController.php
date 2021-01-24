@@ -125,7 +125,11 @@ class TournamentController extends Controller
                 ->first();
                 if ($win || $lose) {
                     if ($win) {
-                        $vs[$team_id][$key]['win'] = true;
+                        if ($win->abstention == 1) {
+                            $vs[$team_id][$key]['win'] = false;
+                        } else {
+                            $vs[$team_id][$key]['win'] = true;
+                        }
                         $vs[$team_id][$key]['score'] = $win->win_score.'-'.$win->lose_score;
                         $teams[$value->sheet][$value->number]['win_num'] += 3;
                         $teams[$value->sheet][$value->number]['win_total'] += $win->win_score;

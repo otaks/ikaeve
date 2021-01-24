@@ -72,7 +72,8 @@
                                     $scores[$selectBlock][$select->sheet][$key][$k]['win'] == $conf[1]))
                                     <td class="p-1">{{ $conf[0] }}.{{ $teams[$select->sheet][$conf[0]]['name'] ?? '' }}
                                       @if ($teams[$select->sheet][$conf[0]]['abstention'] == 1)<span class="badge badge-warning">棄権</span>@endif
-                                      @if($scores[$selectBlock][$select->sheet][$key][$k]['win'] == $conf[0])
+                                      @if($scores[$selectBlock][$select->sheet][$key][$k]['win'] == $conf[0] &&
+                                      $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[0]]['id']]['score'] != 0)
                                         <p class="text-center win_block">{{ $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[0]]['id']]['score'] }}</p>
                                       @else
                                         <p class="text-center lose_block">{{ $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[0]]['id']]['score'] }}</p>
@@ -81,7 +82,8 @@
                                     <td class="text-center p-1">VS</td>
                                     <td class="p-1">{{ $conf[1] }}.{{ $teams[$select->sheet][$conf[1]]['name'] ?? '' }}
                                       @if ($teams[$select->sheet][$conf[1]]['abstention'] == 1)<span class="badge badge-warning">棄権</span>@endif
-                                      @if($scores[$selectBlock][$select->sheet][$key][$k]['win'] == $conf[1])
+                                      @if($scores[$selectBlock][$select->sheet][$key][$k]['win'] == $conf[1] &&
+                                      $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[1]]['id']]['score'] != 0)
                                         <p class="text-center win_block">{{ $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[1]]['id']]['score'] }}</p>
                                       @else
                                         <p class="text-center lose_block">{{ $scores[$selectBlock][$select->sheet][$key][$k][$teams[$select->sheet][$conf[1]]['id']]['score'] }}</p>

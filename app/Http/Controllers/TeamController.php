@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\Team;
 use App\Models\Member;
+use App\Models\Result;
 use App\Models\Answer;
 
 class TeamController extends Controller
@@ -221,6 +222,10 @@ class TeamController extends Controller
                     $data->approval = $value;
                 } else {
                     $data->abstention = $value;
+                    // 試合中の途中棄権の場合残りを0-2で登録
+                    if ($data->block != '') {
+                        $this->insertResult($data);
+                    }
                 }
                 $data->save();
 
@@ -250,5 +255,59 @@ class TeamController extends Controller
         );
         $userData=$connection->get("users/show", ["screen_name" => $name]);
         return $userData->id;
+    }
+
+    private function insertResult($team)
+    {
+        $event = Event::find($team->event_id);
+        $teams = Team::where('block', $team->block)
+        ->where('sheet', $team->sheet)
+        ->where('id', '<>', $team->id)
+        ->get();
+        foreach ($teams as $key => $value) {
+          $query = Result::query();
+          $query->where(function($query) use($team){
+              $query->where('lose_team_id', '=', $team->id)
+                    ->orWhere('win_team_id', '=', $team->id);
+          });
+          $query->where(function($query) use($value){
+              $query->where('win_team_id', '=', $value->id)
+                    ->orWhere('lose_team_id', '=', $value->id);
+          });
+          $result = $query->first();
+          if (!$result) {
+              foreach (config('game.pre') as $key => $val) {
+                  foreach ($val as $conf) {
+                      if (in_array($team->number, $conf) &&
+                      in_array($value->number, $conf)) {
+                          $result = new Result();
+                          if ($value->abstention == 0) {
+                              $result->win_score = $event->pre_score;
+                          } else {
+                              $result->win_score = 0;
+                              $result->abstention = 1;
+                          }
+                          $result->win_team_id = $value->id;
+                          $result->lose_team_id = $team->id;
+                          $result->lose_score = 0;
+                          $result->unearned_win = 1;
+                          $result->block = $value->block;
+                          $result->sheet = $value->sheet;
+                          $result->turn = $key;
+                          $result->event_id = $event->id;
+                          $result->user_id = Auth::id();
+                          $result->approval = 1;
+                          $result->save();
+                        }
+                    }
+                }
+            } elseif ($value->abstention == 1) {
+                $result->win_score = 0;
+                $result->abstention = 1;
+                $result->user_id = Auth::id();
+                $result->approval = 1;
+                $result->save();
+            }
+        }
     }
 }

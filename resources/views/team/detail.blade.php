@@ -40,18 +40,17 @@
               @if ($data::chkTeamMember($data->id))
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4 text-center">
-                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit">編集</a>
+                      <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger">棄権</a>
                     </div>
                 </div>
               @endif
               @if (Auth::user()->role != config('user.role.member'))
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4 text-center">
-                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit w-25">編集</a>
+                      <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit">編集</a>
                       @if($data->abstention == 0)
-                          <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger w-25">棄権</a>
-                      @else
-                          <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 0]) }}" class="btn btn-success w-25">棄権取消</a>
+                        <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger">棄権</a>
                       @endif
                     </div>
                 </div>
