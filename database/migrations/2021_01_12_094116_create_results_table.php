@@ -27,6 +27,7 @@ class CreateResultsTable extends Migration
             $table->unsignedInteger('user_id')->comment('更新者')->nullable();
             $table->text('memo')->comment('メモ')->nullable();
             $table->boolean('approval')->comment('承認(0:未承認/1:承認)')->default(0);
+            $table->boolean('abstention')->comment('両棄権(1:棄権)')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
