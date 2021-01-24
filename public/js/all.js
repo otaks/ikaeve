@@ -36,19 +36,28 @@ $(function(){
         $('input[name^="twitter[]"]').eq(num).val('');
       } else {
         $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
-        url = 'https://twitter.com/'+name;
-        //alert('間違えのないようtwitterアイコンにて確認をお願いします');
-        target = '#twitterLink' + num;
-        test = $(target).attr('href');
-
-        alert(test);
-        $(target).attr('href', url);
+        alert('間違えのないようtwitterアイコンにて確認をお願いします');
       }
     }).catch(error => {
       $('input[name^="twitter[]"]').eq(num).val('');
       alert('エラーが発生しました');
       console.log(error);
     });
+  });
+
+  $('[name^="twitterlink[]"]').click(function() {
+    num = $("[name='twitterlink[]']").index(this);
+    name = $('input[name^="twitter[]"]').eq(num).val();
+    if (name == "") {
+      alert('twitterのIDを入力してください');
+      return false;
+    }
+    url = 'https://twitter.com/'+name;
+    window.open(url, '_blank');
+  });
+
+  $('.deleteTrBtn').click(function() {
+    $(this).closest('tr').remove();
   });
 
   $('#addTrBtn').click(function() {
