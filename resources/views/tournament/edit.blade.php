@@ -12,7 +12,7 @@
                 @endforeach
               </ul>
 
-              <h5 class="mt-2">{{ $selectBlock }}ブロック&nbsp;チーム一覧</h5>
+              <h5 class="mt-2">{{ $selectBlock }}&nbsp;チーム一覧</h5>
 
               @foreach ($teams as $k => $team)
                 @if ($k % 12 == 0)

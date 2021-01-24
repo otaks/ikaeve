@@ -66,7 +66,7 @@
         <div id="mask"></div>
 
         <main>
-          <h4>{{ session('eventName') ?? '' }} @if (session('block')) {{ session('block') }}ブロック @endif </h4>
+          <h4>{{ session('eventName') ?? '' }}</h4>
         </main>
 
       </div>

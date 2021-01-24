@@ -34,6 +34,15 @@ class TournamentController extends Controller
             $member = Member::join('teams', 'teams.id', 'members.team_id')
             ->where('event_id', $event)
             ->where('user_id', Auth::id())->first();
+            if ($member) {
+              $appCnt = Result::where('event_id', $event)
+              ->where('lose_team_id', $member->team_id)
+              ->where('approval', 0)
+              ->count();
+              if (0 < $appCnt) {
+                  FlashMessageService::error('未承認の試合があります。確認の上承認をお願いします。');
+              }
+            }
         }
         if ($member && $request->sheet == '') {
             $selectSheet = $member->team->sheet;
@@ -61,21 +70,25 @@ class TournamentController extends Controller
             ->where('block', $selectBlock)
             ->orderBy('sheet')
             ->orderBy('number')
+            ->where('approval', 1)
             ->get();
 
             $games = Result::where('event_id', $event)
             ->where('block', $selectBlock)
+            ->where('approval', 1)
             ->get();
         } else {
             $results = Team::where('event_id', $event)
             ->where('block', $selectBlock)
             ->where('sheet', $selectSheet)
+            ->where('approval', 1)
             ->orderBy('number')
             ->get();
 
             $games = Result::where('event_id', $event)
             ->where('block', $selectBlock)
             ->where('sheet', $selectSheet)
+            ->where('approval', 1)
             ->get();
         }
         $teams = array();
@@ -103,10 +116,12 @@ class TournamentController extends Controller
                 $win = Result::where('win_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('lose_team_id', $v->id)
+                ->where('approval', 1)
                 ->first();
                 $lose = Result::where('lose_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('win_team_id', $v->id)
+                ->where('approval', 1)
                 ->first();
                 if ($win || $lose) {
                     if ($win) {
@@ -190,8 +205,11 @@ class TournamentController extends Controller
 
     public function makeStore(Request $request)
     {
-        try {
+        // try {
             $event_id = $request->session()->get('event');
+            if (!$event_id) {
+                return redirect()->route('event.index');
+            }
             $event = Event::find($event_id);
             Team::resetAllTeam($event_id);
             $teams = Team::getAllTeam($event_id, $request->order_rule);
@@ -206,7 +224,10 @@ class TournamentController extends Controller
             $theam3 = (count($teams) % $teamBySheet);
             // ブロックごとの3チーム数
             $blockTheam3 = ceil($theam3 / $blockNum);
-
+            // echo 'theam3/'.$theam3;
+            // echo '<br>blockTheam3/'.$blockTheam3;
+            // echo '<br>blockNum/'.$blockNum;
+            // echo '<br>teamByBlock/'.$teamByBlock;
             $j = 0;
             $hajime = array();
             $ato = array();
@@ -225,25 +246,31 @@ class TournamentController extends Controller
             for ( $i = 0; $i < $blockNum; $i++ ) {
                 $block[] = chr(65 + $i);
             }
+            // print_r($teamByBlock);
+            // print_r($hajime);
+            // print_r($ato);
+            // exit;
 
-            $i = 0;
+            $k = 0;
             $j = 0;
             $tonament = array();
-            foreach ($block as $key => $value) {
+            // foreach ($block as $key => $value) {
+            while ($k < $blockNum) {
+                $i = 0;
                 while ($i < $sheetNum) {
-                  if ($key < $sheetNum) {
-                      $blockStr = $block[$key];
+                  if ($k < $sheetNum) {
+                      $blockStr = $block[$k];
                   } else {
-                      $blockStr = $block[($key % $sheetNum)];
+                      $blockStr = $block[($k % $sheetNum)];
                   }
                   $h = 0;
                   while ($h < $teamBySheet) {
-                      if ($h == ($teamBySheet - 1) && $key < 8 &&
-                      $key < $hajime[floor($key / $sheetNum)]) {
+                      if ($h == ($teamBySheet - 1) && $k < 8 &&
+                      $k < $hajime[floor($k / $sheetNum)]) {
                           $h++;
                           continue;
-                      } elseif ($h == ($teamBySheet - 1) && 7 < $key &&
-                      $key > (15 - $ato[floor($key / $sheetNum)])) {
+                      } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
+                      $k > (15 - $ato[floor($k / $sheetNum)])) {
                           $h++;
                           continue;
                       }
@@ -261,14 +288,16 @@ class TournamentController extends Controller
                   }
                   $i++;
               }
-            }
-
-            FlashMessageService::success('作成が完了しました');
-
-        } catch (\Exception $e) {
-            report($e);
-            FlashMessageService::error('作成が失敗しました');
-        }
+              $k++;
+          }
+            // }
+        //
+        //     FlashMessageService::success('作成が完了しました');
+        //
+        // } catch (\Exception $e) {
+        //     report($e);
+        //     FlashMessageService::error('作成が失敗しました');
+        // }
 
         return redirect()->route('tournament.index');
     }
@@ -276,6 +305,9 @@ class TournamentController extends Controller
     public function edit(Request $request)
     {
         $event = $request->session()->get('event');
+        if (!$event) {
+            return redirect()->route('event.index');
+        }
         $selectBlock = $request->block;
         if (!$selectBlock) {
             $selectBlock = 'A';
@@ -314,6 +346,9 @@ class TournamentController extends Controller
     public function progress(Request $request)
     {
         $event = $request->session()->get('event');
+        if (!$event) {
+            return redirect()->route('event.index');
+        }
         // 参加している対戦表のチェック
         $member = null;
         if (Auth::user()->role == config('user.role.member')) {
@@ -337,6 +372,7 @@ class TournamentController extends Controller
         $progress = array();
         $results = Result::where('event_id', $event)
         ->where('block', $selectBlock)
+        ->where('approval', 1)
         ->orderBy('sheet')
         ->orderBy('turn')
         ->get();
@@ -356,6 +392,9 @@ class TournamentController extends Controller
     public function maingame(Request $request)
     {
         $event_id = $request->session()->get('event');
+        if (!$event_id) {
+            return redirect()->route('event.index');
+        }
         $event = Event::find($event_id);
         // 参加している対戦表のチェック
         $member = null;
@@ -393,6 +432,9 @@ class TournamentController extends Controller
     public function teamlist(Request $request)
     {
         $event_id = $request->session()->get('event');
+        if (!$event_id) {
+            return redirect()->route('event.index');
+        }
         $event = Event::find($event_id);
         // 参加している対戦表のチェック
         $member = null;

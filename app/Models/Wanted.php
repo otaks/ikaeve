@@ -36,7 +36,7 @@ class Wanted extends BaseModel
         $db = $this->wepons;
         $array = explode(',', $db);
         foreach ($array as $value) {
-            $str .= $wepons[$value].', ';
+            $str .= '<a href="#" class="badge badge-primary">'.$wepons[$value].'</a> ';
         }
         return $str;
     }

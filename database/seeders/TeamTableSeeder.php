@@ -16,14 +16,15 @@ class TeamTableSeeder extends Seeder
     {
         DB::table('members')->delete();
         DB::table('teams')->delete();
+        DB::table('results')->delete();
         DB::table('users')->where('role', 3)->delete();
         $h = 1;
         $makeBlock = 4;
-        $i = 0;
         $cnt = 4*16;
         // 64
         $event = DB::table('events')->find(1);
         while ($h < $makeBlock) {
+            $i = 0;
             while ($i < $cnt) {
                 $jogai = array('0');
                 $teams = DB::table('teams')->get();

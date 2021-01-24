@@ -106,5 +106,9 @@ Route::group(['middleware' => ['auth']], function () {
     ->group(function() {
         Route::get('result/{block?}/{sheet?}/{turn?}/{num?}', 'GameController@result')->name('result');
         Route::post('result', 'GameController@resultStore');
+        Route::get('approval/{block?}/{sheet?}/{turn?}/{num?}/{mode?}', 'GameController@result')->name('approval');
+        Route::get('delete/{id}/{block?}/{sheet?}', 'GameController@delete')->name('delete');
+        Route::get('resultlist/{block?}', 'GameController@resultlist')->name('resultlist');
+        Route::post('resultlist/{block?}', 'GameController@resultlist')->name('resultlist');
     });
 });
