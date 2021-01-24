@@ -48,12 +48,7 @@
               <input type="hidden" name="twitter_id[]" value="{{ old('twitter_id.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_id : '') }}">
               <div class="input-group-append">
                 <span class="input-group-text">
-                  @if(old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : ''))
-                      <a id="twitterlink{{$i}}" href="https://twitter.com/{{ old('twitter.'.$i, isset($members[$i]) ? $members[$i]->user->twitter_nickname : '') }}" target="_blank">
-                      <i class="fab fa-twitter fa-lg"></i></a>
-                  @else
-                      <a id="twitterlink{{$i}}" href="#"><i class="fab fa-twitter fa-lg"></i></a>
-                  @endif
+                  <a name="twitterlink[]" href="#"><i class="fab fa-twitter fa-lg"></i></a>
                 </span>
               </div>
         </div>
