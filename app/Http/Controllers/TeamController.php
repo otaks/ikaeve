@@ -306,6 +306,7 @@ class TeamController extends Controller
                 $result->abstention = 1;
                 $result->user_id = Auth::id();
                 $result->approval = 1;
+                $result->unearned_win = 0;
                 $result->save();
             }
         }

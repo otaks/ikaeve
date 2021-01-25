@@ -6,7 +6,7 @@
                 @include('elements.flash_message')
                 <form method="POST">
                     @csrf
-                    <div class="form-group row mb-3">
+                    <div class="form-group row mb-3 ml-1">
                         @if (Auth::user()->role == config('user.role.admin'))
                           <div class="col-md-3 col-4 p-1">
                               <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">

@@ -10,7 +10,7 @@
                     <div class="form-group row offset-md-4 mt-5">
                         <div class="col-md-3 col-5 text-center">
                           @if ($data)
-                            <h6 style="color:{{ ($data->win_team_id == $left['id']) ? 'salmon' : 'gray' }}">{{ $left['number'] }}.{{ $left['name'] }}</h6>
+                            <h6 style="color:{{ ($data->win_team_id == $left['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">{{ $left['number'] }}.{{ $left['name'] }}</h6>
                             <input type="hidden" name="team[]" value="{{ $left['id'] }}">
                           @else
                             <h6 id="left_team">{{ $team1->number }}.{{ $team1->name }}</h6>
@@ -20,7 +20,7 @@
                         <div class="col-md-1 col-1 text-center"></div>
                         <div class="col-md-3 col-5 text-center">
                           @if ($data)
-                            <h6 style="color:{{ ($data->win_team_id == $right['id']) ? 'salmon' : 'gray' }}">{{ $right['number'] }}.{{ $right['name'] }}</h6>
+                            <h6 style="color:{{ ($data->win_team_id == $right['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">{{ $right['number'] }}.{{ $right['name'] }}</h6>
                             <input type="hidden" name="team[]" value="{{ $right['id'] }}">
                           @else
                             <h6 id="right_team">{{ $team2->number }}.{{ $team2->name }}</h6>
