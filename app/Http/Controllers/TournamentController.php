@@ -44,7 +44,7 @@ class TournamentController extends Controller
               }
             }
         }
-        if ($member && $request->sheet == '') {
+        if ($member && $request->block == '') {
             $selectSheet = $member->team->sheet;
             $selectBlock = $member->team->block;
         } else {
@@ -127,16 +127,23 @@ class TournamentController extends Controller
                     if ($win) {
                         if ($win->abstention == 1) {
                             $vs[$team_id][$key]['win'] = false;
+                            $vs[$team_id][$key]['score'] = '△';
                         } else {
                             $vs[$team_id][$key]['win'] = true;
+                            $vs[$team_id][$key]['score'] = '◯';
                         }
-                        $vs[$team_id][$key]['score'] = $win->win_score.'-'.$win->lose_score;
+                        //$vs[$team_id][$key]['score'] = $win->win_score.'-'.$win->lose_score;
                         $teams[$value->sheet][$value->number]['win_num'] += 3;
                         $teams[$value->sheet][$value->number]['win_total'] += $win->win_score;
                         $teams[$value->sheet][$value->number]['lose_total'] += $win->lose_score;
                     } else if($lose) {
+                        if ($lose->abstention == 1) {
+                            $vs[$team_id][$key]['score'] = '△';
+                        } else {
+                            $vs[$team_id][$key]['score'] = '×';
+                        }
                         $vs[$team_id][$key]['win'] = false;
-                        $vs[$team_id][$key]['score'] = $lose->lose_score.'-'.$lose->win_score;
+                        //$vs[$team_id][$key]['score'] = $lose->lose_score.'-'.$lose->win_score;
                         $teams[$value->sheet][$value->number]['win_num'] += $lose->lose_score;
                         $teams[$value->sheet][$value->number]['win_total'] += $lose->lose_score;
                         $teams[$value->sheet][$value->number]['lose_total'] += $lose->win_score;
@@ -209,7 +216,7 @@ class TournamentController extends Controller
 
     public function makeStore(Request $request)
     {
-        // try {
+        try {
             $event_id = $request->session()->get('event');
             if (!$event_id) {
                 return redirect()->route('event.index');
@@ -293,15 +300,15 @@ class TournamentController extends Controller
                   $i++;
               }
               $k++;
-          }
-            // }
-        //
-        //     FlashMessageService::success('作成が完了しました');
-        //
-        // } catch (\Exception $e) {
-        //     report($e);
-        //     FlashMessageService::error('作成が失敗しました');
-        // }
+          // }
+            }
+
+            FlashMessageService::success('作成が完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('作成が失敗しました');
+        }
 
         return redirect()->route('tournament.index');
     }
@@ -429,7 +436,7 @@ class TournamentController extends Controller
         }
         $gameCnt = 5;
 
-        return view('tournament.maingame',
+        return view('tournament.maingame0',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'gameCnt'));
     }
 

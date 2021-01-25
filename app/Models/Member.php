@@ -25,27 +25,6 @@ class Member extends BaseModel
         return $this->belongsTo('App\Models\User');
     }
 
-    public function chkResult($block, $sheet, $turn)
-    {
-        $result = Result::where('lose_team_id', $this->team_id)
-        ->where('block', $block)
-        ->where('sheet', $sheet)
-        ->where('turn', $turn)
-        ->first();
-        $result2 = Result::where('win_team_id', $this->team_id)
-        ->where('block', $block)
-        ->where('sheet', $sheet)
-        ->where('turn', $turn)
-        ->first();
-        if ($result) {
-            return $result;
-        } elseif ($result2) {
-            return $result2;
-        } else {
-            return null;
-        }
-    }
-
     public function isLose($block, $sheet, $turn)
     {
         $approval = 0;
