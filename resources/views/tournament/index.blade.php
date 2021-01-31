@@ -13,5 +13,4 @@
             @endif
             </div>
         </div>
-        <script src="{{ asset('/js/reload.js') }}"></script>
 @endsection

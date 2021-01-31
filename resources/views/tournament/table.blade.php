@@ -6,10 +6,17 @@
                     <div class="col-md-6 col-12">
                     <h2 id="{{ ($k + 1) }}">{{ $selectBlock }}-{{ $select->sheet }}ブロック</h2>
                     <h3 class="blue_title">現在の結果</h3>
-                    @foreach ($ranks[$select->sheet] as $k => $team)
-                      <p style="font-size:110%"><span class="badge badge-info">{{ $k+1 }}位</span> <a href="{{ route('team.detail', ['id' => $team['id']]) }}" target="_blank">{{ $team['number'] }}.{{ $team['name'] }}</a>
+                    @php
+                      $rank = 0;
+                    @endphp
+                    @foreach ($teams[$select->sheet] as $k => $team)
+                      @php
+                        $rank++;
+                      @endphp
+                      <p style="font-size:110%">@if ($team['abstention'] == 0 && $team['rank'])<span class="badge badge-info">{{ $rank }}位</span>@endif <a href="{{ route('team.detail', ['id' => $team['id']]) }}" target="_blank">{{ $team['number'] }}.{{ $team['name'] }}</a>
                         @if ($team['abstention'] == 1)<span class="badge badge-warning">棄権</span>
                         @else
+                          @if ($team['main_game'] == 1)<span class="badge badge-danger">順位確定</span>@endif
                           <br><span style="font-size:80%">（勝ち点：{{ $team['win_num'] }}、取得率：{{ $team['percent'] }}%）</span>
                         @endif
                       <br>

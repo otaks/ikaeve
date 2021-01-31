@@ -223,8 +223,10 @@ class TeamController extends Controller
                 } else {
                     $data->abstention = $value;
                     // 試合中の途中棄権の場合残りを0-2で登録
+                    // ランク外(5)で更新
                     if ($data->block != '') {
                         $this->insertResult($data);
+                        $data->pre_rank = 5;
                     }
                 }
                 $data->save();
