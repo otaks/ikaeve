@@ -21,7 +21,7 @@
                   <tr class="table-info">
                     @foreach (config('game.pre') as $val)
                       @foreach ($val as $conf)
-                        <th class="text-center p-1">{{ $conf[0] }}-{{ $conf[1] }}</th>
+                        <th class="text-center p-1">{{ $conf[0] }}vs{{ $conf[1] }}</th>
                       @endforeach
                     @endforeach
                   </tr>

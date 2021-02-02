@@ -29,7 +29,7 @@
                     <tr class="{{($team->sheet % 2 == 0) ? 'table-info':'' }}">
                         <td class="text-center p-2">{{ $team->sheet }}</td>
                         <td class="text-center p-2">{{ $team->number }}</td>
-                        <td class="text-center p-2"></td>
+                        <td class="text-center p-2">@if ($team->main_game == 1)<span class="badge badge-info">{{ $team->pre_rank }}</span>@endif</td>
                         <td class="p-2">
                           <a href="{{ route('team.detail', ['id' => $team['id']]) }}" target="_blank">{{ $team->name }}</a>
                           @if ($team->abstention == 1)<span class="badge badge-warning">棄権</span>@endif

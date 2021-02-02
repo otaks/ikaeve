@@ -6,7 +6,7 @@
                 @include('elements.flash_message')
                 <form method="POST">
                     @csrf
-                    <div class="form-group row mb-3">
+                    <div class="form-group row mb-3 ml-1">
                         @if (Auth::user()->role == config('user.role.admin'))
                           <div class="col-md-3 col-4 p-1">
                               <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">
@@ -93,7 +93,7 @@
                                         @if($data->abstention == 0)
                                             <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger" style="width:70px;">棄権</a>
                                         @else
-                                            <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 0]) }}" class="btn btn-success" style="width:70px;">取消</a>
+                                            <!-- <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 0]) }}" class="btn btn-success" style="width:70px;">取消</a> -->
                                         @endif
                                       </td>
                                       <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>

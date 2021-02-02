@@ -12,13 +12,15 @@
       <a class="nav-link @if($selectSheet == 'teamlist') active @endif"
         href="{{ route('tournament.teamlist', ['block' => $selectBlock]) }}">チーム一覧</a>
     </li>
+    <!--
     <li class="nav-item">
       <a class="nav-link @if($selectSheet == 'maingame') active @endif"
         href="{{ route('tournament.maingame', ['block' => $selectBlock]) }}">本戦</a>
     </li>
+    -->
     <li class="nav-item">
       <a class="nav-link @if($selectSheet == 'progress') active @endif"
-        href="{{ route('tournament.progress', ['block' => $selectBlock]) }}">進捗</a>
+        href="{{ route('tournament.progress', ['block' => $selectBlock]) }}">進行表</a>
     </li>
     <li class="nav-item">
       <a class="nav-link @if($selectSheet == 'all') active @endif"

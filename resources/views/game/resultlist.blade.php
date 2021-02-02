@@ -12,8 +12,8 @@
             @include('elements.flash_message')
             <form method="POST">
                 @csrf
-                <div class="form-group row mb-3 p-1">
-                    <div class="col-md-1 col-3">
+                <div class="form-group row ml-1">
+                    <div class="col-md-1 col-3 p-1">
                         <select class="form-control" name="searchBlock">
                             <option value="">A~</option>
                             @foreach ($blocks as $block)
@@ -21,7 +21,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1 col-3">
+                    <div class="col-md-1 col-3 p-1">
                         <select class="form-control" name="searchSheet">
                             <option value="">1~</option>
                             @foreach ($sheets as $sheet)
@@ -29,7 +29,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1 col-3">
+                    <div class="col-md-1 col-3 p-1">
                         <select class="form-control" name="approval">
                             <option value="">承認</option>
                             <option value="0" @if(isset($search) && $search['approval'] == '0') selected @endif>未</option>
@@ -52,6 +52,7 @@
                             <th>負けチーム/点</th>
                             <th>ブロック</th>
                             <th>承認</th>
+                            <th>不戦勝</th>
                             <th>報告日時</th>
                         </tr>
                         </thead>
@@ -59,7 +60,7 @@
                           @foreach ($datas as $data)
                             <tr>
                                 <td>{{ $data->id }}</td>
-                                <td>{{ $data->turn }}</td>
+                                <td class="text-center">{{ $data->turn }}</td>
                                 <td>{{ $data->winteam->number }}.{{ $data->winteam->name }}
                                   <span class="badge badge-primary">{{ $data->win_score }}</span>
                                 </td>
@@ -68,6 +69,7 @@
                                 </td>
                                 <td>{{ $data->block }}-{{ $data->sheet }}</td>
                                 <td class="text-center">{{ ($data->approval == 1) ? '済' : '未' }}</td>
+                                <td class="text-center">{{ ($data->unearned_win == 1) ? '◯' : '' }}</td>
                                 <td>{{ $data->updated_at }}</td>
                             </tr>
                           @endforeach

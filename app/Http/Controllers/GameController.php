@@ -196,6 +196,10 @@ class GameController extends Controller
                     $data->unearned_win = $request->unearned_win;
                 }
                 $data->save();
+                // 承認された時点でランク更新
+                if ($request->mode == 'app' || Auth::user()->role != config('user.role.member')) {
+                    $this->updatePreRank($event, $request->block, $request->sheet);
+                }
 
             });
 
@@ -215,6 +219,7 @@ class GameController extends Controller
             \DB::transaction(function() use($request) {
 
                 $data = Result::find($request->id);
+                $this->updatePreRank($data->event_id, $data->block, $data->sheet);
                 $data->delete();
             });
 
@@ -260,6 +265,193 @@ class GameController extends Controller
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
         return view('game.resultlist', compact('selectBlock', 'selectSheet', 'datas', 'search', 'blocks', 'sheets'));
+    }
+
+    private function updatePreRank($event, $selectBlock, $selectSheet) {
+        $results = Team::where('event_id', $event)
+        ->where('block', $selectBlock)
+        ->where('sheet', $selectSheet)
+        ->where('approval', 1)
+        ->orderBy('number')
+        ->get();
+
+        $teams = array();
+        foreach ($results as $key => $value) {
+            $teams[$value->number]['id'] = $value->id;
+            $teams[$value->number]['number'] = $value->number;
+            $teams[$value->number]['name'] = $value->name;
+            $teams[$value->number]['abstention'] = $value->abstention;
+            $teams[$value->number]['win_num'] = 0;
+            $teams[$value->number]['win_total'] = 0;
+            $teams[$value->number]['lose_total'] = 0;
+            $teams[$value->number]['created_at'] = $value->created_at;
+
+            $team_id = $value->id;
+            $blockTeam = Team::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->where('sheet', $value->sheet)
+            ->where('id', '<>', $team_id)
+            ->orderBy('number')
+            ->get();
+            foreach ($blockTeam as $key => $v) {
+                $win = Result::where('win_team_id', $team_id)
+                ->where('event_id', $event)
+                ->where('lose_team_id', $v->id)
+                ->where('approval', 1)
+                ->first();
+                $lose = Result::where('lose_team_id', $team_id)
+                ->where('event_id', $event)
+                ->where('win_team_id', $v->id)
+                ->where('approval', 1)
+                ->first();
+                if ($win || $lose) {
+                    if ($win) {
+                        $teams[$value->number]['win_num'] += 3;
+                        $teams[$value->number]['win_total'] += $win->win_score;
+                        $teams[$value->number]['lose_total'] += $win->lose_score;
+                    } else if($lose) {
+                        $teams[$value->number]['win_num'] += $lose->lose_score;
+                        $teams[$value->number]['win_total'] += $lose->lose_score;
+                        $teams[$value->number]['lose_total'] += $lose->win_score;
+                    }
+                }
+            }
+            $winScore = $teams[$value->number]['win_total'];
+            $loseScore = $teams[$value->number]['lose_total'];
+            if ($winScore == 0) {
+                $teams[$value->number]['percent'] = 0;
+            } else {
+                $teams[$value->number]['percent'] = round($winScore / ($winScore + $loseScore) * 100, 1);
+            }
+        }
+
+        $ranks = $teams;
+        $abstentions = array();
+        // 並び替え・一位確定未実装
+        // 棄権チームはランク外
+        foreach ($ranks as $key => $value) {
+            if ($value['abstention'] == 1) {
+                $abstentions[] = $ranks[$key];
+                unset($ranks[$key]);
+            }
+        }
+        // 勝点・取得率で並び替え
+        $score_keys = array_column($ranks, 'win_num');
+        $percent_keys = array_column($ranks, 'percent');
+        array_multisort(
+            $score_keys, SORT_DESC, SORT_NUMERIC,
+            $percent_keys, SORT_DESC, SORT_NUMERIC,
+            $ranks
+         );
+        $ranks = $this->chkWinTeam($ranks);
+        $ranks = $this->chkThreeSided($ranks);
+        foreach ($abstentions as $key => $value) {
+          array_push($ranks, $value);
+        }
+        foreach ($ranks as $key => $value) {
+            $team = Team::find($value['id']);
+            $team->pre_rank = ($key+1);
+            $team->update();
+        }
+        $this->chkAllResultAndRankDecision($event, $selectBlock, $selectSheet);
+    }
+
+    private function chkThreeSided($ary)
+    {
+        $return = $ary;
+        foreach ($ary as $key => $value) {
+            if (2 < (count($return) - $key)) {
+                if ($ary[$key]['percent'] == $ary[($key+1)]['percent'] &&
+                    $ary[$key]['win_num'] == $ary[($key+1)]['win_num'] &&
+                    $ary[$key]['percent'] == $ary[($key+2)]['percent'] &&
+                    $ary[$key]['win_num'] == $ary[($key+2)]['win_num']) {
+                    $result = Team::whereIn('id', [$ary[$key]['id'], $ary[($key+1)]['id'], $ary[($key+2)]['id']])
+                    ->orderBy('created_at', 'ASC')
+                    ->get();
+                    // print_r($result);
+                    foreach ($result as $k => $val) {
+                        if ($val->id == $ary[$key]['id']) {
+                            $return[$k] = $ary[$key];
+                        } elseif ($val->id == $ary[($key+1)]['id']) {
+                            $return[$k] = $ary[($key+1)];
+                        } elseif ($val->id == $ary[($key+2)]['id']) {
+                            $return[$k] = $ary[($key+2)];
+                        }
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
+    private function chkWinTeam($ary)
+    {
+        $return = $ary;
+        foreach ($ary as $key => $value) {
+            if (isset($ary[($key+2)])) {
+                if (!($ary[$key]['percent'] == $ary[($key+1)]['percent'] &&
+                      $ary[$key]['win_num'] == $ary[($key+1)]['win_num'] &&
+                      $ary[$key]['percent'] == $ary[($key+2)]['percent'] &&
+                      $ary[$key]['win_num'] == $ary[($key+2)]['win_num'] &&
+                      isset($ary[($key+2)]))) {
+                    if ($ary[$key]['percent'] == $ary[($key+1)]['percent'] &&
+                        $ary[$key]['win_num'] == $ary[($key+1)]['win_num']) {
+                        $result =Result::where('win_team_id', $ary[($key+1)]['id'])
+                        ->where('lose_team_id', $ary[$key]['id'])
+                        ->first();
+                        if ($result) {
+                            $return[$key] = $ary[($key+1)];
+                            $return[($key+1)] = $ary[$key];
+                        } elseif ($ary[($key+1)]['created_at'] < $ary[$key]['created_at']) {
+                            $return[$key] = $ary[($key+1)];
+                            $return[($key+1)] = $ary[$key];
+                        }
+                    }
+                }
+            } else if (isset($ary[($key+1)])) {
+                if ($ary[$key]['percent'] == $ary[($key+1)]['percent'] &&
+                    $ary[$key]['win_num'] == $ary[($key+1)]['win_num']) {
+                    $result =Result::where('win_team_id', $ary[($key+1)]['id'])
+                    ->where('lose_team_id', $ary[$key]['id'])
+                    ->first();
+                    if ($result) {
+                        $return[$key] = $ary[($key+1)];
+                        $return[($key+1)] = $ary[$key];
+                    } elseif ($ary[($key+1)]['created_at'] < $ary[$key]['created_at']) {
+                        $return[$key] = $ary[($key+1)];
+                        $return[($key+1)] = $ary[$key];
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
+    private function chkAllResultAndRankDecision($event_id, $block, $sheet)
+    {
+        $event = Event::find($event_id);
+        $cnt = Result::where('event_id', $event_id)
+        ->where('block', $block)
+        ->where('sheet', $sheet)
+        ->where('approval', 1)
+        ->count();
+
+        if ($cnt == 6) {
+            $teams = Team::where('event_id', $event_id)
+            ->where('block', $block)
+            ->where('sheet', $sheet)
+            ->where('abstention', 0)
+            ->orderBy('pre_rank')
+            ->get();
+            foreach ($teams as $key => $value) {
+                if ($event->passing_order < $key + 1) {
+                   break;
+                }
+                $team = Team::find($value->id);
+                $team->main_game = 1;
+                $team->update();
+            }
+        }
     }
 
 }
