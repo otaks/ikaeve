@@ -121,6 +121,7 @@
                                             <a href="{{ route('game.approval', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k, 'mode' => 'app']) }}" class="btn btn-primary btn-sm">承認</a>
                                           @elseif ($result->approval == 0)
                                             <a href="#" class="btn btn-outline-info btn-sm">承認待</a>
+                                            <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-success btn-sm">修正</a>
                                           @else
                                             <span class="badge badge-info">確定</span>
                                           @endif

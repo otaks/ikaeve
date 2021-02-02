@@ -25,6 +25,11 @@ class Result extends BaseModel
         return $this->belongsTo('App\Models\Team', 'lose_team_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
     public static function chkResult($block, $sheet, $turn, $team_id=null)
     {
         if (!$team_id) {

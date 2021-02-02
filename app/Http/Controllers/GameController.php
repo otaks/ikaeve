@@ -156,6 +156,7 @@ class GameController extends Controller
         try {
             \DB::transaction(function() use($request, $str) {
 
+                $event = $request->session()->get('event');
                 if ($request->mode == 'app') {
                   $id = $request->id;
                   $data = Result::find($id);
@@ -174,7 +175,6 @@ class GameController extends Controller
                         $lose_score = $scores[1];
                     }
 
-                    $event = $request->session()->get('event');
                     $id = $request->id;
                     $data = Result::find($id);
                     if (!$data) {
@@ -327,7 +327,6 @@ class GameController extends Controller
 
         $ranks = $teams;
         $abstentions = array();
-        // 並び替え・一位確定未実装
         // 棄権チームはランク外
         foreach ($ranks as $key => $value) {
             if ($value['abstention'] == 1) {
@@ -348,12 +347,14 @@ class GameController extends Controller
         foreach ($abstentions as $key => $value) {
           array_push($ranks, $value);
         }
-        foreach ($ranks as $key => $value) {
+        $rank = 1;
+        foreach ($ranks as $value) {
             $team = Team::find($value['id']);
-            $team->pre_rank = ($key+1);
+            $team->pre_rank = $rank;
             $team->update();
+            $rank++;
         }
-        $this->chkAllResultAndRankDecision($event, $selectBlock, $selectSheet);
+        $this->chkAllResultAndRankDecision($event, $selectBlock, $selectSheet, $ranks);
     }
 
     private function chkThreeSided($ary)
@@ -371,11 +372,11 @@ class GameController extends Controller
                     // print_r($result);
                     foreach ($result as $k => $val) {
                         if ($val->id == $ary[$key]['id']) {
-                            $return[$k] = $ary[$key];
+                            $return[$key+$k] = $ary[$key];
                         } elseif ($val->id == $ary[($key+1)]['id']) {
-                            $return[$k] = $ary[($key+1)];
+                            $return[$key+$k] = $ary[($key+1)];
                         } elseif ($val->id == $ary[($key+2)]['id']) {
-                            $return[$k] = $ary[($key+2)];
+                            $return[$key+$k] = $ary[($key+2)];
                         }
                     }
                 }
@@ -427,7 +428,7 @@ class GameController extends Controller
         return $return;
     }
 
-    private function chkAllResultAndRankDecision($event_id, $block, $sheet)
+    private function chkAllResultAndRankDecision($event_id, $block, $sheet, $ranks)
     {
         $event = Event::find($event_id);
         $cnt = Result::where('event_id', $event_id)
@@ -436,7 +437,9 @@ class GameController extends Controller
         ->where('approval', 1)
         ->count();
 
-        if ($cnt == 6) {
+        $allCnt = count($ranks) * (count($ranks) - 1) / 2;
+
+        if ($cnt == $allCnt) {
             $teams = Team::where('event_id', $event_id)
             ->where('block', $block)
             ->where('sheet', $sheet)
@@ -444,11 +447,12 @@ class GameController extends Controller
             ->orderBy('pre_rank')
             ->get();
             foreach ($teams as $key => $value) {
-                if ($event->passing_order < $key + 1) {
-                   break;
-                }
                 $team = Team::find($value->id);
-                $team->main_game = 1;
+                if ($event->passing_order < $key + 1) {
+                    $team->main_game = 0;
+                } else {
+                    $team->main_game = 1;
+                }
                 $team->update();
             }
         }

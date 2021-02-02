@@ -53,6 +53,7 @@
                             <th>ブロック</th>
                             <th>承認</th>
                             <th>不戦勝</th>
+                            <th>申請者</th>
                             <th>報告日時</th>
                         </tr>
                         </thead>
@@ -70,6 +71,7 @@
                                 <td>{{ $data->block }}-{{ $data->sheet }}</td>
                                 <td class="text-center">{{ ($data->approval == 1) ? '済' : '未' }}</td>
                                 <td class="text-center">{{ ($data->unearned_win == 1) ? '◯' : '' }}</td>
+                                <td class="text-center">{{ $data->user->name ?? '' }}</td>
                                 <td>{{ $data->updated_at }}</td>
                             </tr>
                           @endforeach
