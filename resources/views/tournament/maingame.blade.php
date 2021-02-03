@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tournament</title>
   <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
-  <meta name="description" content="A tournament or bracket diagram, with automatic promotion as results are entered interactively." />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Fonts -->
   <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -14,8 +14,20 @@
 
   <!-- Styles -->
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/multi-select.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet">
+
+  <script src="{{ asset('js/app.js') }}" defer></script>
+  <script src="{{ asset('js/all.js') }}" defer></script>
+  <script src="{{ asset('js/menu.js') }}" defer></script>
   <script src="{{ asset('js/go.js') }}" defer></script>
+
+  <!-- datetimepicker -->
+  <link href="{{ asset('css/jquery.datetimepicker.css') }}" rel="stylesheet">
+  <script src="{{ asset('js/jquery.js') }}" defer></script>
+  <script src="{{ asset('js/jquery.datetimepicker.full.js') }}" defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="{{ asset('js/jquery.multi-select.js') }}" defer></script>
   <script id="code">
     function init() {
       //if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
@@ -38,6 +50,7 @@
         if (chk == false) {
             alert('スコアは0~{{ $event->main_score }}を入力してください');
         }
+
 
         return chk;
       }
@@ -189,24 +202,32 @@
   </script>
 </head>
 <body onload="init()">
-  @if (!Route::is('login') && !Route::is('register') && !Route::is('home') &&
-  !Route::is('password.*') && Route::currentRouteName() != '')
-    <main>
-      <h5>{{ session('eventName') ?? '' }} 本戦</h5>
-    </main>
-  @endif
-  <div class="card-body">
-    <div class="container-fluid">
-      @if ($isMobile)
-        @include('tournament/nav_sp')
-      @else
-        @include('tournament/nav')
-      @endif
-      <div id="sample" class="mt-2">
-        <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
-             Also add a border to help see the edges. -->
-        <div id="myDiagramDiv" style="border: solid 0px black; background: #ffffff; width:1000px; height:800px;"></div>
-      </div>
+  <div id="app">
+    <div id="navArea">
+      <main>
+        <h5>{{ session('eventName') ?? '' }} 本戦</h5>
+      </main>
+    </div>
+    <div class="card-body @if ($isMobile) grid-area @endif">
+      <div class="container-fluid @if ($isMobile) top-area @endif">
+        @if ($isMobile)
+          @include('tournament/nav_sp')
+        @else
+          @include('tournament/nav')
+        @endif
+        </div>
+        <!--
+        <div id="sample">
+        -->
+        @if ($isMobile)
+          <div id="myDiagramDiv" class="bottom-area" style="border: solid 0px black; background: #ffffff; width:100%; height:100%;"></div>
+        @else
+          <div id="myDiagramDiv" style="border: solid 0px black; background: #ffffff; width:1000px; height:700px;"></div>
+        @endif
+        <!--
+        </div>
+      -->
+        <input type="hidden" id="url" value="{{ config('user.url') }}">
     </div>
   </div>
 </body>

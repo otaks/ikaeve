@@ -1,3 +1,20 @@
+.grid-area {
+  display: grid;
+  height: 100vh;                /* grid全体の高さを設定 */
+  grid-template-rows: 8% 90%;  /* gridの割合が8:2になるよう2行用意 */
+  grid-template-columns: 100%;  /* 横幅いっぱいに1列用意 */
+}
+
+.top-area {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.bottom-area {
+  grid-row: 2;
+  grid-column: 1;
+}
+
 .tournament {
   background-color: rgb(218, 227, 243);
   padding: 1rem;
