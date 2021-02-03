@@ -16,14 +16,14 @@ class CreateMainGameTable extends Migration
         Schema::create('main_games', function (Blueprint $table) {
             $table->increments('id');
             $table->string('block', 1)->comment('A~P?ブロック')->nullable();
-            $table->unsignedInteger('turn')->comment('上から何番目か')->nullable();
-            $table->unsignedInteger('sheet')->comment('シート')->nullable();
-            $table->unsignedInteger('order')->comment('通過順位(1~2)')->nullable();
-            $table->unsignedInteger('team_id')->comment('チームID')->nullable();
-            $table->boolean('result')->comment('勝ち負け(0:負け/1:勝ち)')->default(0);
+            $table->unsignedInteger('turn')->comment('何試合目')->nullable();
+            $table->unsignedInteger('win_team_id')->comment('勝利チームID')->nullable();
+            $table->unsignedInteger('lose_team_id')->comment('敗北チームID')->nullable();
+            $table->tinyInteger('win_score')->comment('勝利点')->nullable();
+            $table->tinyInteger('lose_score')->comment('敗北点')->nullable();
+            $table->unsignedInteger('user_id')->comment('更新者')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
         });
     }
 

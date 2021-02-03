@@ -504,24 +504,36 @@ class TournamentController extends Controller
             $selectBlock = $request->block;
         }
         if (!$selectBlock) {
-            $selectBlock = 1;
+            $selectBlock = 'A';
         }
         $selectSheet = 'maingame';
 
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
 
-        // 本戦トーナメント構成
         $teams = array();
-        $result = MainGame::orderBy('turn')->get();
-        foreach ($result as $key => $value) {
-            $teams[$value->turn]['sheet'] = $value->sheet;
-            $teams[$value->turn]['order'] = $value->order;
+        foreach (config('game.main') as $key => $value) {
+            foreach ($value as $v) {
+                foreach ($v as $k => $val) {
+                    $team = Team::where('event_id', $event->id)
+                    ->where('block', $selectBlock)
+                    ->where('sheet', $k)
+                    ->where('pre_rank', $val)
+                    ->where('main_game', 1)
+                    ->first();
+                    if ($team) {
+                        // $result[$k]['name'] = $team->name;
+                        $teams[] = $team->name;
+                    } else {
+                        // $result[$k]['name'] = $k.'-'.$val.'位通過';
+                        $teams[] = $k.'-'.$val.'位通過';
+                    }
+                }
+            }
         }
-        $gameCnt = 5;
 
         return view('tournament.maingame',
-        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'gameCnt'));
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event'));
     }
 
     public function teamlist(Request $request)
