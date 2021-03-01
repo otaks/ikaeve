@@ -44,6 +44,24 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{id}', 'EventController@editStore')->where('id', '[0-9]+');
     });
 
+    // staff
+    Route::prefix('staff')->name('staff.')
+    ->group(function() {
+        Route::get('index', 'StaffController@index')->name('index');
+        Route::post('index', 'StaffController@index');
+        Route::get('regist', 'StaffController@regist')->name('regist');
+        Route::post('regist', 'StaffController@registStore');
+        Route::get('edit/{id}', 'StaffController@edit')->name('edit')->where('id', '[0-9]+');
+        Route::post('edit/{id}', 'StaffController@editStore')->where('id', '[0-9]+');
+    });
+
+    // 自分のパスワード変更
+    Route::prefix('user')->name('user.')
+    ->group(function() {
+        Route::get('password', 'UserController@password')->name('password');
+        Route::post('password', 'UserController@passwordStore');
+    });
+
     // 入力項目
     Route::prefix('question')->name('question.')
     ->group(function() {
@@ -96,6 +114,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('make', 'TournamentController@make')->name('make');
         Route::post('make', 'TournamentController@makeStore');
         Route::get('edit/{block?}', 'TournamentController@edit')->name('edit');
+        Route::post('edit/{block?}', 'TournamentController@editStore');
         Route::get('progress/{block?}', 'TournamentController@progress')->name('progress');
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
         Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
@@ -110,5 +129,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('delete/{id}/{block?}/{sheet?}', 'GameController@delete')->name('delete');
         Route::get('resultlist/{block?}', 'GameController@resultlist')->name('resultlist');
         Route::post('resultlist/{block?}', 'GameController@resultlist')->name('resultlist');
+        Route::get('result_detail/{id}', 'GameController@resultdetail')->name('resultDetail');
+        Route::get('main_result', 'GameController@mainResult')->name('mainResult');
+        Route::post('main_result', 'GameController@mainResultStore');
+        Route::get('main_resultlist/{block?}', 'GameController@mainResultlist')->name('mainResultlist');
+        Route::post('main_resultlist/{block?}', 'GameController@mainResultlist')->name('mainResultlist');
+        Route::get('main_result/{win_team?}/{lose_team?}/{win_score?}/{lose_score?}', 'Api\GameController@result')->name('main_result');
     });
 });

@@ -109,36 +109,39 @@
                                     </td>
                                   @else
                                       <td class="p-1 align-middle text-center">
-                                      @if(($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
-                                      ($member->team_id == $teams[$select->sheet][$conf[1]]['id']))
-                                        @php
-                                          $result = \App\Models\Result::chkResult($selectBlock, $select->sheet, $key, $teams[$select->sheet][$conf[0]]['id']);
-                                        @endphp
-                                        @if (!$result)
-                                          <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-success btn-sm">報告</a>
-                                        @else
-                                          @if ($result->lose_team_id == $member->team_id && $result->approval == 0)
-                                            <a href="{{ route('game.approval', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k, 'mode' => 'app']) }}" class="btn btn-primary btn-sm">承認</a>
-                                          @elseif ($result->approval == 0)
-                                            <a href="#" class="btn btn-outline-info btn-sm">承認待</a>
+                                      @if($member)
+                                          @if(($member->team_id == $teams[$select->sheet][$conf[0]]['id']) ||
+                                          ($member->team_id == $teams[$select->sheet][$conf[1]]['id']))
+                                            @php
+                                              $result = \App\Models\Result::chkResult($selectBlock, $select->sheet, $key, $teams[$select->sheet][$conf[0]]['id']);
+                                            @endphp
+                                            @if (!$result)
+                                              <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-success btn-sm">報告</a>
+                                            @else
+                                              @if ($result->lose_team_id == $member->team_id && $result->approval == 0)
+                                                <a href="{{ route('game.approval', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k, 'mode' => 'app']) }}" class="btn btn-primary btn-sm">承認</a>
+                                              @elseif ($result->approval == 0)
+                                                <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-outline-info btn-sm">編集</a>
+                                                <br><span class="badge badge-success">承認待</span>
+                                              @else
+                                                <span class="badge badge-info">確定</span>
+                                              @endif
+                                            @endif
                                           @else
-                                            <span class="badge badge-info">確定</span>
+                                            @php
+                                              $result = \App\Models\Result::chkResult($selectBlock, $select->sheet, $key, $teams[$select->sheet][$conf[0]]['id']);
+                                            @endphp
+                                              @if (!$result)
+                                                <span class="badge badge-secondary">未報告</span>
+                                              @else
+                                                @if ($result->approval == 0)
+                                                  <span class="badge badge-warning">未承認</span>
+                                                @else
+                                                  <span class="badge badge-info">確定</span>
+                                                @endif
+                                            @endif
                                           @endif
                                         @endif
-                                      @else
-                                        @php
-                                          $result = \App\Models\Result::chkResult($selectBlock, $select->sheet, $key, $teams[$select->sheet][$conf[0]]['id']);
-                                        @endphp
-                                          @if (!$result)
-                                            <span class="badge badge-secondary">未報告</span>
-                                          @else
-                                            @if ($result->approval == 0)
-                                              <span class="badge badge-warning">未承認</span>
-                                            @else
-                                              <span class="badge badge-info">確定</span>
-                                            @endif
-                                        @endif
-                                      @endif
                                       </td>
                                   @endif
                                 </tr>

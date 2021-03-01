@@ -86,4 +86,13 @@ class Team extends BaseModel
         ->orderBy('sheet')
         ->get();
     }
+
+    public static function getGameCnt($id, $block, $sheet)
+    {
+        $teamCnt = Team::where('event_id', $id)
+        ->where('block', $block)
+        ->where('sheet', $sheet)
+        ->count();
+        return $teamCnt * ($teamCnt - 1) / 2;
+    }
 }

@@ -51,8 +51,6 @@ class TournamentController extends Controller
         //     }
         // }
 
-
-
         $member = null;
 
         // 参加している対戦表のチェック
@@ -79,6 +77,9 @@ class TournamentController extends Controller
         }
         if (!$selectBlock) {
             $selectBlock = 'A';
+        }
+        if (!$selectSheet) {
+            $selectSheet = 'all';
         }
 
         $blocks = Team::getBlocks($event);
@@ -208,7 +209,6 @@ class TournamentController extends Controller
                         $scores[$value->block][$value->sheet][$value->turn][$num][$value->lose_team_id]['score'] = $value->lose_score;
                     }
                 }
-
             }
         }
         return view('tournament.index',
@@ -438,6 +438,45 @@ class TournamentController extends Controller
         compact('blocks', 'selectBlock', 'teams', 'sheets'));
     }
 
+    public function editStore(Request $request)
+    {
+        $event = $request->session()->get('event');
+        if (!$event) {
+            return redirect()->route('event.index');
+        }
+        try {
+            \DB::transaction(function() use($request, $event) {
+
+                $block = $request->block;
+                $changeBlock = $request->changeBlock;
+                $maxSheet = Team::where('event_id', $event)
+                ->where('block', $changeBlock)
+                ->max('sheet');
+                $sheets = $request->sheet;
+                foreach ($sheets as $value) {
+                    $maxSheet++;
+                    $teams = Team::where('event_id', $event)
+                    ->where('block', $block)
+                    ->where('sheet', $value)
+                    ->get();
+                    foreach ($teams as $v) {
+                        $team = Team::find($v->id);
+                        $team->block = $changeBlock;
+                        $team->sheet = $maxSheet;
+                        $team->save();
+                    }
+                }
+                FlashMessageService::success('移動が完了しました');
+            });
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('移動が失敗しました');
+        }
+
+        return redirect()->route('tournament.edit', ['block' => $request->block]);
+    }
+
     public function progress(Request $request)
     {
         $event = $request->session()->get('event');
@@ -472,7 +511,7 @@ class TournamentController extends Controller
         ->orderBy('turn')
         ->get();
         foreach ($results as $key => $v) {
-            if ($v->winteam->number == 1 || $v->loseteam->number == 1) {
+            if ($v->winteam->number == 1 || (isset($v->loseteam) && $v->loseteam->number == 1)) {
                 $num = 0;
             } else {
                 $num = 1;
@@ -498,30 +537,162 @@ class TournamentController extends Controller
             ->where('event_id', $event->id)
             ->where('user_id', Auth::id())->first();
         }
-        if ($member) {
+        if ($member && !$request->block) {
             $selectBlock = $member->team->block;
         } else {
             $selectBlock = $request->block;
         }
         if (!$selectBlock) {
-            $selectBlock = 1;
+            $selectBlock = 'A';
         }
         $selectSheet = 'maingame';
 
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
 
-        // 本戦トーナメント構成
         $teams = array();
-        $result = MainGame::orderBy('turn')->get();
-        foreach ($result as $key => $value) {
-            $teams[$value->turn]['sheet'] = $value->sheet;
-            $teams[$value->turn]['order'] = $value->order;
+        $cnt = 0;
+        $config = config('game.main'.$event->passing_order);
+        $tmpKey = null;
+        foreach ($config as $key => $value) {
+            foreach ($value as $v) {
+                foreach ($v as $k => $val) {
+                    $chkBlock = Team::where('event_id', $event->id)
+                    ->where('block', $selectBlock)
+                    ->where('sheet', $k)
+                    ->count();
+                    $team = Team::where('event_id', $event->id)
+                    ->where('block', $selectBlock)
+                    ->where('sheet', $k)
+                    ->where('pre_rank', $val)
+                    ->where('main_game', 1)
+                    ->first();
+                    if ($chkBlock == 0) {
+                        if (isset($teams[$cnt-1]) && $teams[$cnt-1]['name'] == 'なし' && $tmpKey == $key) {
+                            unset($teams[$cnt-1]);
+                            $cnt--;
+                            continue;
+                        } else {
+                            $teams[$cnt]['name'] = 'なし';
+                            $teams[$cnt]['id'] = null;
+                            $teams[$cnt]['fcode'] = null;
+                            $tmpKey = $key;
+                        }
+                    } elseif ($team) {
+                        $teams[$cnt]['name'] = $team->name;
+                        if ($team->abstention == 1) {
+                            $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
+                        }
+                        $teams[$cnt]['id'] = $team->id;
+                        $teams[$cnt]['fcode'] = $team->friend_code;
+                    } else {
+                        $teams[$cnt]['name'] = $k.'-'.$val.'位通過';
+                        $teams[$cnt]['id'] = null;
+                        $teams[$cnt]['fcode'] = null;
+                    }
+                    $cnt++;
+                }
+            }
         }
-        $gameCnt = 5;
 
+        $teamNum = 16 * $event->passing_order;
+        $scores = array();
+        foreach ($teams as $key => $value) {
+            $result = null;
+            $query = Result::query()->where('event_id', $event->id)
+            ->where('level', 1);
+            if ($value['id']) {
+                $result = $query->where(function($query) use($value){
+                    $query->where('win_team_id', '=', $value['id'])
+                          ->orWhere('lose_team_id', '=', $value['id']);
+                })->orderBy('turn', 'ASC')->get();
+            }
+            // $num = ($value['id']) ? $this->getTeamOrder($value['id'], $config) : 0;
+            if (!$result) {
+                if ($value['name'] == 'なし') {
+                    if ($key%2 == 0) {
+                        $scores[floor($key/2)][0] = '0';
+                        $scores[floor($key/2)][1] = '3';
+                    } else {
+                        $scores[floor($key/2)][0] = '3';
+                        $scores[floor($key/2)][1] = '0';
+                    }
+                }
+            } else {
+                foreach ($result as $k => $v) {
+                  if ($v->turn == 1) {
+                      $i = floor($key/2);
+                  } else {
+                      $h = 1;
+                      $s = 1;
+                      $all = 0;
+                      $tmpNum = $teamNum;
+                      while($h < $v->turn) {
+                          $s += $s * 2;
+                          $tmpNum = $tmpNum / 2;
+                          $all += $tmpNum;
+                          $h++;
+                      }
+
+                      $s = ($v->turn - 1) * 4;
+                      $i = $all + floor($key/$s);
+                  }
+                  if ($v->win_team_id == $value['id']) {
+                      $scores[$i][] = $v->win_score;
+                  } elseif ($v->lose_team_id == $value['id']) {
+                      $scores[$i][] = $v->lose_score;
+                  }
+                }
+            }
+        }
+        // $cnt = 0;
+        // foreach ($scores as $key => $value) {
+        //     if(empty($scores[$key+1])) {
+        //         $scores[$key+1][0] = '';
+        //         $scores[$key+1][1] = '';
+        //     }
+        // }
+        ksort($scores);
+        // echo $this->get_last_key($scores);
+        // exit;
+        $i = 0;
+        while ($i < $this->get_last_key($scores)) {
+            if(empty($scores[$i])) {
+                $scores[$i][0] = '';
+                $scores[$i][1] = '';
+            }
+            $i++;
+        }
+        ksort($scores);
+        // print_r($scores);
+        // exit;
         return view('tournament.maingame',
-        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'gameCnt'));
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores'));
+    }
+
+    private function get_last_key($array)
+    {
+        $keys = array_keys($array);
+        return ($keys[count($array)-1]) ?? $keys;
+    }
+
+    public static function getTeamOrder($team_id, $config)
+    {
+        $team = Team::find($team_id);
+        $num = 1;
+        foreach ($config as $key => $tmp) {
+            $cnt = 0;
+            foreach ($tmp as $v) {
+                foreach ($v as $k => $a) {
+                    if ($team->sheet == $k && $team->pre_rank == $a) {
+                        $num += $cnt;
+                        break;
+                    }
+                }
+                $cnt++;
+            }
+        }
+        return $num;
     }
 
     public function teamlist(Request $request)

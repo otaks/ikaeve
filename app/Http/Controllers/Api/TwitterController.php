@@ -43,4 +43,38 @@ class TwitterController extends Controller
         return response()->json($result);
     }
 
+    public function getBot() {
+        $connection = new TwitterOAuth(
+            config('twitter.consumer_key'),
+            config('twitter.consumer_secret')
+        );
+        $timeline = $connection->get("statuses/user_timeline", [
+            "count" => 1,
+            "tweet_mode" => "extended",
+            'screen_name' => 'splatoon2_mini'
+          ]);
+          
+        if(isset($timeline->errors)) {
+
+        } else {
+          $webhookurl = "https://discord.com/api/webhooks/809019197027123230/Y15agTnlUtRae7CypX_qQwukpUgKhf5r9J6IsDIbtv4V1vwr3RT5Zj5_LRtmSUKGKtUa";
+          //取得成功
+          foreach ($timeline as $key => $value) {
+              // echo $value->full_text;
+              $json_data = array ('content'=>"$value->full_text");
+              $make_json = json_encode($json_data);
+
+              $ch = curl_init( $webhookurl );
+              curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+              curl_setopt( $ch, CURLOPT_POST, 1);
+              curl_setopt( $ch, CURLOPT_POSTFIELDS, $make_json);
+              curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+              curl_setopt( $ch, CURLOPT_HEADER, 0);
+              curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+              $response = curl_exec( $ch );
+          }
+        }
+    }
+
 }

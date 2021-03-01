@@ -25,25 +25,26 @@ class EventController extends Controller
         $request->session()->forget('block');
         if (Auth::user()->role == config('user.role.admin')) {
             $datas = Event::orderBy('id', 'DESC')->get();
-        } elseif (Auth::user()->role == config('user.role.staff')) {
-            $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
+        // } elseif (Auth::user()->role == config('user.role.staff')) {
+        //     $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
         } else {
-            $dt = new Carbon();
-            $datas = Event::where('view', 0)
-            ->where('from_recruit_date', '<=', $dt)
-            ->where('to_date', '>=', $dt)
-            ->orderBy('id', 'DESC')->get();
-            if (count($datas) == 1) {
-                $event = Event::where('view', 0)
-                ->where('from_recruit_date', '<=', $dt)
-                ->where('to_date', '>=', $dt)
-                ->first();
-                if ($event) {
-                    return redirect()->route('event.detail', ['id' => $event->id]);
-                } else {
-                    return redirect()->route('event.index');
-                }
-            }
+            $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
+            // $dt = new Carbon();
+            // $datas = Event::where('view', 0)
+            // ->where('from_recruit_date', '<=', $dt)
+            // ->where('to_date', '>=', $dt)
+            // ->orderBy('id', 'DESC')->get();
+            // if (count($datas) == 1) {
+            //     $event = Event::where('view', 0)
+            //     ->where('from_recruit_date', '<=', $dt)
+            //     ->where('to_date', '>=', $dt)
+            //     ->first();
+            //     if ($event) {
+            //         return redirect()->route('event.detail', ['id' => $event->id]);
+            //     } else {
+            //         return redirect()->route('event.index');
+            //     }
+            // }
         }
         return view('event.index', compact('datas'));
     }

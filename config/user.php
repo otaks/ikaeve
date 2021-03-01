@@ -6,6 +6,6 @@ return [
         'staff' => 2,
         'member' => 3,
     ],
-    'url' => 'http://terracotta.daa.jp/ikaeve/',
+    'url' => 'http://127.0.0.1:8000/',
 
 ];

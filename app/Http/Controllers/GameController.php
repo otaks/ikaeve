@@ -20,6 +20,121 @@ class GameController extends Controller
        $this->middleware('auth');
     }
 
+    public function mainResult(Request $request)
+    {
+        $req = $request->session()->get('event');
+        $event = Event::find($req);
+        if (!$event) {
+          return redirect()->route('event.index');
+        }
+        $selectBlock = $request->block;
+        // 予選突破チーム
+        $selectTeams = array();
+        $cnt = 0;
+        $config = config('game.main'.$event->passing_order);
+        foreach ($config as $key => $value) {
+            foreach ($value as $v) {
+                foreach ($v as $k => $val) {
+                    $team = Team::where('event_id', $event->id)
+                    ->where('block', $selectBlock)
+                    ->where('sheet', $k)
+                    ->where('pre_rank', $val)
+                    ->where('main_game', 1)
+                    ->first();
+                    if ($team) {
+                        $selectTeams[$cnt]['name'] = $team->name;
+                        $selectTeams[$cnt]['id'] = $team->id;
+                        $cnt++;
+                    }
+                }
+            }
+        }
+        $data = null;
+
+        return view('game.main_result',
+            compact('selectBlock',
+                    'selectTeams',
+                    'event',
+                    'data',
+                  ));
+    }
+
+    public function mainResultStore(Request $request)
+    {
+        if ($request->mode == 'app') {
+            $str = '承認';
+        } else {
+            $str = '報告';
+        }
+        try {
+            \DB::transaction(function() use($request, $str) {
+
+                // $turn = Result::query()->where(function($query) use($value){
+                //     $query->where('win_team_id', '=', $value['id'])
+                //           ->orWhere('lose_team_id', '=', $value['id']);
+                // })->where('level', '1')->count();
+
+                if ($request->mode == 'app') {
+                  $id = $request->id;
+                  $data = Result::find($id);
+                  // print_r($data);
+                  $data->approval = 1;
+                } else {
+                    $teams = $request->team;
+                    $scores = $request->score;
+                    $win_team = $teams[1];
+                    $lose_team = $teams[0];
+                    $win_score = $scores[1];
+                    $lose_score = $scores[0];
+                    if ($scores[1] < $scores[0]) {
+                        $win_team = $teams[0];
+                        $lose_team = ($teams[1] == 0) ? NULL : $teams[1];
+                        $win_score = $scores[0];
+                        $lose_score = $scores[1];
+                    }
+
+                    $event = $request->session()->get('event');
+                    $id = $request->id;
+                    $data = Result::find($id);
+                    if (!$data) {
+                        $data = new Result();
+                    }
+                    $data->event_id = $event;
+                    $data->user_id = Auth::id();
+                    $data->win_team_id = $win_team;
+                    $data->lose_team_id = $lose_team;
+                    $data->win_score = $win_score;
+                    $data->lose_score = $lose_score;
+                    $data->block = $request->block;
+                    $data->sheet = $request->sheet;
+                    $data->turn = $request->turn;
+                    $data->memo = $request->memo;
+                    $data->level = 1;
+                    // if (Auth::user()->role != config('user.role.member')) {
+                        $data->approval = 1;
+                    // }
+                    $data->unearned_win = $request->unearned_win;
+                }
+                $data->save();
+                // print_r($data);
+                // exit;
+                // 承認された時点でランク更新
+                // if ($request->mode == 'app' || Auth::user()->role != config('user.role.member')) {
+                //     $this->updatePreRank($event, $request->block, $request->sheet);
+                // }
+
+            });
+
+            FlashMessageService::success($str . 'が完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error($str . 'が失敗しました');
+        }
+
+        return redirect()->route('tournament.maingame', ['block' => $request->block]);
+    }
+
     public function result(Request $request)
     {
         $req = $request->session()->get('event');
@@ -159,7 +274,8 @@ class GameController extends Controller
                 if ($request->mode == 'app') {
                   $id = $request->id;
                   $data = Result::find($id);
-                  $data->approval = '1';
+                  // print_r($data);
+                  $data->approval = 1;
                 } else {
                     $teams = $request->team;
                     $scores = $request->score;
@@ -191,11 +307,13 @@ class GameController extends Controller
                     $data->turn = $request->turn;
                     $data->memo = $request->memo;
                     if (Auth::user()->role != config('user.role.member')) {
-                        $data->approval = '1';
+                        $data->approval = 1;
                     }
                     $data->unearned_win = $request->unearned_win;
                 }
                 $data->save();
+                // print_r($data);
+                // exit;
                 // 承認された時点でランク更新
                 if ($request->mode == 'app' || Auth::user()->role != config('user.role.member')) {
                     $this->updatePreRank($event, $request->block, $request->sheet);
@@ -248,10 +366,14 @@ class GameController extends Controller
         if (!$selectBlock) {
             $selectBlock = 'A';
         }
+        if (!$request->has('searchBlock')) {
+            $search['searchBlock'] = $selectBlock;
+        }
         $selectSheet = 'progress';
 
         $query = Result::query();
-        $query->where('event_id', $event->id);
+        $query->where('event_id', $event->id)
+        ->where('level', 0);
         if (isset($search['searchBlock'])) {
             $query->where('block', $search['searchBlock']);
         }
@@ -265,6 +387,77 @@ class GameController extends Controller
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
         return view('game.resultlist', compact('selectBlock', 'selectSheet', 'datas', 'search', 'blocks', 'sheets'));
+    }
+
+    public function mainResultlist(Request $request)
+    {
+        $req = $request->session()->get('event');
+        $event = Event::find($req);
+        if (!$event) {
+          return redirect()->route('event.index');
+        }
+        $search = array();
+        $search['approval'] = $request->approval;
+        $search['searchBlock'] = $request->searchBlock;
+        $selectBlock = $request->block;
+        if (!$selectBlock) {
+            $selectBlock = 'A';
+        }
+        $selectSheet = 'maingame';
+
+        $query = Result::query();
+        $query->where('event_id', $event->id)
+        ->where('level', 1);
+        if (isset($search['searchBlock'])) {
+            $query->where('block', $search['searchBlock']);
+        }
+        if (isset($search['approval'])) {
+            $query->where('approval', $search['approval']);
+        }
+        $datas = $query->orderBy('id', 'DESC')->paginate(config('common.page_num'));
+        $blocks = Team::getBlocks($event->id);
+        $sheets = Team::getSheets($event->id, $selectBlock);
+        return view('game.main_resultlist', compact('selectBlock', 'selectSheet', 'datas', 'search', 'blocks', 'sheets'));
+    }
+
+    public function resultdetail(Request $request)
+    {
+        $req = $request->session()->get('event');
+        $event = Event::find($req);
+        $data = Result::find($request->id);
+        if (!$event || !$data) {
+          return redirect()->route('event.index');
+        }
+        $mode = 'view';
+        $selectBlock = $request->block;
+        if (!$selectBlock) {
+            $selectBlock = 'A';
+        }
+        $selectSheet = $data->sheet;
+        $selectTurn = $data->turn;
+
+        $left[] = array();
+        $left['name'] = $data->winteam->name;
+        $left['id'] = $data->winteam->id;
+        $left['number'] = $data->winteam->number;
+        $left['score'] = $data->win_score;
+        $left['unearned_win'] = $data->unearned_win;
+        $right['name'] = $data->loseteam->name;
+        $right['id'] = $data->loseteam->id;
+        $right['number'] = $data->loseteam->number;
+        $right['score'] = $data->lose_score;
+        $right['unearned_win'] = $data->unearned_win;
+
+        return view('game.result',
+            compact('selectSheet',
+                    'selectBlock',
+                    'selectTurn',
+                    'data',
+                    'left',
+                    'right',
+                    'mode',
+                    'event',
+                  ));
     }
 
     private function updatePreRank($event, $selectBlock, $selectSheet) {
@@ -327,8 +520,6 @@ class GameController extends Controller
 
         $ranks = $teams;
         $abstentions = array();
-        // 並び替え・一位確定未実装
-        // 棄権チームはランク外
         foreach ($ranks as $key => $value) {
             if ($value['abstention'] == 1) {
                 $abstentions[] = $ranks[$key];
@@ -344,15 +535,38 @@ class GameController extends Controller
             $ranks
          );
         $ranks = $this->chkWinTeam($ranks);
-        $ranks = $this->chkThreeSided($ranks);
+        $resultCnt = Result::where('event_id', $event)
+        ->where('block', $selectBlock)
+        ->where('sheet', $selectSheet)
+        ->where('approval', 1)
+        ->count();
+        if (2 < $resultCnt) {
+            $ranks = $this->chkThreeSided($ranks);
+        }
+
+        $score_keys = array_column($abstentions, 'win_num');
+        $percent_keys = array_column($abstentions, 'percent');
+        array_multisort(
+            $score_keys, SORT_DESC, SORT_NUMERIC,
+            $percent_keys, SORT_DESC, SORT_NUMERIC,
+            $abstentions
+         );
+        $abstentions = $this->chkWinTeam($abstentions);
+        if (2 < $resultCnt) {
+            $abstentions = $this->chkThreeSided($abstentions);
+        }
+
         foreach ($abstentions as $key => $value) {
           array_push($ranks, $value);
         }
-        foreach ($ranks as $key => $value) {
+        $num = 1;
+        foreach ($ranks as $value) {
             $team = Team::find($value['id']);
-            $team->pre_rank = ($key+1);
+            $team->pre_rank = $num;
             $team->update();
+            $num++;
         }
+
         $this->chkAllResultAndRankDecision($event, $selectBlock, $selectSheet);
     }
 
@@ -436,19 +650,20 @@ class GameController extends Controller
         ->where('approval', 1)
         ->count();
 
-        if ($cnt == 6) {
+        if ($cnt == Team::getGameCnt($event_id, $block, $sheet)) {
             $teams = Team::where('event_id', $event_id)
             ->where('block', $block)
             ->where('sheet', $sheet)
-            ->where('abstention', 0)
+            //->where('abstention', 0)
             ->orderBy('pre_rank')
             ->get();
             foreach ($teams as $key => $value) {
-                if ($event->passing_order < $key + 1) {
-                   break;
-                }
                 $team = Team::find($value->id);
-                $team->main_game = 1;
+                if ($event->passing_order < $key + 1) {
+                    $team->main_game = 0;
+                } else {
+                    $team->main_game = 1;
+                }
                 $team->update();
             }
         }

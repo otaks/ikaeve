@@ -88,7 +88,7 @@
     <label for="note" class="col-md-3 col-5 col-form-label text-md-right">概要</label>
 
     <div class="col-md-6 col-12">
-        <textarea class="form-control" name="note">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
+        <textarea class="form-control" name="note" id="editor">{{ old('note', isset($data) ? $data->note : '') }}</textarea>
     </div>
 </div>
 <div class="form-group row">
