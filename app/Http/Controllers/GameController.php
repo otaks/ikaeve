@@ -271,6 +271,7 @@ class GameController extends Controller
         try {
             \DB::transaction(function() use($request, $str) {
 
+                $event = $request->session()->get('event');
                 if ($request->mode == 'app') {
                   $id = $request->id;
                   $data = Result::find($id);
@@ -290,7 +291,6 @@ class GameController extends Controller
                         $lose_score = $scores[1];
                     }
 
-                    $event = $request->session()->get('event');
                     $id = $request->id;
                     $data = Result::find($id);
                     if (!$data) {
@@ -312,8 +312,6 @@ class GameController extends Controller
                     $data->unearned_win = $request->unearned_win;
                 }
                 $data->save();
-                // print_r($data);
-                // exit;
                 // 承認された時点でランク更新
                 if ($request->mode == 'app' || Auth::user()->role != config('user.role.member')) {
                     $this->updatePreRank($event, $request->block, $request->sheet);
@@ -585,11 +583,11 @@ class GameController extends Controller
                     // print_r($result);
                     foreach ($result as $k => $val) {
                         if ($val->id == $ary[$key]['id']) {
-                            $return[$k] = $ary[$key];
+                            $return[$key+$k] = $ary[$key];
                         } elseif ($val->id == $ary[($key+1)]['id']) {
-                            $return[$k] = $ary[($key+1)];
+                            $return[$key+$k] = $ary[($key+1)];
                         } elseif ($val->id == $ary[($key+2)]['id']) {
-                            $return[$k] = $ary[($key+2)];
+                            $return[$key+$k] = $ary[($key+2)];
                         }
                     }
                 }

@@ -709,11 +709,11 @@ class TournamentController extends Controller
             ->where('event_id', $event->id)
             ->where('user_id', Auth::id())->first();
         }
-        if ($member) {
-            $selectBlock = $member->team->block;
-        } else {
+        // if ($member) {
+        //     $selectBlock = $member->team->block;
+        // } else {
             $selectBlock = $request->block;
-        }
+        // }
         if (!$selectBlock) {
             $selectBlock = 1;
         }

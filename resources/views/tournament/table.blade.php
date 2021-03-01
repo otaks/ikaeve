@@ -141,6 +141,19 @@
                                                 @endif
                                             @endif
                                           @endif
+                                        @else
+                                          @php
+                                            $result = \App\Models\Result::chkResult($selectBlock, $select->sheet, $key, $teams[$select->sheet][$conf[0]]['id']);
+                                          @endphp
+                                            @if (!$result)
+                                              <span class="badge badge-secondary">未報告</span>
+                                            @else
+                                              @if ($result->approval == 0)
+                                                <span class="badge badge-warning">未承認</span>
+                                              @else
+                                                <span class="badge badge-info">確定</span>
+                                              @endif
+                                          @endif
                                         @endif
                                       </td>
                                   @endif
