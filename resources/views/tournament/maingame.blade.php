@@ -3,6 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+  var ua = navigator.userAgent.toLowerCase();
+  var isiOS = (ua.indexOf('iphone') > -1) || (ua.indexOf('ipad') > -1);
+  if(isiOS) {
+    var viewport = document.querySelector('meta[name="viewport"]');
+    if(viewport) {
+      var viewportContent = viewport.getAttribute('content');
+      viewport.setAttribute('content', viewportContent + ', user-scalable=no');
+    }
+  }
+  </script>
   <title>Tournament</title>
   <!-- Copyright 1998-2021 by Northwoods Software Corporation. -->
 
@@ -17,6 +28,7 @@
   <link href="{{ asset('css/multi-select.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet">
 
+  <script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
   <script src="{{ asset('js/app.js') }}" defer></script>
   <script src="{{ asset('js/all.js') }}" defer></script>
   <script src="{{ asset('js/menu.js') }}" defer></script>
@@ -51,7 +63,6 @@
             alert('スコアは0~{{ $event->main_score }}を入力してください');
         }
 
-
         return chk;
       }
 
@@ -60,12 +71,12 @@
         $(go.Node, "Auto",
           { selectable: false },
           $(go.Shape, "RoundedRectangle",
-            { fill: '2E7AA0', stroke: '2E7AA0'},
+            { fill: 'darkcyan', stroke: 'darkcyan'},
             // Shape.fill is bound to Node.data.color
             new go.Binding("fill", "color")),
           $(go.Panel, "Table",
             $(go.RowColumnDefinition, { column: 0, separatorStroke: "white" }),
-            $(go.RowColumnDefinition, { column: 1, separatorStroke: "white", background: "2E7AA0" }),
+            $(go.RowColumnDefinition, { column: 1, separatorStroke: "white", background: "darkcyan" }),
             $(go.RowColumnDefinition, { row: 0, separatorStroke: "white" }),
             $(go.RowColumnDefinition, { row: 1, separatorStroke: "white" }),
             $(go.TextBlock, "",
@@ -177,6 +188,29 @@
 
           var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
           if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
+
+          //myDiagram.model.setDataProperty(data, (data.parentNumber === 0 ? "player1" : "player2"), 'aaaa');
+          // api = "{{ route('game.main_result') }}";
+          // win = data.player1;
+          // win_score = data.score1;
+          // lose = data.player2;
+          // lose_score = data.score2;
+          // if (playerName == data.player2) {
+          //   win = data.player2;
+          //   win_score = data.score2;
+          //   lose = data.player1;
+          //   lose_score = data.score1;
+          // }
+          // api += '/'+win+'/'+lose+'/'+win_score+'/'+lose_score;
+          // alert(api);
+          // axios.get(api).then((res) => {
+          //   if(res.data.status == 400) {
+          //     alert(res.data.message);
+          //   }
+          // }).catch(error => {
+          //   alert('エラーが発生しました');
+          //   console.log(error);
+          // });
           myDiagram.model.setDataProperty(parent.data, (data.parentNumber === 0 ? "player1" : "player2"), playerName);
         });
 
@@ -187,48 +221,64 @@
         //   var d = model.nodeDataArray[i];
         //   if (d.player1 && d.player2) {
         //     // TODO: doesn't prevent tie scores
-        //     model.setDataProperty(d, "score1", Math.floor(Math.random() * 100));
-        //     model.setDataProperty(d, "score2", Math.floor(Math.random() * 100));
+        //     // model.setDataProperty(d, "score1", Math.floor(Math.random() * 100));
+        //     // model.setDataProperty(d, "score2", Math.floor(Math.random() * 100));
         //   }
         // }
+        @foreach($scores as $k => $val)
+          var d = model.nodeDataArray[{{$k}}];
+          var score = "{{$val[0] ?? ''}}";
+          if (score != '') {
+            model.setDataProperty(d, "score1", "{{$val[0] ?? ''}}");
+            model.setDataProperty(d, "score2", "{{$val[1] ?? ''}}");
+          }
+        @endforeach
       }
 
       makeModel([
-        @foreach($teams as $name)
-          '{{ $name }}',
+        @foreach($teams as $val)
+          "{{ $val['name'] }}",
         @endforeach
       ]);
     } // end init
   </script>
 </head>
 <body onload="init()">
-  <div id="app">
-    <div id="navArea">
-      <main>
-        <h5>{{ session('eventName') ?? '' }} 本戦</h5>
-      </main>
-    </div>
-    <div class="card-body @if ($isMobile) grid-area @endif">
+    <div id="app" class="card-body @if ($isMobile) grid-area @endif">
+      @include('elements.flash_message')
       <div class="container-fluid @if ($isMobile) top-area @endif">
         @if ($isMobile)
           @include('tournament/nav_sp')
         @else
           @include('tournament/nav')
         @endif
-        </div>
+        @if (Auth::user()->role != config('user.role.member'))
+          <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
+        @endif
+        @if (!$isMobile)
+          <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm mt-1">報告</a>
+        @endif
+      </div>
         <!--
         <div id="sample">
         -->
-        @if ($isMobile)
-          <div id="myDiagramDiv" class="bottom-area" style="border: solid 0px black; background: #ffffff; width:100%; height:100%;"></div>
+        @if ($event->passing_order == 1)
+          @if ($isMobile)
+            <div id="myDiagramDiv" class="bottom-area" style="border: solid 0px black; background: whitesmoke; width:100%;"></div>
+          @else
+            <div id="myDiagramDiv" style="border: solid 0px black; background: whitesmoke; width:800px; height:{{count($teams) * 40}}px;"></div>
+          @endif
         @else
-          <div id="myDiagramDiv" style="border: solid 0px black; background: #ffffff; width:1000px; height:700px;"></div>
+          @if ($isMobile)
+            <div id="myDiagramDiv" class="bottom-area" style="border: solid 0px black; background: whitesmoke; width:100%;"></div>
+          @else
+            <div id="myDiagramDiv" style="border: solid 0px black; background: whitesmoke; width:1000px; height:{{count($teams) * 40}}px;"></div>
+          @endif
         @endif
         <!--
         </div>
       -->
         <input type="hidden" id="url" value="{{ config('user.url') }}">
     </div>
-  </div>
 </body>
 </html>

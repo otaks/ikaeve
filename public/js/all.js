@@ -70,6 +70,23 @@ $(function(){
     $(this).closest('tr').remove();
   });
 
+  $('.approvalBtn').click(function(e) {
+    id = $(this).data('id');
+    api = $('#approvalApi').val();
+    url = api+'/'+id;
+    axios.get(url).then((res) => {
+      alert(res.data.message);
+      // if(res.data.status == 200) {
+      //   $(e.target).closest('tr').children('td,th').toggleClass('table-warning');
+      // } else {
+        location.reload();
+      // }
+    }).catch(error => {
+      alert('エラーが発生しました');
+      console.log(error);
+    });
+  });
+
   $('.changeTeamBtn').click(function(e) {
     team = $(this).data('id');
     api = $('#changeApi').val();
@@ -147,7 +164,8 @@ $(function(){
       num = $("[name='score[]']").index(this);
       score1 = $("[name='score[]']").eq(0).val();
       score2 = $("[name='score[]']").eq(1).val();
-      if (score1 == score2) {
+      role = $('#role').val();
+      if (score1 == score2 && role == 3) {
         alert('同点で更新はできません');
         $("#submitBtn").prop("disabled", true);
         return false;
@@ -197,11 +215,12 @@ $(function(){
     team2 = $("[name='team[]']").eq(1).val();
     score1 = $("[name='score[]']").eq(0).val();
     score2 = $("[name='score[]']").eq(1).val();
+    role = $('#role').val();
     if (team1 == team2) {
       alert('別のチームを選択してください');
       return false;
     }
-    if (score1 == score2) {
+    if (score1 == score2 && role == 3) {
       alert('同点で更新はできません');
       return false;
     }
