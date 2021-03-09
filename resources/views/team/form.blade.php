@@ -5,7 +5,7 @@
     <div class="col-md-6">
         <input type="hidden" name="team_id" id="team_id" value="{{ isset($data) ? $data->id : '' }}">
         <input type="hidden" name="event_id" id="event_id" value="{{ session('event') }}">
-        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name"
+        <input id="teamname" type="text" class="form-control @error('name') is-invalid @enderror" name="name"
         value="{{ old('name', isset($data) ? $data->name : '') }}" required autocomplete="name">
         @if($errors->has('name')) <span class="text-danger">{{ $errors->first('name') }}</span> @endif
     </div>
@@ -85,3 +85,4 @@
     </div>
 </div>
 <input type="hidden" name="twitterApi" id="twitterApi" value="{{ route('twitter.getId') }}">
+<input type="hidden" name="teamApi" id="teamApi" value="{{ route('team.check') }}">

@@ -31,31 +31,30 @@
                       </td>
                     </tr>
                     <tr>
-                      <th>予選通過順位</th>
+                      <th>予選<br>通過順位</th>
                       <td>
                         {{ $data->passing_order ?? '' }}
                       </td>
                     </tr>　
                     <tr>
-                      <th>予選先取点</th>
+                      <th>予選<br>先取点</th>
                       <td>
                         {{ $data->pre_score ?? '' }}
                       </td>
                     </tr>
                     <tr>
-                      <th>本戦先取点</th>
+                      <th>本戦<br>先取点</th>
                       <td>
                         {{ $data->main_score ?? '' }}
                       </td>
                     </tr>
                     <tr>
-                      <th>決勝戦先取点</th>
+                      <th>決勝戦<br>先取点</th>
                       <td>
                         {{ $data->final_score ?? '' }}
                       </td>
                     </tr>
                     <tr><th>チーム申請数</th><td>{{ count($data->team) }}</tr>
-                    <tr><th>チーム承認数</th><td>{{ $data::approved_team($data->id) }}</tr>
                     <tr><th>チーム人数</th><td>{{ $data->team_member }}</tr>
                     <tr><th>概要</th><td>{!! nl2br(e($data->note)) !!}</tr>
                 </table>

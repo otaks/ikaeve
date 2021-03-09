@@ -34,6 +34,11 @@ Route::prefix('game')->name('game.')
         Route::get('approval/{id?}', 'Api\GameController@approval')->name('approvalapi');
 });
 
+Route::prefix('team')->name('team.')
+    ->group(function() {
+        Route::get('check/{name?}/{event?}/{team?}', 'Api\TeamController@check')->name('check');
+});
+
 // Route::prefix('game')->name('game.')
 //     ->group(function() {
 //         Route::get('result/{event_id}/{win_team}/{lose_team}/{win_score}/{lose_score}', 'Api\GameController@result')->name('result');
