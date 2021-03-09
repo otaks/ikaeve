@@ -53,7 +53,9 @@ class CreateTeamsTable extends Migration
             $table->boolean('change_flg')->comment('チェンジ対象')->default(0);
             $table->unsignedInteger('pre_rank')->comment('予選ランク')->nullable();
             $table->boolean('main_game')->comment('本戦進出')->default(0);
+            $table->unsignedInteger('main_rank')->comment('本戦ランク')->nullable();
             $table->boolean('final_game')->comment('決勝戦進出')->default(0);
+            $table->unsignedInteger('final_rank')->comment('最終')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

@@ -6,24 +6,31 @@
                 <form method="POST" name="resultFrm" action="{{ route('game.result') }}">
                     @csrf
                     <h3 class="mb-3 blue_title offset-md-4 col-md-5">
-                    {{ $selectBlock }}ブロック {{ $selectSheet }}第{{ $selectTurn }}試合</h3>
+                    @if (!$data || (isset($data) && $data->level > 2))
+                        {{ $selectBlock }}ブロック {{ $selectSheet }}第{{ $selectTurn }}試合
+                    @else
+                        決勝戦 第{{ $selectTurn }}試合
+                    @endif
+                    </h3>
                     <div class="form-group row offset-md-4 mt-5">
                         <div class="col-md-3 col-5 text-center">
                           @if ($data)
-                            <h6 style="color:{{ ($data->win_team_id == $left['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">{{ $left['number'] }}.{{ $left['name'] }}</h6>
+                            <h6 style="color:{{ ($data->win_team_id == $left['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">
+                              @if(!$data || (isset($data) && $data->level > 2)){{ $left['number'] }}.@endif{{ $left['name'] }}</h6>
                             <input type="hidden" name="team[]" value="{{ $left['id'] }}">
                           @else
-                            <h6 id="left_team">{{ $team1->number }}.{{ $team1->name }}</h6>
+                            <h6 id="left_team">@if(!$data || (isset($data) && $data->level > 2)){{ $team1->number }}.@endif{{ $team1->name }}</h6>
                             <input type="hidden" name="team[]" value="{{ $team1->id }}">
                           @endif
                         </div>
                         <div class="col-md-1 col-1 text-center"></div>
                         <div class="col-md-3 col-5 text-center">
                           @if ($data)
-                            <h6 style="color:{{ ($data->win_team_id == $right['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">{{ $right['number'] }}.{{ $right['name'] }}</h6>
+                            <h6 style="color:{{ ($data->win_team_id == $right['id'] && $data->abstention == 0) ? 'salmon' : 'gray' }}">
+                              @if(!$data || (isset($data) && $data->level > 2)){{ $right['number'] }}.@endif{{ $right['name'] }}</h6>
                             <input type="hidden" name="team[]" value="{{ $right['id'] }}">
                           @else
-                            <h6 id="right_team">{{ $team2->number }}.{{ $team2->name }}</h6>
+                            <h6 id="right_team">@if(!$data || (isset($data) && $data->level > 2)){{ $team2->number }}.@endif{{ $team2->name }}</h6>
                             <input type="hidden" name="team[]" value="{{ $team2->id }}">
                           @endif
                         </div>
@@ -31,7 +38,7 @@
                     <div class="form-group offset-md-4 row mt-4">
                       <div class="col-md-3 col-4 ml-3">
                         <select name="score[]" id="score" class="form-control col-md-10" @if ($mode != '') disabled @endif>
-                          @for($cnt = 0; $cnt <= $event->pre_score; $cnt++)
+                          @for($cnt = 0; $cnt <= $maxScore; $cnt++)
                             <option value="{{ $cnt }}" {{ ($data && $left['score'] == $cnt) ? 'selected' : '' }}>{{ $cnt }}</option>
                           @endfor
                         </select>
@@ -39,7 +46,7 @@
                       <div class="col-md-1 col-2"><h3>VS</h3></div>
                       <div class="col-md-3 col-4 ml-3">
                         <select name="score[]" class="form-control col-md-10" @if ($mode != '') disabled @endif>
-                          @for($cnt = 0; $cnt <= $event->pre_score; $cnt++)
+                          @for($cnt = 0; $cnt <= $maxScore; $cnt++)
                             <option value="{{ $cnt }}" {{ ($data && $right['score'] == $cnt) ? 'selected' : '' }}>{{ $cnt }}</option>
                           @endfor
                         </select>

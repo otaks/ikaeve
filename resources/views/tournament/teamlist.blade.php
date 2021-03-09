@@ -15,15 +15,17 @@
                     <th class="text-center p-1 align-middle" style="width:25px;">本戦進出</th>
                     <th class="text-center p-1 align-middle" style="width:120px;">チーム名</th>
                     <th class="text-center p-1 align-middle" style="width:80px;">フレンドコード</th>
-                    @php
-                      $i = 0;
-                    @endphp
-                    @while($i < $event->team_member)
-                      <th class="text-center p-1 align-middle" style="width:100px;">プレイヤー{{ ($i + 1) }}</th>
+                    @if (!$isMobile)
                       @php
-                        $i++;
+                        $i = 0;
                       @endphp
-                    @endwhile
+                      @while($i < $event->team_member)
+                        <th class="text-center p-1 align-middle" style="width:100px;">プレイヤー{{ ($i + 1) }}</th>
+                        @php
+                          $i++;
+                        @endphp
+                      @endwhile
+                    @endif
                   </tr>
                   @foreach ($teams as $k => $team)
                     <tr class="{{($team->sheet % 2 == 0) ? 'table-info':'' }}">
@@ -39,16 +41,18 @@
                           {{ substr($team->friend_code, 0, 4) }}-{{ substr($team->friend_code, 4, 4) }}-{{ substr($team->friend_code, 8, 4) }}
                           @endif
                         </td>
-                        @foreach ($team::members($team->id) as $key => $member)
-                          @if ($key < $event->team_member)
-                            <td class="p-2">
-                              {{ $member->name }}
-                              @if($member->user->twitter_nickname)
-                                  &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
+                        @if (!$isMobile)
+                            @foreach ($team::members($team->id) as $key => $member)
+                              @if ($key < $event->team_member)
+                                <td class="p-2">
+                                  {{ $member->name }}
+                                  @if($member->user->twitter_nickname)
+                                      &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
+                                  @endif
+                                </td>
                               @endif
-                            </td>
-                          @endif
-                        @endforeach
+                            @endforeach
+                        @endif
                     </tr>
                   @endforeach
               </table>

@@ -117,6 +117,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{block?}', 'TournamentController@editStore');
         Route::get('progress/{block?}', 'TournamentController@progress')->name('progress');
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
+        Route::get('finalgame', 'TournamentController@finalgame')->name('finalgame');
         Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
     });
 
@@ -134,6 +135,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('main_result', 'GameController@mainResultStore');
         Route::get('main_resultlist/{block?}', 'GameController@mainResultlist')->name('mainResultlist');
         Route::post('main_resultlist/{block?}', 'GameController@mainResultlist')->name('mainResultlist');
-        Route::get('main_result/{win_team?}/{lose_team?}/{win_score?}/{lose_score?}', 'Api\GameController@result')->name('main_result');
+        //Route::get('main_result/{win_team?}/{lose_team?}/{win_score?}/{lose_score?}', 'Api\GameController@result')->name('main_result');
+        Route::get('final_result', 'GameController@finalResult')->name('finalResult');
+        Route::post('final_result', 'GameController@finalResultStore');
+        Route::get('final_resultlist', 'GameController@finalResultlist')->name('finalResultlist');
+        Route::post('final_resultlist', 'GameController@finalResultlist')->name('finalResultlist');
     });
 });

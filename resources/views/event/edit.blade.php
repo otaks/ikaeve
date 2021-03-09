@@ -16,12 +16,4 @@
                     </form>
                 </div>
             </div>
-            <script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
 @endsection
-@script
-    // エディタへの設定を適用する
-    CKEDITOR.replace('editor', {
-      uiColor: '#EEEEEE',
-      height: 400,
-    });
-@endscript
