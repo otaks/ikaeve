@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit/{id}', 'TeamController@edit')->name('edit')->where('id', '[0-9]+');
         Route::post('edit/{id}', 'TeamController@editStore')->where('id', '[0-9]+');
         Route::get('update/{id}/{column}/{value}', 'TeamController@update')->name('update')->where('id', '[0-9]+');
+        Route::get('delete/{id}', 'TeamController@delete')->name('delete')->where('id', '[0-9]+');
     });
 
     // 募集

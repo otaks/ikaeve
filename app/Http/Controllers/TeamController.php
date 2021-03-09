@@ -36,7 +36,6 @@ class TeamController extends Controller
         $search['event'] = $request->session()->get('event');
         $search['name'] = $request->name;
         $search['member_name'] = $request->member_name;
-        $search['approval'] = $request->approval;
 
         $query = Team::query();
         $query->select('teams.*');
@@ -49,9 +48,6 @@ class TeamController extends Controller
         }
         if ($search['member_name']) {
             $query->where('members.name', 'LIKE', '%'.$search['member_name'].'%');
-        }
-        if (isset($search['approval'])) {
-            $query->where('approval', $search['approval']);
         }
         $datas = $query->groupBy('teams.id')->orderBy('teams.id', 'DESC')->paginate(config('common.page_num'));
         return view('team.index', compact('datas', 'search'));
@@ -77,11 +73,15 @@ class TeamController extends Controller
         try {
             \DB::transaction(function() use($request) {
 
+                $event_id = $request->session()->get('event');
+                $maxNo = Team::where('event_id', $event_id)->max('no');
                 $data = new Team();
+                $data->no = $maxNo+1;
                 $data->name = $request->name;
                 $data->friend_code = join('', $request->friend_code);
                 $data->note = $request->note;
-                $data->event_id = $request->session()->get('event');
+                $data->event_id = $event_id;
+                $data->approval = 1;
                 $data->save();
 
                 $total_xp = 0;
@@ -247,6 +247,26 @@ class TeamController extends Controller
     {
         $data = Team::find($request->id);
         return view('team.detail', compact('data'));
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            \DB::transaction(function() use($request) {
+
+                $data = Team::find($request->id);
+                $data->delete();
+
+            });
+
+            FlashMessageService::success('削除が完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('削除が失敗しました');
+        }
+
+        return redirect()->route('team.index');
     }
 
     private function getTwitterId($name)

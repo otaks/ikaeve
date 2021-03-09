@@ -42,6 +42,9 @@
                     <div class="col-md-6 offset-md-4 text-center">
                       <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit">編集</a>
                       <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger">棄権</a>
+                      @if (empty($data->block))
+                        <a href="{{ route('team.delete', ['id' => $data->id]) }}" class="btn btn-warning submit">削除</a>
+                      @endif
                     </div>
                 </div>
               @endif
@@ -51,6 +54,9 @@
                       <a href="{{ route('team.edit', ['id' => $data->id]) }}" class="btn btn-primary submit">編集</a>
                       @if($data->abstention == 0)
                         <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger">棄権</a>
+                      @endif
+                      @if (empty($data->block))
+                        <a href="{{ route('team.delete', ['id' => $data->id]) }}" class="btn btn-warning submit">削除</a>
                       @endif
                     </div>
                 </div>

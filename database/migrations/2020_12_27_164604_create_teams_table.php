@@ -39,6 +39,7 @@ class CreateTeamsTable extends Migration
 
         Schema::create('teams', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('no')->comment('no')->nullable();
             $table->unsignedInteger('event_id')->comment('大会ID')->nullable();
             $table->string('name', 50)->comment('名前')->nullable();
             $table->unsignedInteger('member_id')->comment('代表者ID')->nullable();
