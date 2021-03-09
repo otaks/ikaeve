@@ -107,7 +107,11 @@ $(function(){
   $('#selectBlock').change(function() {
     block = $(this).val();
     url = $('#url').val();
-    location.href = url + 'tournament/index/' + block;
+    if (block == 'finalgame') {
+        location.href = url + 'tournament/' + block;
+    } else {
+        location.href = url + 'tournament/index/' + block;
+    }
   });
 
   $('#selectSheet').load(function() {
