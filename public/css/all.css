@@ -228,21 +228,21 @@ a {
 
 .btn-warning {
   color: #fff;
-  background-color: #ffed4a;
-  border-color: #ffed4a;
+  background-color: salmon;
+  border-color: salmon;
 }
 
 .btn-warning:hover {
   color: #fff;
-  background-color: #ffe924;
-  border-color: #ffe817;
+  background-color: salmon;
+  border-color: salmon;
 }
 
 .btn-warning:focus,
 .btn-warning.focus {
   color: #fff;
-  background-color: #ffe924;
-  border-color: #ffe817;
+  background-color: salmon;
+  border-color: salmon;
   box-shadow: 0 0 0 0.2rem rgba(222, 207, 69, 0.5);
 }
 
