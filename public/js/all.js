@@ -19,6 +19,27 @@ $(function(){
   });
 
   // twitter入力
+  $('#teamname').change(function() {
+    name = $(this).val();
+    event_id = $('#event_id').val();
+    team_id = $('#team_id').val();
+    api = $('#teamApi').val();
+    url = api+'/'+name+'/'+event_id;
+    if (team_id) {
+      url += '/'+team_id;
+    }
+    axios.get(url).then((res) => {
+      if(res.data.status == 400) {
+        $(this).val('');
+        alert(res.data.message);
+      }
+    }).catch(error => {
+      alert('エラーが発生しました');
+      console.log(error);
+    });
+  });
+
+  // twitter入力
   $('input[name^="twitter[]"]').change(function() {
     name = $(this).val();
     event_id = $('#event_id').val();
