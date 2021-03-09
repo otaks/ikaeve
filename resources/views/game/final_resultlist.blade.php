@@ -15,7 +15,9 @@
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr class="thead-light text-center">
-                            <th></th>
+                            @if (Auth::user()->role != config('user.role.member'))
+                              <th></th>
+                            @endif
                             <th>No</th>
                             <th>何戦目</th>
                             <th>勝ちチーム/点</th>
@@ -27,7 +29,11 @@
                         <tbody>
                           @foreach ($datas as $data)
                             <tr>
-                                <td class="text-center"><a href="{{ route('game.delete', ['id' => $data->id]) }}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a></td>
+                                @if (Auth::user()->role != config('user.role.member'))
+                                  <td class="text-center">
+                                    <a href="{{ route('game.delete', ['id' => $data->id]) }}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                  </td>
+                                @endif
                                 <td><a href="{{ route('game.resultDetail', ['id' => $data->id]) }}">{{ $data->id }}</a></td>
                                 <td class="text-center">{{ $data->turn }}</td>
                                 <td>{{ $data->winteam->name }}

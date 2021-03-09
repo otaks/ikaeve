@@ -5,9 +5,7 @@
           @foreach ($blocks as $val)
             <option value="{{ $val->block }}" {{ ($selectBlock == $val->block) ? 'selected' : ''}}>{{ $val->block }}</option>
           @endforeach
-          @if (1 < count($blocks))
-            <optoion value="final" {{ ($selectBlock == 'finalgame') ? 'selected' : ''}}>決勝戦</option>
-          @endif
+          <option value="finalgame" {{ ($selectBlock == 'finalgame') ? 'selected' : ''}}>決勝戦</option>
         </select>
       </div>
     @else
@@ -26,9 +24,9 @@
         </select>
       </div>
     @endif
-    @if($selectSheet == 'maingame' && (isset($member) || ))
-      <div class="col-2 mt-1 p-1">
-        <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
+    @if($selectSheet == 'maingame' && (isset($member) || Auth::user()->role != config('user.role.member')))
+      <div class="col-4 mt-1 p-1">
+        <!-- <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">報告一覧</a> -->
         <a href="{{ route('game.mainResult') }}" class="btn btn-success btn-sm">報告</a>
       </div>
     @endif
