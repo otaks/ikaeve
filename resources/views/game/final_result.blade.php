@@ -3,10 +3,9 @@
 @section('content')
         <div class="card-body">
             <div class="container-fluid">
-                <form method="POST" name="resultFrm" action="{{ route('game.mainResult') }}">
+                <form method="POST" name="resultFrm" action="{{ route('game.finalResult') }}">
                     @csrf
-                    <h3 class="mb-3 blue_title offset-md-4 col-md-5">
-                    {{ $selectBlock }}ブロック 本戦</h3>
+                    <h3 class="mb-3 blue_title offset-md-4 col-md-5">決勝戦</h3>
                     <div class="form-group row offset-md-4 mt-5">
                         <div class="col-md-3 col-5 text-center">
                           <select name="turn" class="form-control col-md-10">

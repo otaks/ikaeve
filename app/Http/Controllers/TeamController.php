@@ -226,7 +226,7 @@ class TeamController extends Controller
                     // ランク外(5)で更新
                     if ($data->block != '') {
                         $this->insertResult($data);
-                        $data->pre_rank = 5;
+                        $data->pre_rank = 4;
                     }
                 }
                 $data->save();
@@ -262,7 +262,8 @@ class TeamController extends Controller
     private function insertResult($team)
     {
         $event = Event::find($team->event_id);
-        $teams = Team::where('block', $team->block)
+        $teams = Team::where('event_id', $team->event_id)
+        ->where('block', $team->block)
         ->where('sheet', $team->sheet)
         ->where('id', '<>', $team->id)
         ->get();

@@ -58,7 +58,7 @@
       function isValidScore(textblock, oldstr, newstr) {
         if (newstr === "") return true;
         var num = parseInt(newstr, 10);
-        chk = !isNaN(num) && num >= 0 && num < {{ ($event->main_score + 1) }};
+        chk = !isNaN(num) && num >= 0 && num < {{ ($event->final_score + 1) }};
         if (chk == false) {
             alert('スコアは0~{{ $event->main_score }}を入力してください');
         }
@@ -222,8 +222,8 @@
           @include('tournament/nav')
         @endif
         @if (Auth::user()->role != config('user.role.member') || (!$isMobile && isset($member)))
-          <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
-          <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm mt-1">報告</a>
+          <a href="{{ route('game.finalResultlist') }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
+          <a href="{{ route('game.finalResult') }}" class="btn btn-success btn-sm mt-1">報告</a>
         @endif
       </div>
         <!--

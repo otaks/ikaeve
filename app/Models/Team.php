@@ -87,12 +87,18 @@ class Team extends BaseModel
         ->get();
     }
 
-    public static function getGameCnt($id, $block, $sheet)
+    public static function getGameCnt($id, $block, $sheet=null)
     {
-        $teamCnt = Team::where('event_id', $id)
-        ->where('block', $block)
-        ->where('sheet', $sheet)
-        ->count();
+        if ($sheet) {
+            $teamCnt = Team::where('event_id', $id)
+            ->where('block', $block)
+            ->where('sheet', $sheet)
+            ->count();
+        } else {
+            $teamCnt = Team::where('event_id', $id)
+            ->where('block', $block)
+            ->count();
+        }
         return $teamCnt * ($teamCnt - 1) / 2;
     }
 }

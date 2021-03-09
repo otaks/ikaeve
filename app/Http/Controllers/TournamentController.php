@@ -319,10 +319,6 @@ class TournamentController extends Controller
             $theam3 = (count($teams) % $teamBySheet);
             // ブロックごとの3チーム数
             $blockTheam3 = ceil($theam3 / $blockNum);
-            // echo 'theam3/'.$theam3;
-            // echo '<br>blockTheam3/'.$blockTheam3;
-            // echo '<br>blockNum/'.$blockNum;
-            // echo '<br>teamByBlock/'.$teamByBlock;
             $j = 0;
             $hajime = array();
             $ato = array();
@@ -341,10 +337,6 @@ class TournamentController extends Controller
             for ( $i = 0; $i < $blockNum; $i++ ) {
                 $block[] = chr(65 + $i);
             }
-            // print_r($teamByBlock);
-            // print_r($hajime);
-            // print_r($ato);
-            // exit;
 
             $k = 0;
             $j = 0;
@@ -523,6 +515,115 @@ class TournamentController extends Controller
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'progress'));
     }
 
+    public function finalgame(Request $request)
+    {
+        $event_id = $request->session()->get('event');
+        if (!$event_id) {
+            return redirect()->route('event.index');
+        }
+        $event = Event::find($event_id);
+        $blocks = Team::getBlocks($event->id);
+        $sheets = null;
+        $selectBlock = 'finalgame';
+        $selectSheet = null;
+        // 参加している対戦表のチェック
+        $member = null;
+        if (Auth::user()->role == config('user.role.member')) {
+            $member = Member::join('teams', 'teams.id', 'members.team_id')
+            ->where('event_id', $event->id)
+            ->where('user_id', Auth::id())->first();
+        }
+        $cnt = 0;
+        $scores = [];
+        $teams = [];
+        foreach ($blocks as $key => $value) {
+            $team = Team::where('event_id', $event->id)
+            ->where('block', $value->block)
+            ->where('main_rank', 1)
+            ->first();
+            if ($team) {
+                $teams[$cnt]['id']   = $team->id;
+                $teams[$cnt]['name'] = $team->name;
+            } else {
+                $teams[$cnt]['id']   = null;
+                $teams[$cnt]['name'] = $value->block . 'ブロック代表';
+            }
+            $cnt++;
+        }
+        $tmpNum = 0;
+        $scores = array();
+        foreach ($teams as $key => $value) {
+            $result = null;
+            $query = Result::query()->where('event_id', $event->id)
+            ->where('level', 2);
+            if ($value['id']) {
+                $result = $query->where(function($query) use($value){
+                    $query->where('win_team_id', '=', $value['id'])
+                          ->orWhere('lose_team_id', '=', $value['id']);
+                })->orderBy('turn', 'ASC')->get();
+            }
+            // $num = ($value['id']) ? $this->getTeamOrder($value['id'], $config) : 0;
+            if (!$result) {
+                if ($value['name'] == 'なし') {
+                    if ($key%2 == 0) {
+                        $scores[floor($key/2)][0] = '0';
+                        $scores[floor($key/2)][1] = '3';
+                    } else {
+                        $scores[floor($key/2)][0] = '3';
+                        $scores[floor($key/2)][1] = '0';
+                    }
+                }
+            } else {
+                foreach ($result as $k => $v) {
+                  if ($v->turn == 1) {
+                      $i = floor($key/2);
+                  } else {
+                      $h = 2;
+                      $division = 4;
+                      $tmp = count($teams) / 2;
+                      $tmpNum = $tmp;
+                      while($h < $v->turn) {
+                          $tmpNum += $tmp / 2;
+                          $tmp = $tmp / 2;
+                          $division = $division * 2;
+                          $h++;
+                      }
+
+                      $tmpNum += floor($key/$division);
+
+                      $i = $tmpNum;
+                  }
+                  if ($v->win_team_id == $value['id']) {
+                      $scores[$i][] = $v->win_score;
+                  } elseif ($v->lose_team_id == $value['id']) {
+                      $scores[$i][] = $v->lose_score;
+                  }
+                }
+            }
+        }
+
+        ksort($scores);
+        $i = 0;
+        while ($i < $this->get_last_key($scores)) {
+            if(empty($scores[$i])) {
+                $scores[$i][0] = '';
+                $scores[$i][1] = '';
+            }
+            $i++;
+        }
+        ksort($scores);
+        return view('tournament.finalgame',
+            compact('event',
+                    'member',
+                    'blocks',
+                    'sheets',
+                    'selectBlock',
+                    'selectSheet',
+                    'scores',
+                    'teams')
+            );
+    }
+
     public function maingame(Request $request)
     {
         $event_id = $request->session()->get('event');
@@ -537,6 +638,7 @@ class TournamentController extends Controller
             ->where('event_id', $event->id)
             ->where('user_id', Auth::id())->first();
         }
+
         if ($member && !$request->block) {
             $selectBlock = $member->team->block;
         } else {
@@ -595,11 +697,13 @@ class TournamentController extends Controller
             }
         }
 
-        $teamNum = 16 * $event->passing_order;
+        // $teamNum = count($sheets) * $event->passing_order;
+        $tmpNum = 0;
         $scores = array();
         foreach ($teams as $key => $value) {
             $result = null;
             $query = Result::query()->where('event_id', $event->id)
+            ->where('block', $selectBlock)
             ->where('level', 1);
             if ($value['id']) {
                 $result = $query->where(function($query) use($value){
@@ -623,19 +727,21 @@ class TournamentController extends Controller
                   if ($v->turn == 1) {
                       $i = floor($key/2);
                   } else {
-                      $h = 1;
-                      $s = 1;
-                      $all = 0;
-                      $tmpNum = $teamNum;
+                      $h = 2;
+                      $division = 4;
+                      $tmp = count($teams) / 2;
+                      $tmpNum = $tmp;
                       while($h < $v->turn) {
-                          $s += $s * 2;
-                          $tmpNum = $tmpNum / 2;
-                          $all += $tmpNum;
+                          $tmpNum += $tmp / 2;
+                          $tmp = $tmp / 2;
+                          $division = $division * 2;
+                          // $all += $tmpNum;
                           $h++;
                       }
 
-                      $s = ($v->turn - 1) * 4;
-                      $i = $all + floor($key/$s);
+                      $tmpNum += floor($key/$division);
+
+                      $i = $tmpNum;
                   }
                   if ($v->win_team_id == $value['id']) {
                       $scores[$i][] = $v->win_score;
@@ -645,16 +751,8 @@ class TournamentController extends Controller
                 }
             }
         }
-        // $cnt = 0;
-        // foreach ($scores as $key => $value) {
-        //     if(empty($scores[$key+1])) {
-        //         $scores[$key+1][0] = '';
-        //         $scores[$key+1][1] = '';
-        //     }
-        // }
+
         ksort($scores);
-        // echo $this->get_last_key($scores);
-        // exit;
         $i = 0;
         while ($i < $this->get_last_key($scores)) {
             if(empty($scores[$i])) {
@@ -664,10 +762,8 @@ class TournamentController extends Controller
             $i++;
         }
         ksort($scores);
-        // print_r($scores);
-        // exit;
         return view('tournament.maingame',
-        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores'));
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
     }
 
     private function get_last_key($array)
