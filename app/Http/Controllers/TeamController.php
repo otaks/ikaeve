@@ -109,7 +109,9 @@ class TeamController extends Controller
                         $data->member_id = $member->id;
                         $data->update();
                     }
-                    $total_xp += $xps[$k];
+                    if (is_numeric($xps[$k])) {
+                        $total_xp += $xps[$k];
+                    }
                 }
                 $data->xp_total = $total_xp;
                 $data->update();
@@ -182,7 +184,9 @@ class TeamController extends Controller
                         $data->member_id = $member->id;
                         $data->update();
                     }
-                    $total_xp += $xps[$k];
+                    if (is_numeric($xps[$k])) {
+                        $total_xp += $xps[$k];
+                    }
                 }
                 $data->xp_total = $total_xp;
                 $data->update();
