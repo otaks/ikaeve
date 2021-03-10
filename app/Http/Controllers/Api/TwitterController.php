@@ -20,18 +20,21 @@ class TwitterController extends Controller
             );
             $userData=$connection->get("users/show", ["screen_name" => $name]);
             $cnt = 0;
-
-            $query = Team::query()
-            ->join('members', 'members.team_id', '=', 'teams.id')
-            ->join('users', 'users.id', '=', 'members.user_id')
-            ->where('event_id', $event)
-            ->where('twitter_id', $userData->id);
-            if ($team) {
-                $query->where('teams.id', '<>', $team);
+            if (isset($userData->id)) {
+                $query = Team::query()
+                ->join('members', 'members.team_id', '=', 'teams.id')
+                ->join('users', 'users.id', '=', 'members.user_id')
+                ->where('event_id', $event)
+                ->where('twitter_id', $userData->id);
+                if ($team) {
+                    $query->where('teams.id', '<>', $team);
+                }
+                $cnt = $query->count();
             }
-            $cnt = $query->count();
 
-            if ($cnt == 0) {
+            if ($cnt == 0 && empty($userData->id)) {
+                $result = ['status' => 400, 'message' => 'twitter名が無効です'];
+            } elseif ($cnt == 0) {
                 $result = ['status' => 200, 'result' => $userData->id];
             } else {
                 $result = ['status' => 400, 'message' => 'この大会に登録済みのtwitter名です'];
