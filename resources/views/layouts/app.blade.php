@@ -52,7 +52,7 @@
                 <li><a href="{{ route('staff.index') }}">スタッフ一覧</a></li>
               @endif
               @if (Auth::user()->role != config('user.role.member'))
-                <!--<li><a href="{{ route('user.password') }}">パスワード変更</a></li>-->
+                <li><a href="{{ route('user.password') }}">パスワード変更</a></li>
               @endif
               <li><a href="{{ route('logout') }}" onclick="event.preventDefault();
                   document.getElementById('logout-form').submit();">logout</a></li>

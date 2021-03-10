@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Service\FlashMessageService;
 use App\Http\Requests\EventRequest;
+use App\Http\Requests\PasswordRequest;
 use Carbon\Carbon;
 use App\Models\User;
 
@@ -16,11 +17,6 @@ class UserController extends Controller
     public function __construct()
     {
        $this->middleware('auth');
-    }
-
-    public function password(Request $request)
-    {
-        return view('user.password');
     }
 
     public function registStore(Request $request)
@@ -69,6 +65,29 @@ class UserController extends Controller
         }
 
         return redirect()->route('staff.index');
+    }
+
+    public function password()
+    {
+        return view('user.password');
+    }
+
+    public function passwordStore(PasswordRequest $request){
+        try {
+            \DB::transaction(function() use($request) {
+
+                $user = \Auth::user();
+                $user->password = Hash::make($request->password);
+                $user->save();
+                FlashMessageService::success('パスワード変更が完了しました');
+            });
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('パスワード変更が失敗しました');
+        }
+
+        return redirect()->route('user.password');
     }
 
 }
