@@ -58,10 +58,10 @@
                                       <br>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }} @endif</td>
                                     <td>
                                         @foreach($data::members($data->id) as $v => $member)
-                                            <a href="{{ route('member.detail', ['id' => $member->id]) }}">{{ $member->name }}</a>
                                             @if($member->user->twitter_nickname)
-                                                &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-lg"></i></a>
+                                                <a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-lg"></i></a>&nbsp;
                                             @endif
+                                            <a href="{{ route('member.detail', ['id' => $member->id]) }}">{{ $member->name }}</a>
                                             <br>
                                         @endforeach
                                     </td>
