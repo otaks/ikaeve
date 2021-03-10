@@ -42,28 +42,30 @@ $(function(){
   // twitter入力
   $('input[name^="twitter[]"]').change(function() {
     name = $(this).val();
-    event_id = $('#event_id').val();
-    team_id = $('#team_id').val();
-    num = $('input[name^="twitter[]"]').index(this);
-    $('input[name^="twitter_id[]"]').eq(num).val('');
-    api = $('#twitterApi').val();
-    url = api+'/'+name+'/'+event_id;
-    if (team_id) {
-      url += '/'+team_id;
-    }
-    axios.get(url).then((res) => {
-      if(res.data.status == 400) {
-        alert(res.data.message);
-        $('input[name^="twitter[]"]').eq(num).val('');
-      } else {
-        $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
-        alert('間違えのないようtwitterアイコンにて確認をお願いします');
+    if (name != '') {
+      event_id = $('#event_id').val();
+      team_id = $('#team_id').val();
+      num = $('input[name^="twitter[]"]').index(this);
+      $('input[name^="twitter_id[]"]').eq(num).val('');
+      api = $('#twitterApi').val();
+      url = api+'/'+name+'/'+event_id;
+      if (team_id) {
+        url += '/'+team_id;
       }
-    }).catch(error => {
-      $('input[name^="twitter[]"]').eq(num).val('');
-      alert('エラーが発生しました');
-      console.log(error);
-    });
+      axios.get(url).then((res) => {
+        if(res.data.status == 400) {
+          alert(res.data.message);
+          $('input[name^="twitter[]"]').eq(num).val('');
+        } else {
+          $('input[name^="twitter_id[]"]').eq(num).val(res.data.result);
+          alert('間違えのないようtwitterアイコンにて確認をお願いします');
+        }
+      }).catch(error => {
+        $('input[name^="twitter[]"]').eq(num).val('');
+        alert('エラーが発生しました');
+        console.log(error);
+      });
+    }
   });
 
   $('[name^="twitterlink[]"]').click(function() {

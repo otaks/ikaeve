@@ -27,7 +27,6 @@
                             <thead>
                             <tr class="thead-light text-center">
                                 <th></th>
-                                <th>No</th>
                                 <th>名前</th>
                                 <th>mail</th>
                                 <th>登録日時</th>
@@ -39,7 +38,6 @@
                                     <td class="text-center">
                                       <a href="{{ route('staff.edit', ['id' => $data->id]) }}"><i class="fas fa-edit fa-lg"></i></a>
                                     </td>
-                                    <td>{{ $data->id }}</td>
                                     <td>{{ $data->name }}</td>
                                     <td>{{ $data->email }}</td>
                                     <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>

@@ -92,10 +92,11 @@ class TeamController extends Controller
                 $ids = $request->member_id;
                 foreach ($ids as $k => $val) {
                     $member = new Member();
-                    $user = User::where('twitter_id', $twitterIds[$k])->first();
+                    $twId = $this->getTwitterId($twitters[$k]);
+                    $user = User::where('twitter_id', $twId)->first();
                     if (!$user) {
                         $user = new User();
-                        $user->twitter_id = $this->getTwitterId($twitters[$k]);
+                        $user->twitter_id = $twId;
                         $user->twitter_nickname = $twitters[$k];
                         $user->save();
                     }
@@ -165,10 +166,11 @@ class TeamController extends Controller
                 $xps = $request->xp;
                 foreach ($ids as $k => $val) {
                     $member = Member::find($val);
-                    $user = User::where('twitter_id', $twitterIds[$k])->first();
+                    $twId = $this->getTwitterId($twitters[$k]);
+                    $user = User::where('twitter_id', $twId)->first();
                     if (!$user) {
                         $user = new User();
-                        $user->twitter_id = $this->getTwitterId($twitters[$k]);
+                        $user->twitter_id = $twId;
                         $user->twitter_nickname = $twitters[$k];
                         $user->save();
                     }
