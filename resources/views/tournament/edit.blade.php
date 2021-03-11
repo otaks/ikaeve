@@ -15,20 +15,22 @@
               <form method="POST">
                   @csrf
                   <h5 class="mt-2">{{ $selectBlock }}&nbsp;チーム一覧</h5>
-                  <div class="row">
-                    <div class="col-1 ml-2 p-1">
-                      <select name="changeBlock" class="form-control">
-                        @foreach ($blocks as $val)
-                          @if($selectBlock != $val->block)
-                            <option value="{{ $val->block }}">{{ $val->block }}</option>
-                          @endif
-                        @endforeach
-                      </select>
-                    </div>
-                    <div class="col-3">
-                        <button type="submit" class="btn btn-primary mt-1">移動</button>
-                    </div>
-                  </div>
+                  @if (1 < count($blocks))
+                      <div class="row">
+                        <div class="col-1 ml-2 p-1">
+                          <select name="changeBlock" class="form-control">
+                            @foreach ($blocks as $val)
+                              @if($selectBlock != $val->block)
+                                <option value="{{ $val->block }}">{{ $val->block }}</option>
+                              @endif
+                            @endforeach
+                          </select>
+                        </div>
+                        <div class="col-3">
+                            <button type="submit" class="btn btn-primary mt-1">移動</button>
+                        </div>
+                      </div>
+                  @endif
                   @foreach ($teams as $k => $team)
                     @if ($k % 12 == 0)
                       <div class="row">
@@ -38,7 +40,8 @@
                             <div class="table-responsive">
                                 <table class="table table-hover table-bordered mt-1">
                                   <tr class="thead-light">
-                                    <th class="p-1 text-center" colspan="3"><input type="checkbox" class="mr-2" name="sheet[]" value="{{ $team->sheet }}">{{ $team->sheet }}</th>
+                                    <th class="p-1 text-center" colspan="3">
+                                      @if (1 < count($blocks))<input type="checkbox" class="mr-2" name="sheet[]" value="{{ $team->sheet }}">@endif{{ $team->sheet }}</th>
                                   </tr>
                                   <tr class="thead-light">
                                     <th class="text-center">No</th>

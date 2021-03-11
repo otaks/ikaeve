@@ -64,6 +64,30 @@
       </select>
     </div>
 </div>
+<div class="form-group row">
+    <label for="name" class="col-md-3 col-6 col-form-label text-md-right required">予選1回戦</label>
+
+    <div class="col-md-6 col-12">
+        <input id="name" type="text" class="form-control @error('pre_rule1') is-invalid @enderror" name="pre_rule1"
+        value="{{ old('pre_rule1', isset($data) ? $data->pre_rule1 : '') }}" autocomplete="pre_rule1">
+    </div>
+</div>
+<div class="form-group row">
+    <label for="name" class="col-md-3 col-6 col-form-label text-md-right required">予選2回戦</label>
+
+    <div class="col-md-6 col-12">
+        <input id="name" type="text" class="form-control @error('pre_rule2') is-invalid @enderror" name="pre_rule2"
+        value="{{ old('pre_rule2', isset($data) ? $data->pre_rule2 : '') }}" autocomplete="pre_rule2">
+    </div>
+</div>
+<div class="form-group row">
+    <label for="name" class="col-md-3 col-6 col-form-label text-md-right required">予選3回戦</label>
+
+    <div class="col-md-6 col-12">
+        <input id="name" type="text" class="form-control @error('pre_rule3') is-invalid @enderror" name="pre_rule3"
+        value="{{ old('pre_rule3', isset($data) ? $data->pre_rule3 : '') }}" autocomplete="pre_rule3">
+    </div>
+</div>
 <div class="form-group row p-1">
     <label for="main_score" class="col-md-3 col-5 col-form-label text-md-right">本戦先取点</label>
 

@@ -43,6 +43,24 @@
                       </td>
                     </tr>
                     <tr>
+                      <th>予選<br>1回線</th>
+                      <td>
+                        {{ $data->pre_rule1 ?? '' }}
+                      </td>
+                    </tr>　
+                    <tr>
+                      <th>予選<br>2回線</th>
+                      <td>
+                        {{ $data->pre_rule2 ?? '' }}
+                      </td>
+                    </tr>　
+                    <tr>
+                      <th>予選<br>3回線</th>
+                      <td>
+                        {{ $data->pre_rule3 ?? '' }}
+                      </td>
+                    </tr>　
+                    <tr>
                       <th>本戦<br>先取点</th>
                       <td>
                         {{ $data->main_score ?? '' }}

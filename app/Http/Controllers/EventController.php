@@ -71,6 +71,9 @@ class EventController extends Controller
                 $data->team_member = $request->team_member;
                 $data->passing_order = $request->passing_order;
                 $data->pre_score = $request->pre_score;
+                $data->pre_rule1 = $request->pre_rule1;
+                $data->pre_rule2 = $request->pre_rule2;
+                $data->pre_rule3 = $request->pre_rule3;
                 $data->main_score = $request->main_score;
                 $data->final_score = $request->final_score;
                 $data->note = $request->note;
@@ -113,6 +116,9 @@ class EventController extends Controller
                 $data->team_member = $request->team_member;
                 $data->passing_order = $request->passing_order;
                 $data->pre_score = $request->pre_score;
+                $data->pre_rule1 = $request->pre_rule1;
+                $data->pre_rule2 = $request->pre_rule2;
+                $data->pre_rule3 = $request->pre_rule3;
                 $data->main_score = $request->main_score;
                 $data->final_score = $request->final_score;
                 $data->note = $request->note;
