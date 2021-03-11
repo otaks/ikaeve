@@ -342,41 +342,67 @@ class TournamentController extends Controller
             $j = 0;
             $tonament = array();
             // foreach ($block as $key => $value) {
-            while ($k < $blockNum) {
+            if ($blockNum == 1) {
                 $i = 0;
                 while ($i < $sheetNum) {
-                  if ($k < $sheetNum) {
-                      $blockStr = $block[$k];
-                  } else {
-                      $blockStr = $block[($k % $sheetNum)];
-                  }
-                  $h = 0;
-                  while ($h < $teamBySheet) {
-                      if ($h == ($teamBySheet - 1) && $k < 8 &&
-                      $k < $hajime[floor($k / $sheetNum)]) {
-                          $h++;
-                          continue;
-                      } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
-                      $k > (15 - $ato[floor($k / $sheetNum)])) {
-                          $h++;
-                          continue;
-                      }
-                      if (empty($teams[$j])) {
-                          break;
-                      }
+                    if ($k < $sheetNum) {
+                        $blockStr = $block[$k];
+                    } else {
+                        $blockStr = $block[($k % $sheetNum)];
+                    }
+                    $h = 0;
+                    while ($h < $teamBySheet) {
+                        if (empty($teams[$j])) {
+                            break;
+                        }
 
-                      $team = Team::find($teams[$j]['id']);
-                      $team->sheet = $i + 1;
-                      $team->block = $blockStr;
-                      $team->number = $h + 1;
-                      $team->update();
-                      $j++;
-                      $h++;
+                        $team = Team::find($teams[$j]['id']);
+                        $team->sheet = $i + 1;
+                        $team->block = $blockStr;
+                        $team->number = $h + 1;
+                        $team->update();
+                        $j++;
+                        $h++;
+                    }
+                    $i++;
+                }
+            } else {
+                while ($k < $blockNum) {
+                    $i = 0;
+                    while ($i < $sheetNum) {
+                      if ($k < $sheetNum) {
+                          $blockStr = $block[$k];
+                      } else {
+                          $blockStr = $block[($k % $sheetNum)];
+                      }
+                      $h = 0;
+                      while ($h < $teamBySheet) {
+                          if ($h == ($teamBySheet - 1) && $k < 8 &&
+                          $k < $hajime[floor($k / $sheetNum)]) {
+                              $h++;
+                              continue;
+                          } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
+                          $k > (15 - $ato[floor($k / $sheetNum)])) {
+                              $h++;
+                              continue;
+                          }
+                          if (empty($teams[$j])) {
+                              break;
+                          }
+
+                          $team = Team::find($teams[$j]['id']);
+                          $team->sheet = $i + 1;
+                          $team->block = $blockStr;
+                          $team->number = $h + 1;
+                          $team->update();
+                          $j++;
+                          $h++;
+                      }
+                      $i++;
                   }
-                  $i++;
-              }
-              $k++;
-          // }
+                  $k++;
+              // }
+                }
             }
 
             FlashMessageService::success('作成が完了しました');

@@ -45,10 +45,10 @@
                             @foreach ($team::members($team->id) as $key => $member)
                               @if ($key < $event->team_member)
                                 <td class="p-2">
-                                  {{ $member->name }}
                                   @if($member->user->twitter_nickname)
                                       &nbsp;<a href="https://twitter.com/{{ $member->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                                   @endif
+                                  {{ $member->name }}
                                 </td>
                               @endif
                             @endforeach

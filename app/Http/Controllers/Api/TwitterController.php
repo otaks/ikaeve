@@ -20,7 +20,7 @@ class TwitterController extends Controller
             );
             $userData=$connection->get("users/show", ["screen_name" => $name]);
             $cnt = 0;
-            if (isset($userData->id)) {
+            if (!empty($userData->id)) {
                 $query = Team::query()
                 ->join('members', 'members.team_id', '=', 'teams.id')
                 ->join('users', 'users.id', '=', 'members.user_id')
