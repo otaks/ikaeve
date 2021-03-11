@@ -31,7 +31,7 @@ class TeamRequest extends FormRequest
             'member_name.*' => 'required|max:50',
             'twitter.*' => 'required|max:20',
             'twitter_id.*' => 'required',
-            'xp.*' => 'max:20|numeric',
+            'xp.*' => 'max:20',
         ];
         return $return;
     }

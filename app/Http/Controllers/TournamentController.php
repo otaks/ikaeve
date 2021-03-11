@@ -29,6 +29,11 @@ class TournamentController extends Controller
             return redirect()->route('event.index');
         }
 
+        $eventDetail = Event::find($event);
+        $rule[1] = $eventDetail->pre_rule1;
+        $rule[2] = $eventDetail->pre_rule2;
+        $rule[3] = $eventDetail->pre_rule3;
+
         //メールアドレス・パスワードアップデート
         // $teams = Team::where('event_id', $event)->get();
         // foreach ($teams as $val) {
@@ -181,7 +186,7 @@ class TournamentController extends Controller
                     }
                 } else {
                     $vs[$team_id][$key]['win'] = false;
-                    $vs[$team_id][$key]['score'] = '?';
+                    $vs[$team_id][$key]['score'] = '';
                 }
             }
             $winScore = $teams[$value->sheet][$value->number]['win_total'];
@@ -212,7 +217,7 @@ class TournamentController extends Controller
             }
         }
         return view('tournament.index',
-        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'scores'));
+        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'scores', 'rule'));
     }
 
     private function chkThreeSided($ary)

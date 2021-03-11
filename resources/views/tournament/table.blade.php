@@ -49,7 +49,7 @@
                             </colgroup>
                             <thead>
                               <tr style="background: #F8EEBE;white-space: nowrap;text-align: left;">
-                                <th colspan="4" class="text-center p-1">第{{ $key }}試合</th>
+                                <th colspan="4" class="text-center p-1">第{{ $key }}試合 @if(isset($rule[$key])) ({{$rule[$key]}}) @endif</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -162,6 +162,11 @@
                             </tbody>
                           </table>
                         @endforeach
+                        <div class="card text-white bg-danger mb-3">
+                          <div class="card-body">
+                            <p class="card-text">勝者がスコア入力（編集ボタン）をして、敗者はそれを承認して対戦結果をトーナメント表に反映させてください</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
