@@ -16,7 +16,6 @@
                         <th>大会名</th>
                         @if (Auth::user()->role == config('user.role.admin'))
                           <th>申請数</th>
-                          <th>承認数</th>
                           <th>開催日時</th>
                          @endif
                     </tr>
@@ -34,7 +33,6 @@
                             <td><a href="{{ route('event.detail', ['id' => $data->id]) }}">{{ $data->name }}</a></td>
                             @if (Auth::user()->role == config('user.role.admin'))
                               <td>{{ count($data->team) }}</td>
-                              <td>{{ $data::approved_team($data->id) }}</td>
                               <td>{{ isset($data->from_date) ? $data->from_date->format('Y/m/d H:i').'〜' : '' }}</td>
                             @endif
                         </tr>
