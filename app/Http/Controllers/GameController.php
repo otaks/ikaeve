@@ -53,7 +53,7 @@ class GameController extends Controller
         // 本戦突破チーム
         $selectTeams = array();
         $cnt = 0;
-        if ($startTurn == 1) {
+        // if ($startTurn == 1) {
             $config = config('game.main'.$event->passing_order);
             foreach ($config as $key => $value) {
                 foreach ($value as $v) {
@@ -63,9 +63,14 @@ class GameController extends Controller
                         ->where('sheet', $k)
                         ->where('pre_rank', $val)
                         ->where('main_game', 1)
-
                         ->first();
                         if ($team) {
+                            $chk = Result::where('event_id', $event->id)
+                            ->where('block', $selectBlock)
+                            ->where('level', 1)
+                            ->where('lose_team_id', $team->id)
+                            ->count();
+                            if (0 < $chk) continue;
                             $selectTeams[$cnt]['name'] = $team->name;
                             $selectTeams[$cnt]['id'] = $team->id;
                             $cnt++;
@@ -73,38 +78,39 @@ class GameController extends Controller
                     }
                 }
             }
-            $gameCnt = $this->getMainGameCnt($selectTeams);
-        } else {
-            $whereTurn = $startTurn;
-            $result = Result::where('event_id', $event->id)
-            ->where('block', $selectBlock)
-            ->where('level', 1)
-            ->where('turn', ($whereTurn - 1))
-            ->get();
-            foreach ($result as $key => $value) {
-                $selectTeams[$cnt]['name'] = $value->winteam->name;
-                $selectTeams[$cnt]['id'] = $value->winteam->id;
-                $cnt++;
-            }
-            $tmpAll = [];
-            $config = config('game.main'.$event->passing_order);
-            foreach ($config as $key => $value) {
-                foreach ($value as $v) {
-                    foreach ($v as $k => $val) {
-                        $team = Team::where('event_id', $event->id)
-                        ->where('block', $selectBlock)
-                        ->where('sheet', $k)
-                        ->where('pre_rank', $val)
-                        ->where('main_game', 1)
-                        ->first();
-                        if ($team) {
-                            $tmpAll[] = $team->id;
-                        }
-                    }
-                }
-            }
-            $gameCnt = $this->getMainGameCnt($tmpAll);
-        }
+            // $gameCnt = $this->getMainGameCnt($selectTeams);
+            $gameCnt = 5;
+        // } else {
+        //     $whereTurn = $startTurn;
+        //     $result = Result::where('event_id', $event->id)
+        //     ->where('block', $selectBlock)
+        //     ->where('level', 1)
+        //     ->where('turn', ($whereTurn - 1))
+        //     ->get();
+        //     foreach ($result as $key => $value) {
+        //         $selectTeams[$cnt]['name'] = $value->winteam->name;
+        //         $selectTeams[$cnt]['id'] = $value->winteam->id;
+        //         $cnt++;
+        //     }
+        //     $tmpAll = [];
+        //     $config = config('game.main'.$event->passing_order);
+        //     foreach ($config as $key => $value) {
+        //         foreach ($value as $v) {
+        //             foreach ($v as $k => $val) {
+        //                 $team = Team::where('event_id', $event->id)
+        //                 ->where('block', $selectBlock)
+        //                 ->where('sheet', $k)
+        //                 ->where('pre_rank', $val)
+        //                 ->where('main_game', 1)
+        //                 ->first();
+        //                 if ($team) {
+        //                     $tmpAll[] = $team->id;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     $gameCnt = $this->getMainGameCnt($tmpAll);
+        // }
         $data = null;
 
         return view('game.main_result',
