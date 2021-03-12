@@ -692,6 +692,7 @@ class TournamentController extends Controller
 
         $teams = array();
         $cnt = 0;
+        $num = 1;
         $config = config('game.main'.$event->passing_order);
         $tmpKey = null;
         foreach ($config as $key => $value) {
@@ -719,16 +720,18 @@ class TournamentController extends Controller
                             $tmpKey = $key;
                         }
                     } elseif ($team) {
-                        $teams[$cnt]['name'] = $team->name;
+                        $teams[$cnt]['name'] = $num.'.'.$team->name;
                         if ($team->abstention == 1) {
                             $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
                         }
                         $teams[$cnt]['id'] = $team->id;
                         $teams[$cnt]['fcode'] = $team->friend_code;
+                        $num++;
                     } else {
                         $teams[$cnt]['name'] = $k.'-'.$val.'位通過';
                         $teams[$cnt]['id'] = null;
                         $teams[$cnt]['fcode'] = null;
+                        $num++;
                     }
                     $cnt++;
                 }
@@ -792,13 +795,23 @@ class TournamentController extends Controller
 
         ksort($scores);
         $i = 0;
-        while ($i < $this->get_last_key($scores)) {
-            if(empty($scores[$i])) {
-                $scores[$i][0] = '';
-                $scores[$i][1] = '';
+        $last = $this->get_last_key($scores);
+        if ($this->get_last_key($scores) == 20) {
+            $last++;
+        }
+        while ($i < $last) {
+            if ($i == '20' && isset($scores[$i])) {
+                $scores['22'][0] = '2';
+                $scores['22'][1] = '0';
+            } else {
+                if(empty($scores[$i])) {
+                    $scores[$i][0] = '';
+                    $scores[$i][1] = '';
+                }
             }
             $i++;
         }
+
         ksort($scores);
         return view('tournament.maingame',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
