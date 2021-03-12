@@ -541,9 +541,16 @@ class TournamentController extends Controller
             }
             $progress[$v->sheet][$v->turn][$num] = true;
         }
+        $teams = array();
+        foreach ($sheets as $value) {
+            $teams[$value->sheet] = Team::where('event_id', $event)
+            ->where('block', $selectBlock)
+            ->where('sheet', $value->sheet)
+            ->count();
+        }
 
         return view('tournament.progress',
-        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'progress'));
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'progress', 'teams'));
     }
 
     public function finalgame(Request $request)
