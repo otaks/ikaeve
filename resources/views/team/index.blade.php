@@ -32,9 +32,9 @@
                         <table class="table table-hover table-bordered">
                             <thead>
                             <tr class="thead-light text-center">
-                                @if (Auth::user()->role != config('user.role.member'))
+                                <!-- @if (Auth::user()->role != config('user.role.member'))
                                   <th></th>
-                                @endif
+                                @endif -->
                                 <th>No</th>
                                 <th>チーム名<br>フレンドコード</th>
                                 <th>メンバー</th>
@@ -48,11 +48,11 @@
                             <tbody>
                               @foreach ($datas as $data)
                                 <tr @if($data->abstention == 1) class="table-secondary" @endif>
-                                    @if (Auth::user()->role != config('user.role.member'))
+                                    <!-- @if (Auth::user()->role != config('user.role.member'))
                                       <td class="text-center">
                                         <a href="{{ route('team.edit', ['id' => $data->id]) }}"><i class="fas fa-edit fa-lg"></i></a>
                                       </td>
-                                    @endif
+                                    @endif -->
                                     <td>{{ $data->no }}</td>
                                     <td><a href="{{ route('team.detail', ['id' => $data->id]) }}">{{ $data->name }}</a>@if($data->abstention == 1) (棄権) @endif
                                       <br>@if($data->friend_code) {{ substr($data->friend_code, 0, 4) }}-{{ substr($data->friend_code, 4, 4) }}-{{ substr($data->friend_code, 8, 4) }} @endif</td>
