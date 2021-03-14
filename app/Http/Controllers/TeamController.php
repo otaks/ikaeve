@@ -232,7 +232,7 @@ class TeamController extends Controller
                     // ランク外(5)で更新
                     if ($data->block != '') {
                         $this->insertResult($data);
-                        $data->pre_rank = 4;
+                        //$data->pre_rank = 4;
                     }
                 }
                 $data->save();
