@@ -40,7 +40,6 @@
                                 <th>メンバー</th>
                                 <th>ブロック</th>
                                 @if (Auth::user()->role != config('user.role.member'))
-                                  <th>棄権</th>
                                   <th>申請日時</th>
                                 @endif
                             </tr>
@@ -73,13 +72,6 @@
                                       @endif
                                     </td>
                                       @if (Auth::user()->role != config('user.role.member'))
-                                      <td class="text-center">
-                                        @if($data->abstention == 0)
-                                            <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 1]) }}" class="btn btn-danger" style="width:70px;">棄権</a>
-                                        @else
-                                            <!-- <a href="{{ route('team.update', ['id' => $data->id, 'column' => 'abstention', 'value'=> 0]) }}" class="btn btn-success" style="width:70px;">取消</a> -->
-                                        @endif
-                                      </td>
                                       <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
                                     @endif
                                 </tr>

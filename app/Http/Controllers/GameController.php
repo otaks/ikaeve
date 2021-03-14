@@ -595,6 +595,7 @@ class GameController extends Controller
                     }
 
                     $id = $request->id;
+                    $loseTeam = find($lose_team);
                     $data = Result::find($id);
                     if (!$data) {
                         $data = new Result();
@@ -609,7 +610,9 @@ class GameController extends Controller
                     $data->sheet = $request->sheet;
                     $data->turn = $request->turn;
                     $data->memo = $request->memo;
-                    if (Auth::user()->role != config('user.role.member')) {
+                    // 相手チーム棄権時、スタッフ・管理人の報告は自動認証
+                    if (Auth::user()->role != config('user.role.member') ||
+                    $loseTeam->abstention == 1) {
                         $data->approval = 1;
                     }
                     $data->unearned_win = $request->unearned_win;
