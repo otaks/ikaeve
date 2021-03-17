@@ -15,6 +15,8 @@ use App\Models\Team;
 use App\Models\Member;
 use App\Models\Result;
 use App\Models\Answer;
+use App\Models\Question;
+use \SplFileObject;
 
 class TeamController extends Controller
 {
@@ -31,23 +33,26 @@ class TeamController extends Controller
         return view('team.index', compact('datas'));
     }
 
-    public function indexStore(Request $request)
+    public function indexStore(Request $request, $page = 1)
     {
         $search['event'] = $request->session()->get('event');
         $search['name'] = $request->name;
         $search['member_name'] = $request->member_name;
 
         $query = Team::query();
-        $query->select('teams.*');
-        $query->join('members', 'members.team_id', '=', 'teams.id');
-        if ($search['event']) {
-            $query->where('event_id', $search['event']);
-        }
+        $query->select('teams.*')
+        ->join('members', 'members.team_id', '=', 'teams.id')
+        ->join('users', 'users.id', '=', 'members.user_id')
+        ->where('event_id', $search['event']);
+
         if ($search['name']) {
             $query->where('teams.name', 'LIKE', '%'.$search['name'].'%');
         }
         if ($search['member_name']) {
-            $query->where('members.name', 'LIKE', '%'.$search['member_name'].'%');
+            $query->where(function($query) use($search){
+                $query->where('members.name', 'LIKE', '%'.$search['member_name'].'%')
+                      ->orWhere('users.twitter_nickname', 'LIKE', '%'.$search['member_name'].'%');
+            });
         }
         $datas = $query->groupBy('teams.id')->orderBy('teams.id', 'DESC')->paginate(config('common.page_num'));
         return view('team.index', compact('datas', 'search'));
@@ -75,56 +80,63 @@ class TeamController extends Controller
 
                 $event_id = $request->session()->get('event');
                 $maxNo = Team::where('event_id', $event_id)->max('no');
-                $data = new Team();
-                $data->no = $maxNo+1;
-                $data->name = $request->name;
-                $data->friend_code = join('', $request->friend_code);
-                $data->note = $request->note;
-                $data->event_id = $event_id;
-                $data->approval = 1;
-                $data->save();
+                $chkTeam = Team::where('event_id', $event_id)
+                ->where('name', $request->name)
+                ->count();
+                if ($chkTeam == 0) {
+                    $data = new Team();
+                    $data->no = $maxNo+1;
+                    $data->name = $request->name;
+                    $data->friend_code = join('', $request->friend_code);
+                    $data->note = $request->note;
+                    $data->event_id = $event_id;
+                    $data->approval = 1;
+                    $data->save();
 
-                $total_xp = 0;
-                $names = $request->member_name;
-                $twitters = $request->twitter;
-                $twitterIds = $request->twitter_id;
-                $xps = $request->xp;
-                $ids = $request->member_id;
-                foreach ($ids as $k => $val) {
-                    $member = new Member();
-                    $twId = $this->getTwitterId($twitters[$k]);
-                    $user = User::where('twitter_id', $twId)->first();
-                    if (!$user) {
-                        $user = new User();
-                        $user->twitter_id = $twId;
-                        $user->twitter_nickname = $twitters[$k];
-                        $user->save();
+                    $total_xp = 0;
+                    $names = $request->member_name;
+                    $twitters = $request->twitter;
+                    $twitterIds = $request->twitter_id;
+                    $xps = $request->xp;
+                    $ids = $request->member_id;
+                    foreach ($ids as $k => $val) {
+                        $member = new Member();
+                        $twitterName = str_replace('@', '', $twitters[$k]);
+                        $twitterName = str_replace('＠', '', $twitterName);
+                        $twId = $this->getTwitterId($twitterName);
+                        $user = User::where('twitter_id', $twId)->first();
+                        if (!$user) {
+                            $user = new User();
+                            $user->twitter_id = $twId;
+                            $user->twitter_nickname = $twitterName;
+                            $user->save();
+                        }
+                        $member->user_id = $user->id;
+                        $member->team_id = $data->id;
+                        $member->name = $names[$k];
+                        $member->xp = $xps[$k];
+                        $member->save();
+                        if ($k == 0) {
+                            $data->member_id = $member->id;
+                            $data->update();
+                        }
+                        if (is_numeric($xps[$k])) {
+                            $total_xp += $xps[$k];
+                        }
                     }
-                    $member->user_id = $user->id;
-                    $member->team_id = $data->id;
-                    $member->name = $names[$k];
-                    $member->xp = $xps[$k];
-                    $member->save();
-                    if ($k == 0) {
-                        $data->member_id = $member->id;
-                        $data->update();
-                    }
-                    if (is_numeric($xps[$k])) {
-                        $total_xp += $xps[$k];
-                    }
-                }
-                $data->xp_total = $total_xp;
-                $data->update();
+                    $data->xp_total = $total_xp;
+                    $data->update();
 
-                $questions = $request->question;
-                $answers = $request->answer;
-                if ($request->question) {
-                    foreach ($questions as $k => $val) {
-                        $answer = new Answer();
-                        $answer->team_id = $data->id;
-                        $answer->question_id = $val;
-                        $answer->note = $answers[$k];
-                        $answer->save();
+                    $questions = $request->question;
+                    $answers = $request->answer;
+                    if ($request->question) {
+                        foreach ($questions as $k => $val) {
+                            $answer = new Answer();
+                            $answer->team_id = $data->id;
+                            $answer->question_id = $val;
+                            $answer->note = $answers[$k];
+                            $answer->save();
+                        }
                     }
                 }
             });
@@ -168,12 +180,14 @@ class TeamController extends Controller
                 $xps = $request->xp;
                 foreach ($ids as $k => $val) {
                     $member = Member::find($val);
-                    $twId = $this->getTwitterId($twitters[$k]);
+                    $twitterName = str_replace('@', '', $twitters[$k]);
+                    $twitterName = str_replace('＠', '', $twitterName);
+                    $twId = $this->getTwitterId($twitterName);
                     $user = User::where('twitter_id', $twId)->first();
                     if (!$user) {
                         $user = new User();
                         $user->twitter_id = $twId;
-                        $user->twitter_nickname = $twitters[$k];
+                        $user->twitter_nickname = $twitterName;
                         $user->save();
                     }
                     $member->user_id = $user->id;
@@ -261,6 +275,11 @@ class TeamController extends Controller
             \DB::transaction(function() use($request) {
 
                 $data = Team::find($request->id);
+                $test = $data->member();
+                foreach ($data->members($request->id) as $value) {
+                    $member = Member::find($value->id);
+                    $member->delete();
+                }
                 $data->delete();
 
             });
@@ -275,6 +294,141 @@ class TeamController extends Controller
         return redirect()->route('team.index');
     }
 
+    public function import(Request $request)
+    {
+        $event_id = $request->session()->get('event');
+        $teams = Team::where('event_id', $event_id)
+        ->where('abstention', 0)
+        ->get();
+        // チーム名重複チェック
+        $nameNgAry = [];
+        // ユーザー重複チェック
+        $userNgAry = [];
+        // フレンドコードチェック
+        $fcodeNgAry = [];
+        foreach ($teams as $value) {
+            $chkTeamName = Team::where('event_id', $event_id)
+            ->where('abstention', 0)
+            ->where('id', '<>', $value->id)
+            ->where('name', $value->name)
+            ->count();
+            if (0 < $chkTeamName) {
+                $nameNgAry[] = $value;
+            }
+            $members = Team::members($value->id);
+            foreach ($members as $member) {
+                $chkUser = Member::select('members.*')
+                ->join('teams', 'teams.id', 'members.team_id')
+                ->where('team_id', '<>', $value->id)
+                ->where('event_id', $event_id)
+                ->where('user_id', $member->user_id)
+                ->first();
+                if (isset($chkUser)) {
+                    $userNgAry[$chkUser->id] = $chkUser->name;
+                }
+            }
+        }
+        asort($userNgAry);
+        $fcodeNgAry = Team::where('event_id', $event_id)
+        ->where('abstention', 0)
+        ->whereRaw('LENGTH(friend_code) < 12')
+        ->get();
+
+        return view('team.import', compact('nameNgAry', 'userNgAry', 'fcodeNgAry'));
+    }
+
+    public function importStore(Request $request)
+    {
+        try {
+            \DB::transaction(function() use($request) {
+                // setlocaleを設定
+                $event_id = $request->session()->get('event');
+                $event = Event::find($event_id);
+
+                setlocale(LC_ALL, 'ja_JP.UTF-8');
+
+                // アップロードしたファイルを取得
+                // 'csv_file' はCSVファイルインポート画面の inputタグのname属性
+                $uploaded_file = $request->file('csv_file');
+
+                // アップロードしたファイルの絶対パスを取得
+                $file_path = $request->file('csv_file')->path($uploaded_file);
+
+                $file = new SplFileObject($file_path);
+                $file->setFlags(SplFileObject::READ_CSV);
+
+                $row_count = 1;
+                foreach ($file as $row)
+                {
+                    // 1行目のヘッダーは取り込まない
+                    if ($row_count > 1)
+                    {
+                        $error = [];
+                        $registDate = $row[0];
+                        $teamName = $row[1];
+                        $maxNo = Team::where('event_id', $event_id)->max('no');
+                        $data = new Team();
+                        $data->no = $maxNo+1;
+                        $data->name = $teamName;
+                        $data->event_id = $event_id;
+                        $data->approval = 1;
+                        $data->created_at = $registDate;
+                        $data->save();
+
+                        $questions = Question::where('event_id', $event_id)->get();
+
+                        $num = 2;
+                        for ($i =0; $i < $event->team_member; $i++) {
+                            $memberName = $row[$num];
+                            $twitterName = $row[$num+1];
+                            $twitterName = str_replace('@', '', $twitterName);
+                            $twitterName = str_replace('＠', '', $twitterName);
+                            $member = new Member();
+                            $user = User::where('twitter_nickname', $twitterName)->first();
+                            if (!$user || !$this->is_alnum($twitterName)) {
+                                $user = new User();
+                                $user->twitter_nickname = $twitterName;
+                                $user->save();
+                            }
+                            $member->user_id = $user->id;
+                            $member->team_id = $data->id;
+                            $member->name = $memberName;
+                            $member->save();
+                            if ($i == 0) {
+                                $num += 2;
+                                $data->friend_code = preg_replace("/[^0-9]/","",$row[$num]);
+                                $data->member_id = $member->id;
+                            }
+                            $num++;
+                        }
+                        $data->note = $row[$num+2];
+                        $data->update();
+
+                        $num += 2;
+                        foreach ($questions as $k => $val) {
+                            $answer = new Answer();
+                            $answer->team_id = $data->id;
+                            $answer->question_id = $val->id;
+                            $answer->note = $row[$num];
+                            $answer->save();
+                            $num++;
+                        }
+
+                    }
+                    $row_count++;
+                }
+                $row_count -= 2;
+                FlashMessageService::success($row_count . '件の登録が完了しました');
+            });
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('登録が失敗しました');
+        }
+
+        return redirect()->route('team.import');
+    }
+
     private function getTwitterId($name)
     {
         $connection = new TwitterOAuth(
@@ -282,7 +436,7 @@ class TeamController extends Controller
             config('twitter.consumer_secret')
         );
         $userData=$connection->get("users/show", ["screen_name" => $name]);
-        return $userData->id;
+        return ($userData) ? $userData->id : null;
     }
 
     private function insertResult($team)
@@ -339,5 +493,12 @@ class TeamController extends Controller
                 $result->save();
             }
         }
+    }
+    private function is_alnum($text) {
+          if (preg_match("/^[a-zA-Z0-9]+$/",$text)) {
+              return TRUE;
+          } else {
+              return FALSE;
+          }
     }
 }

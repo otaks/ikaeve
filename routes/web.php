@@ -93,6 +93,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{id}', 'TeamController@editStore')->where('id', '[0-9]+');
         Route::get('update/{id}/{column}/{value}', 'TeamController@update')->name('update')->where('id', '[0-9]+');
         Route::get('delete/{id}', 'TeamController@delete')->name('delete')->where('id', '[0-9]+');
+        Route::get('import', 'TeamController@import')->name('import');
+        Route::post('import', 'TeamController@importStore');
     });
 
     // 募集
@@ -120,6 +122,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
         Route::get('finalgame', 'TournamentController@finalgame')->name('finalgame');
         Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
+        Route::get('result', 'TournamentController@result')->name('result');
     });
 
     // 対戦
