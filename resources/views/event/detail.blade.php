@@ -7,6 +7,9 @@
                 @if ($recruitBtnView)
                     <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
                 @endif
+                @if (Auth::user()->role == config('user.role.admin'))
+                    <a href="{{ route('team.import') }}" class="btn btn-info">CSV</a>
+                @endif
                 @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
                     <a href="{{ route('tournament.make') }}" class="btn btn-success">対戦表作成</a>
                     <a href="{{ route('tournament.edit') }}" class="btn btn-success">対戦表編集</a>

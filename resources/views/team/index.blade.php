@@ -4,7 +4,7 @@
         <div class="card-body">
             <div class="container-fluid">
                 @include('elements.flash_message')
-                <form method="POST">
+                <form method="POST" action="{{ route('team.index') }}">
                     @csrf
                     <div class="form-group row mb-3 ml-1">
                         @if (Auth::user()->role == config('user.role.admin'))
@@ -12,14 +12,14 @@
                               <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">
                           </div>
                           <div class="col-md-3 col-4 p-1">
-                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名">
+                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー/Twitte名">
                           </div>
                         @else
                           <div class="col-md-3 col-5 p-1">
                               <input type="text" class="form-control" name="name" value="{{ $search['name'] ?? '' }}" placeholder="チーム名">
                           </div>
                           <div class="col-md-3 col-5 p-1">
-                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー名">
+                              <input type="text" class="form-control" name="member_name" value="{{ $search['member_name'] ?? '' }}" placeholder="メンバー/Twitter名">
                           </div>
                         @endif
                         <div class="col-md-2 col-1 p-1">

@@ -10,6 +10,7 @@ use App\Http\Requests\EventRequest;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Event;
+use App\Models\Team;
 
 class EventController extends Controller
 {
@@ -25,26 +26,8 @@ class EventController extends Controller
         $request->session()->forget('block');
         if (Auth::user()->role == config('user.role.admin')) {
             $datas = Event::orderBy('id', 'DESC')->get();
-        // } elseif (Auth::user()->role == config('user.role.staff')) {
-        //     $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
         } else {
             $datas = Event::where('view', 0)->orderBy('id', 'DESC')->get();
-            // $dt = new Carbon();
-            // $datas = Event::where('view', 0)
-            // ->where('from_recruit_date', '<=', $dt)
-            // ->where('to_date', '>=', $dt)
-            // ->orderBy('id', 'DESC')->get();
-            // if (count($datas) == 1) {
-            //     $event = Event::where('view', 0)
-            //     ->where('from_recruit_date', '<=', $dt)
-            //     ->where('to_date', '>=', $dt)
-            //     ->first();
-            //     if ($event) {
-            //         return redirect()->route('event.detail', ['id' => $event->id]);
-            //     } else {
-            //         return redirect()->route('event.index');
-            //     }
-            // }
         }
         return view('event.index', compact('datas'));
     }
@@ -149,6 +132,7 @@ class EventController extends Controller
         if ($data->header_color) {
             $request->session()->put('headerColor', $data->header_color);
         }
+
         $dt = new Carbon();
         $recruitBtnView = Carbon::parse($dt)->between($data->to_recruit_date, $data->from_recruit_date);
         $makeBtnView = Carbon::parse($dt)->between($data->from_recruit_date, $data->from_date);

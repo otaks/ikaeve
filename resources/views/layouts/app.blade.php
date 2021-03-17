@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -31,6 +32,10 @@
     <script src="{{ asset('js/jquery.datetimepicker.full.js') }}" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="{{ asset('js/jquery.multi-select.js') }}" defer></script>
+
+    <!-- Googlegonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=RocknRoll+One&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -72,7 +77,7 @@
         <div id="mask"></div>
 
         <main>
-          <h4>{{ session('eventName') ?? '' }}</h4>
+          <h4 class="eventTitle">{{ session('eventName') ?? '' }}</h4>
         </main>
 
       </div>

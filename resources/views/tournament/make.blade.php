@@ -13,7 +13,7 @@
                         <div class="col-md-6 offset-md-3 col-12">
                           * 現時点で承認済み、かつ棄権していないチームが対象です。<br>
                           * 対象チーム数 → {{ $targetTeamCnt }}チーム<br>
-                          * 作成ブロック数 → {{ $makeBlockCnt }}ブロック<br>
+                          <!-- * 作成ブロック数 → {{ $makeBlockCnt }}ブロック<br> -->
                         </div>
                     </div>
                     <div class="form-group row">

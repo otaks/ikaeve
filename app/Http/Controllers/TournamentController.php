@@ -34,28 +34,6 @@ class TournamentController extends Controller
         $rule[2] = $eventDetail->pre_rule2;
         $rule[3] = $eventDetail->pre_rule3;
 
-        //メールアドレス・パスワードアップデート
-        // $teams = Team::where('event_id', $event)->get();
-        // foreach ($teams as $val) {
-        //   // print_r($val->member);
-        //   // exit;
-        //     foreach ($val->members($val->id) as $key => $value) {
-        //       // print_r($value);
-        //       // exit;
-        //       //   $membr = Member::find($value->member_id);
-        //         $email = $val->block.$val->sheet.'_'.($key+1).'@gmail.com';
-        //         $chk = User::where('email', $email)->count();
-        //         if (0 < $chk) continue;
-        //         $user = User::find($value->user_id);
-        //         $user->email = $email;
-        //         $user->password = '$2y$10$iEM0JsD/kXclEgTNpfVYweijj.W3.RxzcoPsUxl85cjp9aZ0ntQ5K';
-        //         $user->created_at = '2021-01-14 11:49:24';
-        //         $user->save();
-        //         // print_r($user);
-        //         // exit;
-        //     }
-        // }
-
         $member = null;
 
         // 参加している対戦表のチェック
@@ -220,6 +198,21 @@ class TournamentController extends Controller
         compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'scores', 'rule'));
     }
 
+    public function result(Request $request) {
+        $event = $request->session()->get('event');
+        if (!$event) {
+            return redirect()->route('event.index');
+        }
+
+        $eventDetail = Event::find($event);
+        $first = $eventDetail->rankTeam(1);
+        // print_r($first);
+        // exit;
+        $second = $eventDetail->rankTeam(2);
+        $third = $eventDetail->rankTeam(3);
+        return view('tournament.result', compact('eventDetail', 'first', 'second', 'third'));
+    }
+
     private function chkThreeSided($ary)
     {
         $return = $ary;
@@ -316,9 +309,10 @@ class TournamentController extends Controller
             $sheetNum = 16;
             $teamBySheet = 4;
             // ブロック数
-            $blockNum = ceil(count($teams) / ($sheetNum * $teamBySheet));
+            $allNum = count($teams);
+            $blockNum = ceil($allNum / ($sheetNum * $teamBySheet));
             // ブロック単位のチーム数
-            $teamByBlock =  floor(count($teams) / $blockNum);
+            $teamByBlock =  ceil($allNum / $blockNum);
 
             // 奇数チームになるシート数
             $theam3 = (count($teams) % $teamBySheet);
@@ -374,6 +368,9 @@ class TournamentController extends Controller
             } else {
                 while ($k < $blockNum) {
                     $i = 0;
+                    $blockPerTeam = ceil($teamByBlock[$i]/16);
+                    // echo $blockPerTeam;
+                    // exit;
                     while ($i < $sheetNum) {
                       if ($k < $sheetNum) {
                           $blockStr = $block[$k];
@@ -381,18 +378,21 @@ class TournamentController extends Controller
                           $blockStr = $block[($k % $sheetNum)];
                       }
                       $h = 0;
-                      while ($h < $teamBySheet) {
-                          if ($h == ($teamBySheet - 1) && $k < 8 &&
-                          $k < $hajime[floor($k / $sheetNum)]) {
-                              $h++;
-                              continue;
-                          } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
-                          $k > (15 - $ato[floor($k / $sheetNum)])) {
-                              $h++;
-                              continue;
-                          }
+                      while ($h < $blockPerTeam) {
+                          // if ($h == ($teamBySheet - 1) && $k < 8 &&
+                          // $k < $hajime[floor($k / $sheetNum)]) {
+                          //     $h++;
+                          //     continue;
+                          // } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
+                          // $k > (15 - $ato[floor($k / $sheetNum)])) {
+                          //     $h++;
+                          //     continue;
+                          // }
                           if (empty($teams[$j])) {
                               break;
+                          }
+                          if ($i < 6 && 2 < $h) {
+                            break;
                           }
 
                           $team = Team::find($teams[$j]['id']);
@@ -692,8 +692,11 @@ class TournamentController extends Controller
 
         $teams = array();
         $cnt = 0;
-        $num = 1;
-        $config = config('game.main'.$event->passing_order);
+        if ($event_id == 2) {
+            $config = $this->event2gameAry();
+        } else {
+            $config = config('game.main'.$event->passing_order);
+        }
         $tmpKey = null;
         foreach ($config as $key => $value) {
             foreach ($value as $v) {
@@ -714,33 +717,35 @@ class TournamentController extends Controller
                             $cnt--;
                             continue;
                         } else {
-                            $teams[$cnt]['name'] = 'なし';
+                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'.なし';
                             $teams[$cnt]['id'] = null;
                             $teams[$cnt]['fcode'] = null;
                             $tmpKey = $key;
                         }
                     } elseif ($team) {
-                        $teams[$cnt]['name'] = $num.'.'.$team->name;
+                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'.'.$team->name;
                         if ($team->abstention == 1) {
                             $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
                         }
                         $teams[$cnt]['id'] = $team->id;
                         $teams[$cnt]['fcode'] = $team->friend_code;
-                        $num++;
                     } else {
-                        $teams[$cnt]['name'] = $k.'-'.$val.'位通過';
+                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'.'.$k.'-'.$val.'位通過';
                         $teams[$cnt]['id'] = null;
                         $teams[$cnt]['fcode'] = null;
-                        $num++;
                     }
                     $cnt++;
                 }
             }
         }
 
-        // $teamNum = count($sheets) * $event->passing_order;
         $tmpNum = 0;
         $scores = array();
+        $teamNum = count($teams);
+        if ($teamNum / 8 == 3) {
+            $scores[($teamNum-2)][0] = $event->main_score;
+            $scores[($teamNum-2)][1] = '0';
+        }
         foreach ($teams as $key => $value) {
             $result = null;
             $query = Result::query()->where('event_id', $event->id)
@@ -752,14 +757,14 @@ class TournamentController extends Controller
                           ->orWhere('lose_team_id', '=', $value['id']);
                 })->orderBy('turn', 'ASC')->get();
             }
-            // $num = ($value['id']) ? $this->getTeamOrder($value['id'], $config) : 0;
             if (!$result) {
-                if ($value['name'] == 'なし') {
+                preg_match('/[0-9+].[な][し]/u', $value['name'], $m);
+                if ($m) {
                     if ($key%2 == 0) {
                         $scores[floor($key/2)][0] = '0';
-                        $scores[floor($key/2)][1] = '3';
+                        $scores[floor($key/2)][1] = $event->main_score;
                     } else {
-                        $scores[floor($key/2)][0] = '3';
+                        $scores[floor($key/2)][0] = $event->main_score;
                         $scores[floor($key/2)][1] = '0';
                     }
                 }
@@ -783,6 +788,9 @@ class TournamentController extends Controller
                       $tmpNum += floor($key/$division);
 
                       $i = $tmpNum;
+                      if ($v->turn == 5) {
+                          $i = 23;
+                      }
                   }
                   if ($v->win_team_id == $value['id']) {
                       $scores[$i][] = $v->win_score;
@@ -796,18 +804,10 @@ class TournamentController extends Controller
         ksort($scores);
         $i = 0;
         $last = $this->get_last_key($scores);
-        if ($this->get_last_key($scores) == 20) {
-            $last++;
-        }
         while ($i < $last) {
-            if ($i == '20' && isset($scores[$i])) {
-                $scores['22'][0] = '2';
-                $scores['22'][1] = '0';
-            } else {
-                if(empty($scores[$i])) {
-                    $scores[$i][0] = '';
-                    $scores[$i][1] = '';
-                }
+            if(empty($scores[$i])) {
+                $scores[$i][0] = '';
+                $scores[$i][1] = '';
             }
             $i++;
         }
@@ -877,5 +877,60 @@ class TournamentController extends Controller
 
         return view('tournament.teamlist',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event'));
+    }
+
+    private function event2gameAry() {
+
+        $array = [
+                0 => [
+                    ['11' => '1'],
+                    ['4' => '2'],
+                ],
+                1 => [
+                    ['2' => '1'],
+                    ['3' => '2'],
+                ],
+                2 => [
+                    ['11' => '2'],
+                    ['1' => '1'],
+                ],
+                3 => [
+                    ['2' => '2'],
+                    ['4' => '1'],
+                ],
+                4 => [
+                    ['1' => '2'],
+                    ['3' => '1'],
+                ],
+                5 => [
+                    ['12' => '1'],
+                    ['5' => '1'],
+                ],
+                6 => [
+                    ['8' => '2'],
+                    ['6' => '1'],
+                ],
+                7 => [
+                    ['12' => '2'],
+                    ['7' => '1'],
+                ],
+                8 => [
+                    ['9' => '1'],
+                    ['6' => '2'],
+                ],
+                9 => [
+                    ['10' => '1'],
+                    ['8' => '1'],
+                ],
+                10 => [
+                    ['5' => '2'],
+                    ['10' => '2'],
+                ],
+                11 => [
+                    ['7' => '2'],
+                    ['9' => '2'],
+                ]
+        ];
+        return $array;
     }
 }

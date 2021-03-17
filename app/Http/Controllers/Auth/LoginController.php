@@ -60,6 +60,9 @@ class LoginController extends Controller
          }
         $myinfo = User::where('twitter_id', $user->id)->where('role', config('user.role.member'))->first();
         if (!$myinfo) {
+            $myinfo = User::where('twitter_nickname', $user->nickname)->where('role', config('user.role.member'))->first();
+        }
+        if (!$myinfo) {
                $myinfo = User::firstOrCreate(['twitter_id' => $user->id ],
                          [
                            'name' => $user->name,
@@ -68,10 +71,12 @@ class LoginController extends Controller
                           ]
                        );
         } else {
-          if ($myinfo->twitter_auth == 0) {
+          // if ($myinfo->twitter_auth == 0) {
+              $myinfo->twitter_id = $user->id;
+              $myinfo->twitter_nickname = $user->nickname;
               $myinfo->twitter_auth = 1;
               $myinfo->update();
-          }
+          // }
         }
         Auth::login($myinfo);
         return redirect()->to('/event/index'); // homeへ転送

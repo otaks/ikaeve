@@ -18,14 +18,17 @@ class TwitterController extends Controller
                 config('twitter.consumer_key'),
                 config('twitter.consumer_secret')
             );
-            $userData=$connection->get("users/show", ["screen_name" => $name]);
+            $userData = $connection->get("users/show", ["screen_name" => $name]);
             $cnt = 0;
             if (!empty($userData->id)) {
                 $query = Team::query()
                 ->join('members', 'members.team_id', '=', 'teams.id')
                 ->join('users', 'users.id', '=', 'members.user_id')
                 ->where('event_id', $event)
-                ->where('twitter_id', $userData->id);
+                ->where(function($query) use($userData){
+                    $query->where('twitter_id', $userData->id)
+                          ->orWhere('twitter_nickname', $userData->screen_name);
+                });
                 if ($team) {
                     $query->where('teams.id', '<>', $team);
                 }

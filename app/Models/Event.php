@@ -37,4 +37,11 @@ class Event extends BaseModel
     {
         return $this->hasMany('App\Models\Question');
     }
+
+    public function rankTeam($rank)
+    {
+        return Team::where('event_id', $this->id)
+        ->where('final_rank', $rank)
+        ->get();
+    }
 }

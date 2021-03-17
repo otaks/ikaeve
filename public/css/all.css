@@ -15,6 +15,10 @@
   grid-column: 1;
 }
 
+.eventTitle {
+  font-family: 'RocknRoll One', sans-serif;
+}
+
 .tournament {
   background-color: rgb(218, 227, 243);
   padding: 1rem;
