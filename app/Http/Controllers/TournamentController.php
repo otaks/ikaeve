@@ -717,20 +717,20 @@ class TournamentController extends Controller
                             $cnt--;
                             continue;
                         } else {
-                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'.なし';
+                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'）なし';
                             $teams[$cnt]['id'] = null;
                             $teams[$cnt]['fcode'] = null;
                             $tmpKey = $key;
                         }
                     } elseif ($team) {
-                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'.'.$team->name;
+                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$team->name;
                         if ($team->abstention == 1) {
                             $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
                         }
                         $teams[$cnt]['id'] = $team->id;
                         $teams[$cnt]['fcode'] = $team->friend_code;
                     } else {
-                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'.'.$k.'-'.$val.'位通過';
+                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$k.'-'.$val.'位通過';
                         $teams[$cnt]['id'] = null;
                         $teams[$cnt]['fcode'] = null;
                     }

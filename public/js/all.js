@@ -34,7 +34,7 @@ $(function(){
         alert(res.data.message);
       }
     }).catch(error => {
-      alert('エラーが発生しました');
+      // alert('エラーが発生しました');
       console.log(error);
     });
   });
@@ -62,7 +62,7 @@ $(function(){
         }
       }).catch(error => {
         $('input[name^="twitter[]"]').eq(num).val('');
-        alert('エラーが発生しました');
+        // alert('エラーが発生しました');
         console.log(error);
       });
     }
