@@ -7,12 +7,23 @@
                 @if ($recruitBtnView)
                     <a href="{{ route('team.regist') }}" class="btn btn-primary">参加申請</a>
                 @endif
-                @if (Auth::user()->role == config('user.role.admin'))
-                    <a href="{{ route('team.import') }}" class="btn btn-info">CSV</a>
-                @endif
                 @if (Auth::user()->role == config('user.role.admin') && $makeBtnView)
+                    <a href="{{ route('team.import') }}" class="btn btn-info">CSV</a>
                     <a href="{{ route('tournament.make') }}" class="btn btn-success">対戦表作成</a>
                     <a href="{{ route('tournament.edit') }}" class="btn btn-success">対戦表編集</a>
+                @endif
+
+                @if ($member)
+                    <div class="card mt-1 mx-auto text-white bg-info" style="width: 100%;">
+                      <div class="card-header">
+                        <b>チーム名：{{ $member->team->name }}</b>
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text">
+                          <b>ブロック：{{ $member->team->block }} - {{ $member->team->sheet }}</b>
+                        </p>
+                      </div>
+                    </div>
                 @endif
                 <table class="table table-bordered mt-3">
                     <tr>
@@ -46,19 +57,19 @@
                       </td>
                     </tr>
                     <tr>
-                      <th>予選<br>1回線</th>
+                      <th>予選<br>1回戦</th>
                       <td>
                         {{ $data->pre_rule1 ?? '' }}
                       </td>
                     </tr>　
                     <tr>
-                      <th>予選<br>2回線</th>
+                      <th>予選<br>2回戦</th>
                       <td>
                         {{ $data->pre_rule2 ?? '' }}
                       </td>
                     </tr>　
                     <tr>
-                      <th>予選<br>3回線</th>
+                      <th>予選<br>3回戦/th>
                       <td>
                         {{ $data->pre_rule3 ?? '' }}
                       </td>

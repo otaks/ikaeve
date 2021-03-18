@@ -14,6 +14,7 @@
                     </tr>
                     <tr><th>xp</th><td>{{ $data->xp }}</tr>
                 </table>
+                <input type="hidden" name="system" value="{{ $data->user_id }}">
               </div>
           </div>
 @endsection

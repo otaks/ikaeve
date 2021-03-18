@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\Team;
+use App\Models\Member;
 
 class EventController extends Controller
 {
@@ -129,13 +130,18 @@ class EventController extends Controller
           return redirect()->route('event.index');
         }
         $request->session()->put('eventName', $data->name);
-        if ($data->header_color) {
-            $request->session()->put('headerColor', $data->header_color);
+
+        $member = array();
+        // 参加している対戦表のチェック
+        if (Auth::user()->role == config('user.role.member')) {
+            $member = Member::join('teams', 'teams.id', 'members.team_id')
+            ->where('event_id', $data->id)
+            ->where('user_id', Auth::id())->first();
         }
 
         $dt = new Carbon();
         $recruitBtnView = Carbon::parse($dt)->between($data->to_recruit_date, $data->from_recruit_date);
         $makeBtnView = Carbon::parse($dt)->between($data->from_recruit_date, $data->from_date);
-        return view('event.detail', compact('data', 'recruitBtnView', 'makeBtnView'));
+        return view('event.detail', compact('data', 'recruitBtnView', 'makeBtnView', 'member'));
     }
 }

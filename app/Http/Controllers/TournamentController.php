@@ -801,18 +801,20 @@ class TournamentController extends Controller
             }
         }
 
-        ksort($scores);
-        $i = 0;
-        $last = $this->get_last_key($scores);
-        while ($i < $last) {
-            if(empty($scores[$i])) {
-                $scores[$i][0] = '';
-                $scores[$i][1] = '';
+        if (0 < count($scores)) {
+            ksort($scores);
+            $i = 0;
+            $last = $this->get_last_key($scores);
+            while ($i < $last) {
+                if(empty($scores[$i])) {
+                    $scores[$i][0] = '';
+                    $scores[$i][1] = '';
+                }
+                $i++;
             }
-            $i++;
-        }
 
-        ksort($scores);
+            ksort($scores);
+        }
         return view('tournament.maingame',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
     }
