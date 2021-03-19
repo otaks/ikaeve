@@ -595,7 +595,7 @@ class GameController extends Controller
                     }
 
                     $id = $request->id;
-                    $loseTeam = find($lose_team);
+                    $loseTeam = Team::find($lose_team);
                     $data = Result::find($id);
                     if (!$data) {
                         $data = new Result();

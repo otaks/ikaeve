@@ -14,7 +14,7 @@
                 @endif
 
                 @if ($member)
-                    <div class="card mt-1 mx-auto text-white bg-info" style="width: 100%;">
+                    <div class="card mt-1 mx-auto text-center text-white bg-info" style="width: 100%;">
                       <div class="card-header">
                         <b>チーム名：{{ $member->team->name }}</b>
                       </div>

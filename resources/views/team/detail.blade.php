@@ -34,7 +34,7 @@
                       @endif
                     </td>
                     <tr><th>意気込みなど</th><td>{!! nl2br(e($data->note)) !!}</tr>
-                    <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i')  }}</tr>
+                    <tr><th>申請日時</th><td>{{ $data->created_at->format('Y/m/d H:i:s')  }}</tr>
                 </table>
               </div>
               @if ($data::chkTeamMember($data->id))

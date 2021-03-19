@@ -24,7 +24,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/multi-select.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/all.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/all2.css') }}" rel="stylesheet">
 
     <!-- datetimepicker -->
     <link href="{{ asset('css/jquery.datetimepicker.css') }}" rel="stylesheet">
@@ -35,7 +35,7 @@
 
     <!-- Googlegonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=RocknRoll+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app">

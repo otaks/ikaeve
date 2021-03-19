@@ -491,6 +491,9 @@ class TeamController extends Controller
                 $result->approval = 1;
                 $result->unearned_win = 0;
                 $result->save();
+            } elseif ($value->approval == 0) {
+                $result->approval = 1;
+                $result->save();
             }
         }
     }
