@@ -10,9 +10,13 @@
         <a class="nav-link @if($selectBlock == 'finalgame') active @endif"
           href="{{ route('tournament.finalgame') }}">決勝戦</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link @if($selectBlock == 'result') active @endif"
+          href="{{ route('tournament.result') }}">結果</a>
+      </li>
     </ul>
   @endif
-  @if($selectBlock != 'finalgame')
+  @if($selectBlock != 'finalgame' && $selectBlock != 'result')
       <ul class="nav nav-tabs">
         <li class="nav-item">
           <a class="nav-link @if($selectSheet == 'teamlist') active @endif"

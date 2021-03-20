@@ -268,7 +268,7 @@ class GameController extends Controller
                     $data->lose_team_id = $lose_team;
                     $data->win_score = $win_score;
                     $data->lose_score = $lose_score;
-                    $data->block = $request->block;
+                    // $data->block = $request->block;
                     $data->turn = $request->turn;
                     $data->memo = $request->memo;
                     $data->level = 2;
@@ -298,7 +298,7 @@ class GameController extends Controller
                     $turn = $gameCnt;
                     for ($i = 0; $i < $gameCnt; $i++) {
                         $results = Result::where('event_id', $event)
-                        ->where('block', $block)
+                        // ->where('block', $block)
                         ->where('approval', 1)
                         ->where('level', 2)
                         ->where('turn', $turn)
@@ -306,7 +306,7 @@ class GameController extends Controller
 
                         if ($gameCnt == $turn) {
                             $result = Result::where('event_id', $event)
-                            ->where('block', $block)
+                            // ->where('block', $block)
                             ->where('approval', 1)
                             ->where('level', 2)
                             ->where('turn', $turn)

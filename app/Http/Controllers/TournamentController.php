@@ -204,13 +204,18 @@ class TournamentController extends Controller
             return redirect()->route('event.index');
         }
 
+        $selectBlock = 'result';
+        $selectSheet = '';
+        $blocks = Team::getBlocks($event);
+        $sheets = Team::getSheets($event, $selectBlock);
+
         $eventDetail = Event::find($event);
         $first = $eventDetail->rankTeam(1);
         // print_r($first);
         // exit;
         $second = $eventDetail->rankTeam(2);
         $third = $eventDetail->rankTeam(3);
-        return view('tournament.result', compact('eventDetail', 'first', 'second', 'third'));
+        return view('tournament.result', compact('eventDetail', 'first', 'second', 'third', 'selectBlock', 'selectSheet', 'sheets', 'blocks', ));
     }
 
     private function chkThreeSided($ary)
@@ -581,10 +586,10 @@ class TournamentController extends Controller
             ->first();
             if ($team) {
                 $teams[$cnt]['id']   = $team->id;
-                $teams[$cnt]['name'] = $team->name;
+                $teams[$cnt]['name'] = floor($cnt/2+1).'）'.$team->name;
             } else {
                 $teams[$cnt]['id']   = null;
-                $teams[$cnt]['name'] = $value->block . 'ブロック代表';
+                $teams[$cnt]['name'] = floor($cnt/2+1).'）'.$value->block . 'ブロック代表';
             }
             $cnt++;
         }
@@ -788,7 +793,7 @@ class TournamentController extends Controller
                       $tmpNum += floor($key/$division);
 
                       $i = $tmpNum;
-                      if ($v->turn == 5) {
+                      if ($v->turn == 5 && $event->id == 2) {
                           $i = 23;
                       }
                   }
@@ -815,6 +820,7 @@ class TournamentController extends Controller
 
             ksort($scores);
         }
+
         return view('tournament.maingame',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
     }

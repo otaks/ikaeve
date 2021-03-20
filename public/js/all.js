@@ -130,7 +130,7 @@ $(function(){
   $('#selectBlock').change(function() {
     block = $(this).val();
     url = $('#url').val();
-    if (block == 'finalgame') {
+    if (block == 'finalgame' || block == 'result') {
         location.href = url + 'tournament/' + block;
     } else {
         location.href = url + 'tournament/index/' + block;
@@ -142,6 +142,8 @@ $(function(){
     sheet = $(this).val();
     url = $('#url').val();
     if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
+    } else if (sheet == 'result') {
+        location.href = url + 'tournament/' + sheet;
     } else {
       if (!$('#'+sheet).length) {
         location.href = url + 'tournament/index/' + block + '/' + sheet;
@@ -160,6 +162,8 @@ $(function(){
     url = $('#url').val();
     if (sheet == 'progress' || sheet == 'teamlist' || sheet== 'maingame') {
       location.href = url + 'tournament/' + sheet + '/' + block;
+    } else if (sheet == 'result') {
+        location.href = url + 'tournament/' + sheet;
     } else {
         location.href = url + 'tournament/index/' + block + '/' + sheet;
       // } else{
