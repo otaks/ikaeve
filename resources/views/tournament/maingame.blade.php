@@ -26,7 +26,7 @@
   <!-- Styles -->
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   <link href="{{ asset('css/multi-select.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/all.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/all2.css') }}" rel="stylesheet">
 
   <script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
   <script src="{{ asset('js/app.js') }}" defer></script>
@@ -214,7 +214,6 @@
 </head>
 <body onload="init()">
     <div id="app" class="card-body @if ($isMobile) grid-area @endif">
-      @include('elements.flash_message')
       <div class="container-fluid @if ($isMobile) top-area @endif">
         @if ($isMobile)
           @include('tournament/nav_sp')

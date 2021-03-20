@@ -30,7 +30,7 @@
                       <th>ブロック</th>
                       <td>
                       @if($data->block)
-                        {{ $data->block }}&nbsp;{{ $data->sheet }}-{{ $data->number }}
+                        <a href="{{ route('tournament.index', ['block' => $data->block, 'sheet' => $data->sheet]) }}">{{ $data->block }}-{{ $data->sheet }}</a>
                       @endif
                     </td>
                     <tr><th>意気込みなど</th><td>{!! nl2br(e($data->note)) !!}</tr>

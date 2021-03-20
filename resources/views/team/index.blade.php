@@ -66,9 +66,7 @@
                                     </td>
                                     <td>
                                       @if($data->block)
-                                        {{ $data->block }}
-                                        <br>
-                                        {{ $data->sheet }}-{{ $data->number }}
+                                        <a href="{{ route('tournament.index', ['block' => $data->block, 'sheet' => $data->sheet]) }}">{{ $data->block }}-{{ $data->sheet }}</a>
                                       @endif
                                     </td>
                                       @if (Auth::user()->role != config('user.role.member'))

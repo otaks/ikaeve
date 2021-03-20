@@ -683,7 +683,7 @@ class GameController extends Controller
         $selectSheet = 'progress';
 
         $query = Result::query();
-        $query->where('event_id', $event->id);
+        $query->where('event_id', $event->id)->whereNull('level');
         if (isset($search['searchBlock'])) {
             $query->where('block', $search['searchBlock']);
         }
