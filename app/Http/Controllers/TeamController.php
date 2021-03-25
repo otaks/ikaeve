@@ -245,7 +245,7 @@ class TeamController extends Controller
                     // 試合中の途中棄権の場合残りを0-2で登録
                     // ランク外(5)で更新
                     if ($data->block != '') {
-                        $this->insertResult($data);
+                        $this->updateResult($data);
                         //$data->pre_rank = 4;
                     }
                 }
@@ -439,7 +439,7 @@ class TeamController extends Controller
         return ($userData) ? $userData->id : null;
     }
 
-    private function insertResult($team)
+    private function updateResult($team)
     {
         $event = Event::find($team->event_id);
         $teams = Team::where('event_id', $team->event_id)
@@ -484,16 +484,16 @@ class TeamController extends Controller
                         }
                     }
                 }
-            } elseif ($value->abstention == 1) {
-                $result->win_score = 0;
-                $result->abstention = 1;
-                $result->user_id = Auth::id();
-                $result->approval = 1;
-                $result->unearned_win = 0;
-                $result->save();
-            } elseif ($value->approval == 0) {
-                $result->approval = 1;
-                $result->save();
+            // } elseif ($value->abstention == 1) {
+            //     $result->win_score = 0;
+            //     $result->abstention = 1;
+            //     $result->user_id = Auth::id();
+            //     $result->approval = 1;
+            //     $result->unearned_win = 0;
+            //     $result->save();
+            // } elseif ($value->approval == 0) {
+            //     // $result->approval = 1;
+            //     $result->delete();
             }
         }
     }

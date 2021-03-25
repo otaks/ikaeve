@@ -34,7 +34,8 @@
                                     <a href="{{ route('game.delete', ['id' => $data->id]) }}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                   </td>
                                 @endif
-                                <td><a href="{{ route('game.resultDetail', ['id' => $data->id]) }}">{{ $data->id }}</a></td>
+                                <!-- <td><a href="{{ route('game.resultDetail', ['id' => $data->id]) }}">{{ $data->id }}</a></td> -->
+                                <td><a href="{{ route('game.result', ['id' => $data->id]) }}">{{ $data->id }}</a></td>
                                 <td class="text-center">{{ $data->turn }}</td>
                                 <td>{{ $data->winteam->name }}
                                   <span class="badge badge-primary">{{ $data->win_score }}</span>

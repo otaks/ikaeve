@@ -144,5 +144,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('final_result', 'GameController@finalResultStore');
         Route::get('final_resultlist', 'GameController@finalResultlist')->name('finalResultlist');
         Route::post('final_resultlist', 'GameController@finalResultlist')->name('finalResultlist');
+        Route::get('rank_reset/{block?}/{sheet?}', 'GameController@rankReset')->name('rankReset');
+        Route::get('rank_set/{block?}/{sheet?}', 'GameController@rankSet')->name('rankSet');
     });
 });

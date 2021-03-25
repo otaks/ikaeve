@@ -6,8 +6,10 @@
                 <form method="POST" name="resultFrm" action="{{ route('game.result') }}">
                     @csrf
                     <h3 class="mb-3 blue_title offset-md-4 col-md-5">
-                    @if (!$data || (isset($data) && $data->level > 2))
+                    @if ($level == 0)
                         {{ $selectBlock }}ブロック {{ $selectSheet }}第{{ $selectTurn }}試合
+                    @elseif ($level == 1)
+                        本戦 第{{ $selectTurn }}試合
                     @else
                         決勝戦 第{{ $selectTurn }}試合
                     @endif
@@ -105,6 +107,7 @@
                             <input type="hidden" name="turn" value="{{ $selectTurn }}">
                             <input type="hidden" name="id" id="result_id" value="{{ ($data->id) ?? ''}}">
                             <input type="hidden" name="role" id="role" value="{{ Auth::user()->role }}">
+                            <input type="hidden" name="level" value="{{ ($data->level) ?? ''}}">
                         </div>
                     </div>
                     @if ($mode == 'app')

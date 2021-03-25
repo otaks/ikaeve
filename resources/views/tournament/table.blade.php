@@ -1,11 +1,11 @@
 
                   @foreach ($sheets as $k => $select)
                   @if (empty($teams[$select->sheet])) @continue @endif
-                  <div style="background-color: {{ ($selectSheet != 'all' || ($k % 2 == 0 && ($selectSheet == 'all' || $selectSheet == ''))) ? '#F8FAFC' : 'rgb(218, 227, 243)'}}; padding: 1rem; margin-top: 8px;">
+                  <div style="background-color: {{ ($selectSheet != 'all' || ($k % 2 == 0 && ($selectSheet == 'all' || $selectSheet == ''))) ? '#F8FAFC' : 'rgb(218, 227, 243)'}}; padding: 1rem; margin-top: 3px;">
                   <div class="row">
                     <div class="col-md-6 col-12">
-                    <h2 id="{{ ($k + 1) }}">{{ $selectBlock }}-{{ $select->sheet }}ブロック</h2>
-                    <h3 class="blue_title">現在の結果</h3>
+                    <h3 id="{{ ($k + 1) }}">{{ $selectBlock }}-{{ $select->sheet }}ブロック</h3>
+                    <h4 class="blue_title">現在の結果</h4>
                     @php
                       $rank = 0;
                     @endphp
@@ -34,9 +34,15 @@
                       @endforeach
                       </span>
                     @endforeach
+                    @if (Auth::user()->role != config('user.role.member'))
+                      <br>
+                      <br>
+                      <a href="{{ route('game.rankSet', ['block' => $selectBlock, 'sheet' => $select->sheet]) }}" class="btn btn-outline-success btn-sm">順位確定</a>
+                      <a href="{{ route('game.rankReset', ['block' => $selectBlock, 'sheet' => $select->sheet]) }}" class="btn btn-outline-danger btn-sm">順位リセット</a>
+                    @endif
                     </div>
                     <div class="col-md-6 col-12 mt-4">
-                      <h3 class="blue_title mt-3">対戦表</h3>
+                      <h4 class="blue_title mt-3">対戦表</h4>
                         @foreach (config('game.pre') as $key => $val)
                           <table class="table table-bordered">
                             <colgroup>

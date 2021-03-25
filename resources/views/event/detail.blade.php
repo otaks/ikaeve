@@ -12,18 +12,27 @@
                     <a href="{{ route('tournament.make') }}" class="btn btn-success">対戦表作成</a>
                     <a href="{{ route('tournament.edit') }}" class="btn btn-success">対戦表編集</a>
                 @endif
-
-                @if ($member)
-                    <div class="card mt-1 mx-auto text-center text-white bg-info" style="width: 100%;">
-                      <div class="card-header">
-                        <b>チーム名：{{ $member->team->name }}</b>
-                      </div>
-                      <div class="card-body">
-                        <p class="card-text">
-                          <b>ブロック：{{ $member->team->block }} - {{ $member->team->sheet }}</b>
-                        </p>
-                      </div>
-                    </div>
+                @if (Auth::user()->role == config('user.role.member'))
+                    @if ($member)
+                        <div class="card mt-1 mx-auto text-center text-white bg-info" style="width: 100%;">
+                          <div class="card-header">
+                            <b>チーム名：{{ $member->team->name }}</b>
+                          </div>
+                          <div class="card-body">
+                            <p class="card-text">
+                              <b>ブロック：{{ $member->team->block }} - {{ $member->team->sheet }}</b>
+                            </p>
+                          </div>
+                        </div>
+                    @else
+                        <div class="alert alert-danger" role="alert">
+                          <b>該当するチームはありません。</b><br>
+                          参加申請されている方は、申請時のtwitterアカウント名の入力を間違えているか
+                          申請以外のtwitterアカウントでログインしている可能性があります。メニューのチーム一覧より
+                          自チームを検索しログインしているtwitterアカウントが正しいかご確認をお願いいたします。
+                          （twitterアカウントを間違えていた場合はチームの他のメンバーから修正をお願いいたします）
+                        </div>
+                    @endif
                 @endif
                 <table class="table table-bordered mt-3">
                     <tr>

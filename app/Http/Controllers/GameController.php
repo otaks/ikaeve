@@ -112,6 +112,7 @@ class GameController extends Controller
         //     $gameCnt = $this->getMainGameCnt($tmpAll);
         // }
         $data = null;
+        $level = 1;
 
         return view('game.main_result',
             compact('selectBlock',
@@ -119,7 +120,8 @@ class GameController extends Controller
                     'event',
                     'data',
                     'gameCnt',
-                    'startTurn'
+                    'startTurn',
+                    'level'
                   ));
     }
 
@@ -203,6 +205,7 @@ class GameController extends Controller
             $gameCnt = $this->getMainGameCnt($tmpAll);
         }
         $data = null;
+        $level = 2;
 
         return view('game.final_result',
             compact('selectBlock',
@@ -210,7 +213,8 @@ class GameController extends Controller
                     'event',
                     'data',
                     'gameCnt',
-                    'startTurn'
+                    'startTurn',
+                    'level'
                   ));
     }
 
@@ -439,6 +443,9 @@ class GameController extends Controller
           return redirect()->route('event.index');
         }
         $mode = $request->mode;
+        $edit_id = $request->id;
+        $data = null;
+        $level = 0;
 
         $defaultTeam = array();
         $member = null;
@@ -448,73 +455,82 @@ class GameController extends Controller
             ->where('event_id', $event->id)
             ->where('user_id', Auth::id())->first();
         }
-
-        if ($member) {
-            $selectSheet = $member->team->sheet;
-            $selectBlock = $member->team->block;
-            $selectTurn = $request->turn;
-            $selectNum = $request->num;
-            $conf = config('game.pre');
-            if ($conf[$selectTurn]) {
-                $defaultTeam[] = $conf[$selectTurn][$selectNum][0];
-                $defaultTeam[] = $conf[$selectTurn][$selectNum][1];
+        if (isset($edit_id)) {
+            $data = Result::find($edit_id);
+            $selectSheet = $data->sheet;
+            $selectBlock = $data->block;
+            $selectTurn = $data->turn;
+            $selectNum = $data->num;
+            $team1 = null;
+            $team2 = null;
+        }
+        if (!$data) {
+            if ($member) {
+                $selectSheet = $member->team->sheet;
+                $selectBlock = $member->team->block;
+                $selectTurn = $request->turn;
+                $selectNum = $request->num;
+                $conf = config('game.pre');
+                if ($conf[$selectTurn]) {
+                    $defaultTeam[] = $conf[$selectTurn][$selectNum][0];
+                    $defaultTeam[] = $conf[$selectTurn][$selectNum][1];
+                }
+            } else {
+                $selectSheet = $request->sheet;
+                $selectBlock = $request->block;
+                $selectTurn = $request->turn;
+                $selectNum = $request->num;
+                $conf = config('game.pre');
+                if ($conf[$selectTurn]) {
+                    $defaultTeam[] = $conf[$selectTurn][$selectNum][0];
+                    $defaultTeam[] = $conf[$selectTurn][$selectNum][1];
+                }
             }
-        } else {
-            $selectSheet = $request->sheet;
-            $selectBlock = $request->block;
-            $selectTurn = $request->turn;
-            $selectNum = $request->num;
-            $conf = config('game.pre');
-            if ($conf[$selectTurn]) {
-                $defaultTeam[] = $conf[$selectTurn][$selectNum][0];
-                $defaultTeam[] = $conf[$selectTurn][$selectNum][1];
+            if (!$selectBlock) {
+                $selectBlock = 'A';
             }
-        }
-        if (!$selectBlock) {
-            $selectBlock = 'A';
-        }
-        if (!$selectSheet) {
-            $selectSheet = 1;
-        }
-        if (!$selectTurn) {
-            $selectTurn = 1;
-        }
+            if (!$selectSheet) {
+                $selectSheet = 1;
+            }
+            if (!$selectTurn) {
+                $selectTurn = 1;
+            }
 
-        $team1 = Team::where('event_id', $event->id)
-        ->where('block', $selectBlock)
-        ->where('sheet', $selectSheet)
-        ->where('number', $defaultTeam[0])
-        ->first();
+            $team1 = Team::where('event_id', $event->id)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->where('number', $defaultTeam[0])
+            ->first();
 
-        $team2 = Team::where('event_id', $event->id)
-        ->where('block', $selectBlock)
-        ->where('sheet', $selectSheet)
-        ->where('number', $defaultTeam[1])
-        ->first();
+            $team2 = Team::where('event_id', $event->id)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->where('number', $defaultTeam[1])
+            ->first();
 
-        $win = Result::where('win_team_id', $team1->id)
-        ->where('lose_team_id', $team2->id)
-        ->where('block', $selectBlock)
-        ->where('sheet', $selectSheet)
-        ->where('turn', $selectTurn)
-        ->where('event_id', $event->id)
-        ->first();
+            $win = Result::where('win_team_id', $team1->id)
+            ->where('lose_team_id', $team2->id)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->where('turn', $selectTurn)
+            ->where('event_id', $event->id)
+            ->first();
 
-        $lose = Result::where('lose_team_id', $team1->id)
-        ->where('win_team_id', $team2->id)
-        ->where('block', $selectBlock)
-        ->where('sheet', $selectSheet)
-        ->where('turn', $selectTurn)
-        ->where('event_id', $event->id)
-        ->first();
+            $lose = Result::where('lose_team_id', $team1->id)
+            ->where('win_team_id', $team2->id)
+            ->where('block', $selectBlock)
+            ->where('sheet', $selectSheet)
+            ->where('turn', $selectTurn)
+            ->where('event_id', $event->id)
+            ->first();
 
-        $data = null;
-        $left = null;
-        $right = null;
-        if ($win) {
-            $data = $win;
-        } elseif ($lose) {
-            $data = $lose;
+            $left = null;
+            $right = null;
+            if ($win) {
+                $data = $win;
+            } elseif ($lose) {
+                $data = $lose;
+            }
         }
         if ($data) {
             if ($data->winteam->number < $data->loseteam->number) {
@@ -540,6 +556,7 @@ class GameController extends Controller
                 $left['score'] = $data->lose_score;
                 $left['unearned_win'] = $data->unearned_win;
             }
+            $level = $data->level;
         }
         $maxScore = $event->pre_score;
         // if ($data->level == 1) {
@@ -547,7 +564,6 @@ class GameController extends Controller
         // } elseif ($data->level == 2) {
         //     $maxScore = $event->final_score;
         // }
-
         return view('game.result',
             compact('selectSheet',
                     'selectBlock',
@@ -561,6 +577,7 @@ class GameController extends Controller
                     'mode',
                     'event',
                     'maxScore',
+                    'level',
                   ));
     }
 
@@ -619,7 +636,8 @@ class GameController extends Controller
                 }
                 $data->save();
                 // 承認された時点でランク更新
-                if ($request->mode == 'app' || Auth::user()->role != config('user.role.member')) {
+                if ($data->level == 0 &&
+                  ($request->mode == 'app' || Auth::user()->role != config('user.role.member'))) {
                     $this->updatePreRank($event, $request->block, $request->sheet);
                 }
 
@@ -631,8 +649,13 @@ class GameController extends Controller
             report($e);
             FlashMessageService::error($str . 'が失敗しました');
         }
-
-        return redirect()->route('tournament.index', ['block' => $request->block, 'sheet' => $request->sheet]);
+        if ($request->level == 2) {
+            return redirect()->route('game.finalResultlist');
+        } elseif ($request->level == 1) {
+            return redirect()->route('game.mainResultlist', ['block' => $request->block]);
+        } else {
+            return redirect()->route('tournament.index', ['block' => $request->block, 'sheet' => $request->sheet]);
+        }
     }
 
     public function delete(Request $request)
@@ -804,6 +827,61 @@ class GameController extends Controller
                     'event',
                     'maxScore',
                   ));
+    }
+
+    public function rankSet(Request $request)
+    {
+        $req = $request->session()->get('event');
+        $event = Event::find($req);
+        if (!$event) {
+          return redirect()->route('event.index');
+        }
+
+        try {
+            \DB::transaction(function() use($request, $event) {
+                $this->updatePreRank($event->id, $request->block, $request->sheet);
+            });
+
+            FlashMessageService::success('順位確定が完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('順位確定が失敗しました');
+        }
+
+        return redirect()->route('tournament.index', ['block' => $request->block, 'sheet' => $request->sheet]);
+    }
+
+    public function rankReset(Request $request)
+    {
+        $req = $request->session()->get('event');
+        $event = Event::find($req);
+        if (!$event) {
+          return redirect()->route('event.index');
+        }
+        try {
+            \DB::transaction(function() use($request, $req) {
+                $teams = Team::where('event_id', $req)
+                ->where('block', $request->block)
+                ->where('sheet', $request->sheet)
+                ->get();
+
+                foreach ($teams as $val) {
+                    $team = Team::find($val->id);
+                    $team->pre_rank = null;
+                    $team->main_game = 0;
+                    $team->update();
+                }
+            });
+
+            FlashMessageService::success('順位リセットが完了しました');
+
+        } catch (\Exception $e) {
+            report($e);
+            FlashMessageService::error('順位リセットが失敗しました');
+        }
+
+        return redirect()->route('tournament.index', ['block' => $request->block, 'sheet' => $request->sheet]);
     }
 
     private function updatePreRank($event, $selectBlock, $selectSheet) {
