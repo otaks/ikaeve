@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Team;
+use App\Models\TeamEdit;
 
 class TournamentController extends Controller
 {
@@ -24,15 +25,24 @@ class TournamentController extends Controller
                 $target = Team::where('event_id', $event_id)
                 ->where('change_flg', 1)
                 ->first();
+                if (!$target) {
+                    $target = TeamEdit::where('event_id', $event_id)
+                    ->where('change_flg', 1)
+                    ->first();
+                }
             }
             if (strpos($team_id, '_')){
                 $ary = explode('_', $team_id);
-                $team = new Team();
-                $team->event_id = $ary[3];
+                $team = TeamEdit::where('event_id', $ary[3])->first();
+                if (!$team) {
+                  $team = new TeamEdit();
+                  $team->event_id = $ary[3];
+                }
                 $team->name = $ary[0].'ブロックの'.$ary[1].'のNo'.$ary[2];
                 $team->block = $ary[0];
                 $team->sheet = $ary[1];
                 $team->number = $ary[2];
+                $team->change_flg = 1;
                 $team->save();
             }
             if (!$target) {
@@ -58,12 +68,12 @@ class TournamentController extends Controller
                 $target->number = $number;
                 $target->change_flg = 0;
                 $target->update();
-                if (!$team->friend_code) {
-                    $team->delete();
-                }
-                if (!$target->friend_code) {
-                    $target->delete();
-                }
+                // if (!$team->friend_code) {
+                //     $team->delete();
+                // }
+                // if (!$target->friend_code) {
+                //     $target->delete();
+                // }
                 $result = ['status' => 300, 'message' => $team->name.'と'.$target->name.'を入れ替えました'];
             }
         } catch (\Exception $e) {

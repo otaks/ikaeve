@@ -373,8 +373,8 @@ class TournamentController extends Controller
             } else {
                 while ($k < $blockNum) {
                     $i = 0;
-                    $blockPerTeam = ceil($teamByBlock[$i]/16);
-                    // echo $blockPerTeam;
+                    // $blockPerTeam = ceil($teamByBlock[$i]/16);
+                    // echo $teamByBlock[$i];
                     // exit;
                     while ($i < $sheetNum) {
                       if ($k < $sheetNum) {
@@ -383,7 +383,7 @@ class TournamentController extends Controller
                           $blockStr = $block[($k % $sheetNum)];
                       }
                       $h = 0;
-                      while ($h < $blockPerTeam) {
+                      while ($h < 4) {
                           // if ($h == ($teamBySheet - 1) && $k < 8 &&
                           // $k < $hajime[floor($k / $sheetNum)]) {
                           //     $h++;
@@ -395,9 +395,6 @@ class TournamentController extends Controller
                           // }
                           if (empty($teams[$j])) {
                               break;
-                          }
-                          if ($i < 6 && 2 < $h) {
-                            break;
                           }
 
                           $team = Team::find($teams[$j]['id']);
@@ -592,6 +589,11 @@ class TournamentController extends Controller
                 $teams[$cnt]['name'] = floor($cnt/2+1).'）'.$value->block . 'ブロック代表';
             }
             $cnt++;
+        }
+        if (count($blocks)%2 == 1) {
+              $tmp['id']   = null;
+              $tmp['name'] = 'なし';
+              $teams[] = $tmp;
         }
         $tmpNum = 0;
         $scores = array();

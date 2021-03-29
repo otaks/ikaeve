@@ -840,6 +840,21 @@ class GameController extends Controller
         try {
             \DB::transaction(function() use($request, $event) {
                 $this->updatePreRank($event->id, $request->block, $request->sheet);
+                $teams = Team::where('event_id', $event->id)
+                ->where('block', $request->block)
+                ->where('sheet', $request->sheet)
+                //->where('abstention', 0)
+                ->orderBy('pre_rank')
+                ->get();
+                foreach ($teams as $key => $value) {
+                    $team = Team::find($value->id);
+                    if ($event->passing_order < $key + 1) {
+                        $team->main_game = 0;
+                    } else {
+                        $team->main_game = 1;
+                    }
+                    $team->update();
+                }
             });
 
             FlashMessageService::success('順位確定が完了しました');

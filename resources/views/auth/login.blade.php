@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
+                            <div class="col-md-2 offset-md-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
@@ -50,6 +50,9 @@
                                         保存
                                     </label>
                                 </div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <a href="{{ route('password.update') }}">パスワード忘れた方</a>
                             </div>
                         </div>
 
