@@ -6,7 +6,7 @@
             <option value="{{ $val->block }}" {{ ($selectBlock == $val->block) ? 'selected' : ''}}>{{ $val->block }}</option>
           @endforeach
           <option value="finalgame" {{ ($selectBlock == 'finalgame') ? 'selected' : ''}}>決勝戦</option>
-          <option value="result" {{ ($selectBlock == 'result') ? 'selected' : ''}}>結果</option>
+          <!-- <option value="result" {{ ($selectBlock == 'result') ? 'selected' : ''}}>結果</option> -->
         </select>
       </div>
     @else
@@ -20,7 +20,7 @@
           <option value="all" {{ ($selectSheet == 'all') ? 'selected' : ''}}>予選</option>
           <option value="maingame" {{ ($selectSheet == 'maingame') ? 'selected' : ''}}>本戦</option>
           @if (1 == count($blocks))
-            <option value="result" {{ ($selectBlock == 'result' || $selectSheet == 'result') ? 'selected' : ''}}>結果</option>
+            <!-- <option value="result" {{ ($selectBlock == 'result' || $selectSheet == 'result') ? 'selected' : ''}}>結果</option> -->
           @endif
           @foreach ($sheets as $val)
             <option value="{{ $val->sheet }}" {{ ($selectSheet == $val->sheet) ? 'selected' : ''}}>{{ $val->sheet }}</option>

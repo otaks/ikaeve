@@ -317,7 +317,8 @@ class TournamentController extends Controller
             $allNum = count($teams);
             $blockNum = ceil($allNum / ($sheetNum * $teamBySheet));
             // ブロック単位のチーム数
-            $teamByBlock =  ceil($allNum / $blockNum);
+            $teamByBlockNum =  floor($allNum / $blockNum);
+            // 57
 
             // 奇数チームになるシート数
             $theam3 = (count($teams) % $teamBySheet);
@@ -326,17 +327,17 @@ class TournamentController extends Controller
             $j = 0;
             $hajime = array();
             $ato = array();
-            $teamByBlock = array();
+            // $teamByBlock = array();
 
-            while ($j < $blockNum) {
-                $teamByBlock[$j] = floor(count($teams) / $blockNum);
-                if ($j + 1 == $blockNum) {
-                    $teamByBlock[$j] += count($teams) % $blockNum;
-                }
-                $hajime[$j] = floor($blockTheam3 / 2);
-                $ato[$j] = floor($blockTheam3 / 2) + $blockTheam3 % 2;
-                $j++;
-            }
+            // while ($j < $blockNum) {
+            //     $teamByBlock[$j] = floor(count($teams) / $blockNum);
+            //     if ($j + 1 == $blockNum) {
+            //         $teamByBlock[$j] += count($teams) % $blockNum;
+            //     }
+            //     $hajime[$j] = floor($blockTheam3 / 2);
+            //     $ato[$j] = floor($blockTheam3 / 2) + $blockTheam3 % 2;
+            //     $j++;
+            // }
             $block = array();
             for ( $i = 0; $i < $blockNum; $i++ ) {
                 $block[] = chr(65 + $i);
@@ -373,6 +374,7 @@ class TournamentController extends Controller
             } else {
                 while ($k < $blockNum) {
                     $i = 0;
+                    $team4Cnt = 0;
                     // $blockPerTeam = ceil($teamByBlock[$i]/16);
                     // echo $teamByBlock[$i];
                     // exit;
@@ -383,17 +385,32 @@ class TournamentController extends Controller
                           $blockStr = $block[($k % $sheetNum)];
                       }
                       $h = 0;
-                      while ($h < 4) {
-                          // if ($h == ($teamBySheet - 1) && $k < 8 &&
-                          // $k < $hajime[floor($k / $sheetNum)]) {
-                          //     $h++;
-                          //     continue;
-                          // } elseif ($h == ($teamBySheet - 1) && 7 < $k &&
-                          // $k > (15 - $ato[floor($k / $sheetNum)])) {
-                          //     $h++;
-                          //     continue;
-                          // }
-                          if (empty($teams[$j])) {
+                      $maxPerSheetNum = 4;
+                      if (24 <= $teamByBlockNum && $teamByBlockNum <= 32) {
+                        // echo $team4Cnt;
+                        // echo '<br>';
+                        // echo $teamByBlockNum;
+                        // echo '<br>';
+                        // echo ($i + 1);
+                        // echo '<br>aaa';
+                        // exit;
+                          $maxPerSheetNum = 3;
+                      }
+                      if (48 <= $teamByBlockNum) {
+                          $team4Cnt = $teamByBlockNum - 48;
+                          if ($team4Cnt < ($i + 1)) {
+                            // echo $team4Cnt;
+                            // echo '<br>';
+                            // echo $teamByBlockNum;
+                            // echo '<br>';
+                            // echo ($i + 1);
+                            // echo '<br>bb';
+                            // exit;
+                              $maxPerSheetNum = 3;
+                          }
+                      }
+                      while ($h < $maxPerSheetNum) {
+                          if (empty($teams[$j]) ||  (($k + 1) * $teamByBlockNum) < $j) {
                               break;
                           }
 
@@ -404,6 +421,7 @@ class TournamentController extends Controller
                           $team->update();
                           $j++;
                           $h++;
+                          $team4Cnt++;
                       }
                       $i++;
                   }
@@ -411,6 +429,24 @@ class TournamentController extends Controller
               // }
                 }
             }
+            // 振り分けられなかった分のチェック
+            // $chkTeam = Team::where('event_id', $event_id)
+            // ->whereNull('block')
+            // ->get();
+            // foreach ($chkTeam as $val) {
+            //     $sheetAndBlock = Team::select('block', 'sheet')
+            //     ->where('event_id', $event_id)
+            //     ->whereRaw('max(number) < 4')
+            //     ->groupBy('block','sheet')
+            //     ->first();
+            //     print_r($sheetAndBlock);
+            //     exit;
+            //     $upTeam = Team::find($val->id);
+            //     $upTeam->block = $sheetAndBlock->block;
+            //     $upTeam->sheet = $sheetAndBlock->sheet;
+            //     $upTeam->number = 4;
+            //     $upTeam->update();
+            // }
 
             FlashMessageService::success('作成が完了しました');
 
