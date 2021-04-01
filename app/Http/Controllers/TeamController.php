@@ -106,10 +106,13 @@ class TeamController extends Controller
                         $twId = $this->getTwitterId($twitterName);
                         $user = User::where('twitter_id', $twId)->first();
                         if (!$user) {
-                            $user = new User();
-                            $user->twitter_id = $twId;
-                            $user->twitter_nickname = $twitterName;
-                            $user->save();
+                            $user = User::where('twitter_nickname', $twitterName)->first();
+                            if (!$user) {
+                                $user = new User();
+                                $user->twitter_id = $twId;
+                                $user->twitter_nickname = $twitterName;
+                                $user->save();
+                            }
                         }
                         $member->user_id = $user->id;
                         $member->team_id = $data->id;
@@ -185,10 +188,13 @@ class TeamController extends Controller
                     $twId = $this->getTwitterId($twitterName);
                     $user = User::where('twitter_id', $twId)->first();
                     if (!$user) {
-                        $user = new User();
-                        $user->twitter_id = $twId;
-                        $user->twitter_nickname = $twitterName;
-                        $user->save();
+                        $user = User::where('twitter_nickname', $twitterName)->first();
+                        if (!$user) {
+                            $user = new User();
+                            $user->twitter_id = $twId;
+                            $user->twitter_nickname = $twitterName;
+                            $user->save();
+                        }
                     }
                     $member->user_id = $user->id;
                     $member->name = $names[$k];
