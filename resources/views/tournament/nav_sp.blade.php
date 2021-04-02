@@ -31,7 +31,11 @@
     @if(($selectSheet == 'maingame' || ($selectSheet == 'finalgame' || $selectBlock == 'finalgame')) && (isset($member) || Auth::user()->role != config('user.role.member')))
       <div class="col-4 mt-1 p-1">
         <!-- <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">報告一覧</a> -->
-        <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm">報告</a>
+        @if ($selectSheet == 'finalgame' || $selectBlock == 'finalgame')
+            <a href="{{ route('game.finalResult') }}" class="btn btn-success btn-sm">報告</a>
+        @else
+            <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm">報告</a>
+        @endif
       </div>
     @endif
   </div>

@@ -27,6 +27,8 @@
                     @else
                         <div class="alert alert-danger" role="alert">
                           <b>該当するチームはありません。</b><br>
+                          【ログイン中のtwitterアカウント：{{Auth::user()->twitter_nickname}}】
+                          <br>
                           参加申請されている方は、申請時のtwitterアカウント名の入力を間違えているか
                           申請以外のtwitterアカウントでログインしている可能性があります。メニューのチーム一覧より
                           自チームを検索しログインしているtwitterアカウントが正しいかご確認をお願いいたします。
@@ -78,7 +80,7 @@
                       </td>
                     </tr>　
                     <tr>
-                      <th>予選<br>3回戦/th>
+                      <th>予選<br>3回戦</th>
                       <td>
                         {{ $data->pre_rule3 ?? '' }}
                       </td>
