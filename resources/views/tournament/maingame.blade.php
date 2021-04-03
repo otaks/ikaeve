@@ -41,6 +41,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="{{ asset('js/jquery.multi-select.js') }}" defer></script>
   <script id="code">
+    var winner = "";
+
     function init() {
       //if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -71,7 +73,9 @@
         $(go.Node, "Auto",
           { selectable: false },
           $(go.Shape, "RoundedRectangle",
-            { fill: 'darkcyan', stroke: 'darkcyan'},
+            { fill: 'darkcyan'}, 
+            new go.Binding("stroke", "", nodeColor),
+            new go.Binding("strokeWidth", "", nodeWidth),
             // Shape.fill is bound to Node.data.color
             new go.Binding("fill", "color")),
           $(go.Panel, "Table",
@@ -121,8 +125,39 @@
             routing: go.Link.Orthogonal,
             selectable: false
           },
-          $(go.Shape, { strokeWidth: 1, stroke: 'gray' }));
+          $(go.Shape, 
+            new go.Binding("strokeWidth", "", linkWidth),
+            new go.Binding("stroke", "", linkColor),
+          )
+        );
 
+      function linkColor(data) {
+        if (data.player1 == winner || data.player2 == winner){
+          return "orange"
+        }
+        return "gray";
+      }
+
+      function linkWidth(data) {
+        if (data.player1 == winner || data.player2 == winner){
+          return 4;
+        }
+        return 1;
+      }
+
+      function nodeColor(data) {
+        if (data.player1 == winner || data.player2 == winner){
+          return "orange"
+        }
+        return "darkcyan";
+      }
+
+      function nodeWidth(data) {
+        if (data.player1 == winner || data.player2 == winner){
+          return 4;
+        }
+        return 1;
+      }
 
       // Generates the original graph from an array of player names
       function createPairs(players) {
