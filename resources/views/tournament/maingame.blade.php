@@ -74,8 +74,18 @@
           { selectable: false },
           $(go.Shape, "RoundedRectangle",
             { fill: 'darkcyan'}, 
-            new go.Binding("stroke", "", nodeColor),
-            new go.Binding("strokeWidth", "", nodeWidth),
+            new go.Binding("stroke", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return "orange"
+                }
+                return "darkcyan";
+              }),
+            new go.Binding("strokeWidth", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return 4;
+                }
+                return 1;
+              }),
             // Shape.fill is bound to Node.data.color
             new go.Binding("fill", "color")),
           $(go.Panel, "Table",
@@ -126,38 +136,20 @@
             selectable: false
           },
           $(go.Shape, 
-            new go.Binding("strokeWidth", "", linkWidth),
-            new go.Binding("stroke", "", linkColor),
+            new go.Binding("strokeWidth", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return 4;
+                }
+                return 1;
+              }),
+            new go.Binding("stroke", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return "orange"
+                }
+                return "gray";
+              }),
           )
         );
-
-      function linkColor(data) {
-        if (data.player1 == winner || data.player2 == winner){
-          return "orange"
-        }
-        return "gray";
-      }
-
-      function linkWidth(data) {
-        if (data.player1 == winner || data.player2 == winner){
-          return 4;
-        }
-        return 1;
-      }
-
-      function nodeColor(data) {
-        if (data.player1 == winner || data.player2 == winner){
-          return "orange"
-        }
-        return "darkcyan";
-      }
-
-      function nodeWidth(data) {
-        if (data.player1 == winner || data.player2 == winner){
-          return 4;
-        }
-        return 1;
-      }
 
       // Generates the original graph from an array of player names
       function createPairs(players) {
