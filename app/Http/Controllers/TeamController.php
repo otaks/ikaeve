@@ -256,7 +256,7 @@ class TeamController extends Controller
                     } elseif ($data->block != '' && $value == 0) {
                         $result = Result::where('event_id', $data->event_id)
                         ->where('lose_team_id', $data->id)
-                        ->where('updated_at', '<', $data->updated_at)
+                        ->where('unearned_win', 1)
                         ->delete();
                     }
                 }
