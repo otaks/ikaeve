@@ -627,17 +627,16 @@ class GameController extends Controller
                     $data->sheet = $request->sheet;
                     $data->turn = $request->turn;
                     $data->memo = $request->memo;
-                    // 相手チーム棄権時、スタッフ・管理人の報告は自動認証
+                    // 不戦勝、相手チーム棄権時、スタッフ・管理人の報告は自動認証
                     if (Auth::user()->role != config('user.role.member') ||
-                    $loseTeam->abstention == 1) {
+                    $loseTeam->abstention == 1 || $request->unearned_win == 1) {
                         $data->approval = 1;
                     }
                     $data->unearned_win = $request->unearned_win;
                 }
                 $data->save();
                 // 承認された時点でランク更新
-                if ($data->level == 0 &&
-                  ($request->mode == 'app' || Auth::user()->role != config('user.role.member'))) {
+                if ($data->level == 0 && $data->approval == 1) {
                     $this->updatePreRank($event, $request->block, $request->sheet);
                 }
 

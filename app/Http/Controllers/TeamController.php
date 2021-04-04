@@ -250,9 +250,14 @@ class TeamController extends Controller
                     $data->abstention = $value;
                     // 試合中の途中棄権の場合残りを0-2で登録
                     // ランク外(5)で更新
-                    if ($data->block != '') {
+                    if ($data->block != '' && $value == 1) {
                         $this->updateResult($data);
                         //$data->pre_rank = 4;
+                    } elseif ($data->block != '' && $value == 0) {
+                        $result = Result::where('event_id', $data->event_id)
+                        ->where('lose_team_id', $data->id)
+                        ->where('updated_at', '<', $data->updated_at)
+                        ->delete();
                     }
                 }
                 $data->save();
@@ -384,14 +389,16 @@ class TeamController extends Controller
                         $questions = Question::where('event_id', $event_id)->get();
 
                         $num = 2;
+                        $data->friend_code = preg_replace("/[^0-9]/","",$row[$num]);
                         for ($i =0; $i < $event->team_member; $i++) {
                             $memberName = $row[$num];
-                            $twitterName = $row[$num+1];
+                            $num++;
+                            $twitterName = $row[$num];
                             $twitterName = str_replace('@', '', $twitterName);
                             $twitterName = str_replace('＠', '', $twitterName);
                             $member = new Member();
                             $user = User::where('twitter_nickname', $twitterName)->first();
-                            if (!$user || !$this->is_alnum($twitterName)) {
+                            if (!$user) {
                                 $user = new User();
                                 $user->twitter_nickname = $twitterName;
                                 $user->save();
@@ -401,13 +408,12 @@ class TeamController extends Controller
                             $member->name = $memberName;
                             $member->save();
                             if ($i == 0) {
-                                $num += 2;
-                                $data->friend_code = preg_replace("/[^0-9]/","",$row[$num]);
+                                $num++;
                                 $data->member_id = $member->id;
                             }
                             $num++;
                         }
-                        $data->note = $row[$num+2];
+                        $data->note = $row[$num];
                         $data->update();
 
                         $num += 2;
