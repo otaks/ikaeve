@@ -41,6 +41,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="{{ asset('js/jquery.multi-select.js') }}" defer></script>
   <script id="code">
+    var winner = "";
+
     function init() {
       //if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
       var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -71,7 +73,19 @@
         $(go.Node, "Auto",
           { selectable: false },
           $(go.Shape, "RoundedRectangle",
-            { fill: 'darkcyan', stroke: 'darkcyan'},
+            { fill: 'darkcyan'}, 
+            new go.Binding("stroke", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return "orange"
+                }
+                return "darkcyan";
+              }),
+            new go.Binding("strokeWidth", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return 4;
+                }
+                return 1;
+              }),
             // Shape.fill is bound to Node.data.color
             new go.Binding("fill", "color")),
           $(go.Panel, "Table",
@@ -99,7 +113,7 @@
               {
                 column: 1, row: 0,
                 wrap: go.TextBlock.None, margin: 2, width: 25,
-                isMultiline: false, editable: true, textAlign: 'center',
+                isMultiline: false, editable: false, textAlign: 'center',
                 font: '8pt  Segoe UI,sans-serif', stroke: 'white'
               },
               new go.Binding("text", "score1").makeTwoWay()),
@@ -107,7 +121,7 @@
               {
                 column: 1, row: 1,
                 wrap: go.TextBlock.None, margin: 2, width: 25,
-                isMultiline: false, editable: true, textAlign: 'center',
+                isMultiline: false, editable: false, textAlign: 'center',
                 font: '8pt  Segoe UI,sans-serif', stroke: 'white'
               },
               new go.Binding("text", "score2").makeTwoWay())
@@ -121,8 +135,21 @@
             routing: go.Link.Orthogonal,
             selectable: false
           },
-          $(go.Shape, { strokeWidth: 1, stroke: 'gray' }));
-
+          $(go.Shape, 
+            new go.Binding("strokeWidth", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return 4;
+                }
+                return 1;
+              }),
+            new go.Binding("stroke", "", function (data) {
+                if (data.player1 == winner || data.player2 == winner){
+                  return "orange"
+                }
+                return "gray";
+              }),
+          )
+        );
 
       // Generates the original graph from an array of player names
       function createPairs(players) {
@@ -177,6 +204,9 @@
           var data = e.object;
           if (isNaN(data.score1) || isNaN(data.score2)) return;
 
+          var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
+          if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
+
           // TODO: What happens if score1 and score2 are the same number?
 
           // both score1 and score2 are numbers,
@@ -184,10 +214,13 @@
           // if the data.parentNumber is 0, then we set player1 on the parent
           // if the data.parentNumber is 1, then we set player2
           var parent = myDiagram.findNodeForKey(data.parent);
-          if (parent === null) return;
-
-          var playerName = parseInt(data.score1) > parseInt(data.score2) ? data.player1 : data.player2;
-          if (parseInt(data.score1) === parseInt(data.score2)) playerName = "";
+          if (parent === null) {
+            if (playerName !== "") {
+              winner = playerName;
+              myDiagram.rebuildParts();
+            }
+            return;
+          }
 
           myDiagram.model.setDataProperty(parent.data, (data.parentNumber === 0 ? "player1" : "player2"), playerName);
         });
