@@ -90,7 +90,6 @@ class TeamController extends Controller
                     $data->friend_code = join('', $request->friend_code);
                     $data->note = $request->note;
                     $data->event_id = $event_id;
-                    $data->approval = 1;
                     $data->save();
 
                     $total_xp = 0;
@@ -244,21 +243,17 @@ class TeamController extends Controller
             \DB::transaction(function() use($id, $column, $value) {
 
                 $data = Team::find($id);
-                if ($column == 'approval') {
-                    $data->approval = $value;
-                } else {
-                    $data->abstention = $value;
-                    // 試合中の途中棄権の場合残りを0-2で登録
-                    // ランク外(5)で更新
-                    if ($data->block != '' && $value == 1) {
-                        $this->updateResult($data);
-                        //$data->pre_rank = 4;
-                    } elseif ($data->block != '' && $value == 0) {
-                        $result = Result::where('event_id', $data->event_id)
-                        ->where('lose_team_id', $data->id)
-                        ->where('unearned_win', 1)
-                        ->delete();
-                    }
+                $data->abstention = $value;
+                // 試合中の途中棄権の場合残りを0-2で登録
+                // ランク外(5)で更新
+                if ($data->block != '' && $value == 1) {
+                    $this->updateResult($data);
+                    //$data->pre_rank = 4;
+                } elseif ($data->block != '' && $value == 0) {
+                    $result = Result::where('event_id', $data->event_id)
+                    ->where('lose_team_id', $data->id)
+                    ->where('unearned_win', 1)
+                    ->delete();
                 }
                 $data->save();
 
@@ -382,7 +377,6 @@ class TeamController extends Controller
                         $data->no = $maxNo+1;
                         $data->name = $teamName;
                         $data->event_id = $event_id;
-                        $data->approval = 1;
                         $data->created_at = $registDate;
                         $data->save();
 
@@ -491,7 +485,6 @@ class TeamController extends Controller
                           $result->turn = $key;
                           $result->event_id = $event->id;
                           $result->user_id = Auth::id();
-                          $result->approval = 1;
                           $result->save();
                         }
                     }

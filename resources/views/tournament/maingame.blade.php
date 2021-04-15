@@ -73,7 +73,7 @@
         $(go.Node, "Auto",
           { selectable: false },
           $(go.Shape, "RoundedRectangle",
-            { fill: 'darkcyan'}, 
+            { fill: 'darkcyan'},
             new go.Binding("stroke", "", function (data) {
                 if (data.player1 == winner || data.player2 == winner){
                   return "orange"
@@ -135,7 +135,7 @@
             routing: go.Link.Orthogonal,
             selectable: false
           },
-          $(go.Shape, 
+          $(go.Shape,
             new go.Binding("strokeWidth", "", function (data) {
                 if (data.player1 == winner || data.player2 == winner){
                   return 4;

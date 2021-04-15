@@ -102,11 +102,7 @@
                                       @if (!$result)
                                         <span class="badge badge-secondary">未報告</span>
                                       @else
-                                        @if ($result->approval == 0)
-                                          <span class="badge badge-warning">未承認</span>
-                                        @else
-                                          <span class="badge badge-info">確定</span>
-                                        @endif
+                                        <span class="badge badge-info">確定</span>
                                       @endif
                                       <br>
                                       <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-outline-info btn-sm">編集</a>
@@ -122,14 +118,10 @@
                                             @if (!$result)
                                               <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-success btn-sm">報告</a>
                                             @else
-                                              @if ($result->lose_team_id == $member->team_id && $result->approval == 0)
-                                                <a href="{{ route('game.approval', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k, 'mode' => 'app']) }}" class="btn btn-primary btn-sm">承認</a>
-                                              @elseif ($result->approval == 0)
+                                              @if ($result->win_team_id == $member->team_id)
                                                 <a href="{{ route('game.result', ['block' => $selectBlock, 'sheet' => $select->sheet, 'turn' => $key, 'num' => $k]) }}" class="btn btn-outline-info btn-sm">編集</a>
-                                                <br><span class="badge badge-success">承認待</span>
-                                              @else
-                                                <span class="badge badge-info">確定</span>
                                               @endif
+                                              <span class="badge badge-info">確定</span>
                                             @endif
                                           @else
                                             @php
@@ -138,11 +130,7 @@
                                               @if (!$result)
                                                 <span class="badge badge-secondary">未報告</span>
                                               @else
-                                                @if ($result->approval == 0)
-                                                  <span class="badge badge-warning">未承認</span>
-                                                @else
-                                                  <span class="badge badge-info">確定</span>
-                                                @endif
+                                                <span class="badge badge-info">確定</span>
                                             @endif
                                           @endif
                                         @else
@@ -152,11 +140,7 @@
                                             @if (!$result)
                                               <span class="badge badge-secondary">未報告</span>
                                             @else
-                                              @if ($result->approval == 0)
-                                                <span class="badge badge-warning">未承認</span>
-                                              @else
-                                                <span class="badge badge-info">確定</span>
-                                              @endif
+                                              <span class="badge badge-info">確定</span>
                                           @endif
                                         @endif
                                       </td>

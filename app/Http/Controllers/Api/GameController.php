@@ -66,21 +66,4 @@ class GameController extends Controller
         return response()->json($result);
     }
 
-    public function approval($id)
-    {
-        $result = array('status' => '', 'message' => '');
-        try {
-            $data = Result::find($id);
-            $data->approval = 1;
-            $data->save();
-
-            $result = ['status' => 300, 'message' => '承認しました'];
-
-        } catch (\Exception $e) {
-            report($e);
-            $result = ['status' => 400, 'message' => 'システムエラーです'];
-        }
-        return response()->json($result);
-    }
-
 }

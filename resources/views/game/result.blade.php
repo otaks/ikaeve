@@ -82,12 +82,7 @@
                     </div>
                     <div class="form-group row offset-md-4">
                         <div class="col-md-7 text-center">
-                            @if ($mode == 'app')
-                              <button type="button" id="submitBtn" class="btn btn-primary submit">承認</button>
-                              <a href="javascript:history.back()" class="btn btn-outline-secondary">戻る</a>
-                              <input type="hidden" name="approval" value="1">
-                              <input type="hidden" name="mode" value="app">
-                            @elseif ($mode == 'view')
+                            @if ($mode == 'view')
                               <a href="javascript:history.back()" class="btn btn-outline-secondary">戻る</a>
                             @else
                               <button type="button" id="submitBtn" class="btn btn-primary submit" @if(!$data && Auth::user()->role == config('user.role.member')) disabled @endif>登録</button>

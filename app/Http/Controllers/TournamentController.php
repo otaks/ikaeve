@@ -41,15 +41,6 @@ class TournamentController extends Controller
             $member = Member::join('teams', 'teams.id', 'members.team_id')
             ->where('event_id', $event)
             ->where('user_id', Auth::id())->first();
-            if ($member) {
-              $appCnt = Result::where('event_id', $event)
-              ->where('lose_team_id', $member->team_id)
-              ->where('approval', 0)
-              ->count();
-              if (0 < $appCnt) {
-                  FlashMessageService::error('未承認の試合があります。確認の上承認をお願いします。');
-              }
-            }
         }
         if ($member && $request->block == '') {
             $selectSheet = $member->team->sheet;
@@ -81,18 +72,15 @@ class TournamentController extends Controller
             ->orderBy('sheet')
             ->orderBy('pre_rank')
             ->orderBy('number')
-            ->where('approval', 1)
             ->get();
 
             $games = Result::where('event_id', $event)
             ->where('block', $selectBlock)
-            ->where('approval', 1)
             ->get();
         } else {
             $results = Team::where('event_id', $event)
             ->where('block', $selectBlock)
             ->where('sheet', $selectSheet)
-            ->where('approval', 1)
             ->orderBy('pre_rank')
             ->orderBy('number')
             ->get();
@@ -100,7 +88,6 @@ class TournamentController extends Controller
             $games = Result::where('event_id', $event)
             ->where('block', $selectBlock)
             ->where('sheet', $selectSheet)
-            ->where('approval', 1)
             ->get();
         }
         $teams = array();
@@ -130,12 +117,10 @@ class TournamentController extends Controller
                 $win = Result::where('win_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('lose_team_id', $v->id)
-                ->where('approval', 1)
                 ->first();
                 $lose = Result::where('lose_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('win_team_id', $v->id)
-                ->where('approval', 1)
                 ->first();
                 if ($win || $lose) {
                     if ($win) {
@@ -567,7 +552,6 @@ class TournamentController extends Controller
         $progress = array();
         $results = Result::where('event_id', $event)
         ->where('block', $selectBlock)
-        ->where('approval', 1)
         ->orderBy('sheet')
         ->orderBy('turn')
         ->get();

@@ -46,7 +46,6 @@ class Team extends BaseModel
         $query = Team::query();
         $query->select('teams.*')
         ->where('event_id', $id)
-        ->where('approval', 1)
         ->where('abstention', 0);
         if ($rule == 1) {
             $query->orderBy('xp_total', 'desc');

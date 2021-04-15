@@ -242,45 +242,35 @@ class GameController extends Controller
 
                 $event = $request->session()->get('event');
                 $blocks = Team::getBlocks($event);
-                if ($request->mode == 'app') {
-                  $id = $request->id;
-                  $data = Result::find($id);
-                  // print_r($data);
-                  $data->approval = 1;
-                } else {
-                    $teams = $request->team;
-                    $scores = $request->score;
-                    $win_team = $teams[1];
-                    $lose_team = $teams[0];
-                    $win_score = $scores[1];
-                    $lose_score = $scores[0];
-                    if ($scores[1] < $scores[0]) {
-                        $win_team = $teams[0];
-                        $lose_team = ($teams[1] == 0) ? NULL : $teams[1];
-                        $win_score = $scores[0];
-                        $lose_score = $scores[1];
-                    }
-
-                    $id = $request->id;
-                    $data = Result::find($id);
-                    if (!$data) {
-                        $data = new Result();
-                    }
-                    $data->event_id = $event;
-                    $data->user_id = Auth::id();
-                    $data->win_team_id = $win_team;
-                    $data->lose_team_id = $lose_team;
-                    $data->win_score = $win_score;
-                    $data->lose_score = $lose_score;
-                    // $data->block = $request->block;
-                    $data->turn = $request->turn;
-                    $data->memo = $request->memo;
-                    $data->level = 2;
-                    // if (Auth::user()->role != config('user.role.member')) {
-                        $data->approval = 1;
-                    // }
-                    $data->unearned_win = $request->unearned_win;
+                $teams = $request->team;
+                $scores = $request->score;
+                $win_team = $teams[1];
+                $lose_team = $teams[0];
+                $win_score = $scores[1];
+                $lose_score = $scores[0];
+                if ($scores[1] < $scores[0]) {
+                    $win_team = $teams[0];
+                    $lose_team = ($teams[1] == 0) ? NULL : $teams[1];
+                    $win_score = $scores[0];
+                    $lose_score = $scores[1];
                 }
+
+                $id = $request->id;
+                $data = Result::find($id);
+                if (!$data) {
+                    $data = new Result();
+                }
+                $data->event_id = $event;
+                $data->user_id = Auth::id();
+                $data->win_team_id = $win_team;
+                $data->lose_team_id = $lose_team;
+                $data->win_score = $win_score;
+                $data->lose_score = $lose_score;
+                // $data->block = $request->block;
+                $data->turn = $request->turn;
+                $data->memo = $request->memo;
+                $data->level = 2;
+                    $data->unearned_win = $request->unearned_win;
                 $data->save();
 
                 $tmpAll = [];
@@ -303,7 +293,6 @@ class GameController extends Controller
                     for ($i = 0; $i < $gameCnt; $i++) {
                         $results = Result::where('event_id', $event)
                         // ->where('block', $block)
-                        ->where('approval', 1)
                         ->where('level', 2)
                         ->where('turn', $turn)
                         ->get();
@@ -311,7 +300,6 @@ class GameController extends Controller
                         if ($gameCnt == $turn) {
                             $result = Result::where('event_id', $event)
                             // ->where('block', $block)
-                            ->where('approval', 1)
                             ->where('level', 2)
                             ->where('turn', $turn)
                             ->first();
@@ -347,6 +335,17 @@ class GameController extends Controller
         return redirect()->route('tournament.finalgame');
     }
 
+    private function chkDistinctResult($team_id, $level, $turn) {
+          $cnt = $query->where(function($query) use($team_id){
+              $query->where('win_team_id', '=', $team_id])
+                    ->orWhere('lose_team_id', '=', $team_id]);
+          })
+          ->where('level', $level)
+          ->where('turn', $turn)
+          ->count();
+          return ($cnt == 0) ? true : false;
+    }
+
     public function mainResultStore(Request $request)
     {
         if ($request->mode == 'app') {
@@ -358,45 +357,35 @@ class GameController extends Controller
             \DB::transaction(function() use($request, $str) {
 
                 $event = $request->session()->get('event');
-                if ($request->mode == 'app') {
-                  $id = $request->id;
-                  $data = Result::find($id);
-                  // print_r($data);
-                  $data->approval = 1;
-                } else {
-                    $teams = $request->team;
-                    $scores = $request->score;
-                    $win_team = $teams[1];
-                    $lose_team = $teams[0];
-                    $win_score = $scores[1];
-                    $lose_score = $scores[0];
-                    if ($scores[1] < $scores[0]) {
-                        $win_team = $teams[0];
-                        $lose_team = ($teams[1] == 0) ? NULL : $teams[1];
-                        $win_score = $scores[0];
-                        $lose_score = $scores[1];
-                    }
-
-                    $id = $request->id;
-                    $data = Result::find($id);
-                    if (!$data) {
-                        $data = new Result();
-                    }
-                    $data->event_id = $event;
-                    $data->user_id = Auth::id();
-                    $data->win_team_id = $win_team;
-                    $data->lose_team_id = $lose_team;
-                    $data->win_score = $win_score;
-                    $data->lose_score = $lose_score;
-                    $data->block = $request->block;
-                    $data->turn = $request->turn;
-                    $data->memo = $request->memo;
-                    $data->level = 1;
-                    // if (Auth::user()->role != config('user.role.member')) {
-                        $data->approval = 1;
-                    // }
-                    $data->unearned_win = $request->unearned_win;
+                $teams = $request->team;
+                $scores = $request->score;
+                $win_team = $teams[1];
+                $lose_team = $teams[0];
+                $win_score = $scores[1];
+                $lose_score = $scores[0];
+                if ($scores[1] < $scores[0]) {
+                    $win_team = $teams[0];
+                    $lose_team = ($teams[1] == 0) ? NULL : $teams[1];
+                    $win_score = $scores[0];
+                    $lose_score = $scores[1];
                 }
+
+                $id = $request->id;
+                $data = Result::find($id);
+                if (!$data) {
+                    $data = new Result();
+                }
+                $data->event_id = $event;
+                $data->user_id = Auth::id();
+                $data->win_team_id = $win_team;
+                $data->lose_team_id = $lose_team;
+                $data->win_score = $win_score;
+                $data->lose_score = $lose_score;
+                $data->block = $request->block;
+                $data->turn = $request->turn;
+                $data->memo = $request->memo;
+                $data->level = 1;
+                $data->unearned_win = $request->unearned_win;
                 $data->save();
 
                     $tmpAll = [];
@@ -583,35 +572,27 @@ class GameController extends Controller
 
     public function resultStore(Request $request)
     {
-        if ($request->mode == 'app') {
-            $str = '承認';
-        } else {
-            $str = '報告';
-        }
         try {
-            \DB::transaction(function() use($request, $str) {
+            \DB::transaction(function() use($request) {
+
 
                 $event = $request->session()->get('event');
-                if ($request->mode == 'app') {
-                  $id = $request->id;
-                  $data = Result::find($id);
-                  // print_r($data);
-                  $data->approval = 1;
-                } else {
-                    $teams = $request->team;
-                    $scores = $request->score;
-                    $win_team = $teams[1];
-                    $lose_team = $teams[0];
-                    $win_score = $scores[1];
-                    $lose_score = $scores[0];
-                    if ($scores[1] < $scores[0]) {
-                        $win_team = $teams[0];
-                        $lose_team = $teams[1];
-                        $win_score = $scores[0];
-                        $lose_score = $scores[1];
-                    }
+                $teams = $request->team;
+                $scores = $request->score;
+                $win_team = $teams[1];
+                $lose_team = $teams[0];
+                $win_score = $scores[1];
+                $lose_score = $scores[0];
+                if ($scores[1] < $scores[0]) {
+                    $win_team = $teams[0];
+                    $lose_team = $teams[1];
+                    $win_score = $scores[0];
+                    $lose_score = $scores[1];
+                }
 
-                    $id = $request->id;
+                $id = $request->id;
+                if ((empty($id) && $this->chkDistinctResult($win_team, 0, $request->turn) == true) ||
+                (!empty($id) && $this->chkDistinctResult($win_team, 0, $request->turn) == false)) {
                     $loseTeam = Team::find($lose_team);
                     $data = Result::find($id);
                     if (!$data) {
@@ -627,26 +608,20 @@ class GameController extends Controller
                     $data->sheet = $request->sheet;
                     $data->turn = $request->turn;
                     $data->memo = $request->memo;
-                    // 不戦勝、相手チーム棄権時、スタッフ・管理人の報告は自動認証
-                    if (Auth::user()->role != config('user.role.member') ||
-                    $loseTeam->abstention == 1 || $request->unearned_win == 1) {
-                        $data->approval = 1;
-                    }
                     $data->unearned_win = $request->unearned_win;
-                }
-                $data->save();
-                // 承認された時点でランク更新
-                if ($data->level == 0 && $data->approval == 1) {
+                    $data->save();
+
+                    // ランク更新
                     $this->updatePreRank($event, $request->block, $request->sheet);
                 }
 
             });
 
-            FlashMessageService::success($str . 'が完了しました');
+            FlashMessageService::success('報告が完了しました');
 
         } catch (\Exception $e) {
             report($e);
-            FlashMessageService::error($str . 'が失敗しました');
+            FlashMessageService::error('報告が失敗しました');
         }
         if ($request->level == 2) {
             return redirect()->route('game.finalResultlist');
@@ -692,7 +667,6 @@ class GameController extends Controller
           return redirect()->route('event.index');
         }
         $search = array();
-        $search['approval'] = $request->approval;
         $search['searchBlock'] = $request->searchBlock;
         $search['searchSheet'] = $request->searchSheet;
         $selectBlock = $request->block;
@@ -712,9 +686,6 @@ class GameController extends Controller
         if (isset($search['searchSheet'])) {
             $query->where('sheet', $search['searchSheet']);
         }
-        if (isset($search['approval'])) {
-            $query->where('approval', $search['approval']);
-        }
         $datas = $query->orderBy('id', 'DESC')->paginate(config('common.page_num'));
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
@@ -729,7 +700,6 @@ class GameController extends Controller
           return redirect()->route('event.index');
         }
         $search = array();
-        $search['approval'] = $request->approval;
         $search['searchBlock'] = $request->searchBlock;
         $selectBlock = $request->block;
         if (!$selectBlock) {
@@ -742,9 +712,6 @@ class GameController extends Controller
         ->where('level', 1);
         if (isset($search['searchBlock'])) {
             $query->where('block', $search['searchBlock']);
-        }
-        if (isset($search['approval'])) {
-            $query->where('approval', $search['approval']);
         }
         $datas = $query->orderBy('id', 'DESC')->paginate(config('common.page_num'));
         $blocks = Team::getBlocks($event->id);
@@ -760,7 +727,6 @@ class GameController extends Controller
           return redirect()->route('event.index');
         }
         $search = array();
-        $search['approval'] = $request->approval;
         $search['searchBlock'] = $request->searchBlock;
         $selectBlock = 'finalgame';
         $selectSheet = null;
@@ -770,9 +736,6 @@ class GameController extends Controller
         ->where('level', 2);
         if (isset($search['searchBlock'])) {
             $query->where('block', $search['searchBlock']);
-        }
-        if (isset($search['approval'])) {
-            $query->where('approval', $search['approval']);
         }
         $datas = $query->orderBy('id', 'DESC')->paginate(config('common.page_num'));
         $blocks = Team::getBlocks($event->id);
@@ -814,6 +777,7 @@ class GameController extends Controller
         $right['number'] = $data->loseteam->number;
         $right['score'] = $data->lose_score;
         $right['unearned_win'] = $data->unearned_win;
+        $level = $data->level;
 
         return view('game.result',
             compact('selectSheet',
@@ -825,6 +789,7 @@ class GameController extends Controller
                     'mode',
                     'event',
                     'maxScore',
+                    'level',
                   ));
     }
 
@@ -902,7 +867,6 @@ class GameController extends Controller
         $results = Team::where('event_id', $event)
         ->where('block', $selectBlock)
         ->where('sheet', $selectSheet)
-        ->where('approval', 1)
         ->orderBy('number')
         ->get();
 
@@ -928,12 +892,10 @@ class GameController extends Controller
                 $win = Result::where('win_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('lose_team_id', $v->id)
-                ->where('approval', 1)
                 ->first();
                 $lose = Result::where('lose_team_id', $team_id)
                 ->where('event_id', $event)
                 ->where('win_team_id', $v->id)
-                ->where('approval', 1)
                 ->first();
                 if ($win || $lose) {
                     if ($win) {
@@ -976,7 +938,6 @@ class GameController extends Controller
         $resultCnt = Result::where('event_id', $event)
         ->where('block', $selectBlock)
         ->where('sheet', $selectSheet)
-        ->where('approval', 1)
         ->count();
         if (2 < $resultCnt) {
             $ranks = $this->chkThreeSided($ranks);
@@ -1085,7 +1046,6 @@ class GameController extends Controller
         $cnt = Result::where('event_id', $event_id)
         ->where('block', $block)
         ->where('sheet', $sheet)
-        ->where('approval', 1)
         ->count();
 
         if ($cnt >= Team::getGameCnt($event_id, $block, $sheet)) {
@@ -1127,7 +1087,6 @@ class GameController extends Controller
         for ($i = 0; $i < $gameCnt; $i++) {
             $results = Result::where('event_id', $event->id)
             ->where('block', $block)
-            ->where('approval', 1)
             ->where('level', 1)
             ->where('turn', $turn)
             ->get();
@@ -1135,7 +1094,6 @@ class GameController extends Controller
             if ($gameCnt == $turn) {
                 $result = Result::where('event_id', $event->id)
                 ->where('block', $block)
-                ->where('approval', 1)
                 ->where('level', 1)
                 ->where('turn', $turn)
                 ->first();
