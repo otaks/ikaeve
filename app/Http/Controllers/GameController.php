@@ -335,16 +335,16 @@ class GameController extends Controller
         return redirect()->route('tournament.finalgame');
     }
 
-    private function chkDistinctResult($team_id, $level, $turn) {
-          $cnt = $query->where(function($query) use($team_id){
-              $query->where('win_team_id', '=', $team_id])
-                    ->orWhere('lose_team_id', '=', $team_id]);
-          })
-          ->where('level', $level)
-          ->where('turn', $turn)
-          ->count();
-          return ($cnt == 0) ? true : false;
-    }
+    // private function chkDistinctResult($team_id, $level, $turn) {
+    //       $cnt = $query->where(function($query) use($team_id){
+    //           $query->where('win_team_id', '=', $team_id)
+    //                 ->orWhere('lose_team_id', '=', $team_id);
+    //       })
+    //       ->where('level', $level)
+    //       ->where('turn', $turn)
+    //       ->count();
+    //       return ($cnt == 0) ? true : false;
+    // }
 
     public function mainResultStore(Request $request)
     {
@@ -406,11 +406,11 @@ class GameController extends Controller
                             }
                         }
                     }
-                    $gameCnt = $this->getMainGameCnt($tmpAll);
-
-                    if ($request->turn == $gameCnt) {
-                        $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
-                    }
+                    // $gameCnt = $this->getMainGameCnt($tmpAll);
+                    //
+                    // if ($request->turn == $gameCnt) {
+                    //     $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
+                    // }
 
             });
 
@@ -591,29 +591,25 @@ class GameController extends Controller
                 }
 
                 $id = $request->id;
-                if ((empty($id) && $this->chkDistinctResult($win_team, 0, $request->turn) == true) ||
-                (!empty($id) && $this->chkDistinctResult($win_team, 0, $request->turn) == false)) {
-                    $loseTeam = Team::find($lose_team);
-                    $data = Result::find($id);
-                    if (!$data) {
-                        $data = new Result();
-                    }
-                    $data->event_id = $event;
-                    $data->user_id = Auth::id();
-                    $data->win_team_id = $win_team;
-                    $data->lose_team_id = $lose_team;
-                    $data->win_score = $win_score;
-                    $data->lose_score = $lose_score;
-                    $data->block = $request->block;
-                    $data->sheet = $request->sheet;
-                    $data->turn = $request->turn;
-                    $data->memo = $request->memo;
-                    $data->unearned_win = $request->unearned_win;
-                    $data->save();
-
-                    // ランク更新
-                    $this->updatePreRank($event, $request->block, $request->sheet);
+                $data = Result::find($id);
+                if (!$data) {
+                    $data = new Result();
                 }
+                $data->event_id = $event;
+                $data->user_id = Auth::id();
+                $data->win_team_id = $win_team;
+                $data->lose_team_id = $lose_team;
+                $data->win_score = $win_score;
+                $data->lose_score = $lose_score;
+                $data->block = $request->block;
+                $data->sheet = $request->sheet;
+                $data->turn = $request->turn;
+                $data->memo = $request->memo;
+                $data->unearned_win = $request->unearned_win;
+                $data->save();
+
+                // ランク更新
+                $this->updatePreRank($event, $request->block, $request->sheet);
 
             });
 
