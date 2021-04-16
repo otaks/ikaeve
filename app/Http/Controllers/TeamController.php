@@ -384,6 +384,7 @@ class TeamController extends Controller
 
                         $num = 2;
                         $data->friend_code = preg_replace("/[^0-9]/","",$row[$num]);
+                        $num++;
                         for ($i =0; $i < $event->team_member; $i++) {
                             $memberName = $row[$num];
                             $num++;
@@ -404,8 +405,9 @@ class TeamController extends Controller
                             if ($i == 0) {
                                 $num++;
                                 $data->member_id = $member->id;
+                            } else {
+                                $num++;
                             }
-                            $num++;
                         }
                         $data->note = $row[$num];
                         $data->update();

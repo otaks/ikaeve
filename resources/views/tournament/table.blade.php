@@ -152,7 +152,7 @@
                         @endforeach
                         <div class="card text-white bg-danger mb-3">
                           <div class="card-body">
-                            <p class="card-text">勝者がスコア入力（編集ボタン）をして、敗者はそれを承認（承認ボタン）をして対戦結果をトーナメント表に反映させてください</p>
+                            <p class="card-text">勝者がスコア入力（編集ボタン）をするとトーナメント表に反映されますのでご確認ください</p>
                           </div>
                         </div>
                       </div>
