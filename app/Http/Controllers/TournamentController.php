@@ -454,7 +454,8 @@ class TournamentController extends Controller
             $selectBlock = 'A';
         }
         $blocks = Team::getBlocks($event);
-        $sheets = Team::getSheets($event, $selectBlock);
+        //$sheets = Team::getSheets($event, $selectBlock);
+        $sheets = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
 
         $teams = array();
         foreach ($sheets as $key => $value) {
@@ -462,17 +463,17 @@ class TournamentController extends Controller
             while ($i <= 4) {
                 $team = Team::where('event_id', $event)
                 ->where('block', $selectBlock)
-                ->where('sheet', $value->sheet)
+                ->where('sheet', $value)
                 ->where('number', $i)
                 ->first();
                 if ($team) {
                     $teams[] = $team;
                 } else {
                     $teams[] = (object)[
-                      'id' => $selectBlock.'_'.$value->sheet.'_'.$i.'_'.$event,
+                      'id' => $selectBlock.'_'.$value.'_'.$i.'_'.$event,
                       'number' => $i,
                       'name' => '',
-                      'sheet' => $value->sheet,
+                      'sheet' => $value,
                       'abstention' => 0,
                   ];
                 }
