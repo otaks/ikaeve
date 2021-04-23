@@ -257,6 +257,17 @@ class GameController extends Controller
 
                 $id = $request->id;
                 $data = Result::find($id);
+                // 重複チェック
+                if (!$data) {
+                    $query = Result::query()->where('event_id', $event);
+                    $data = $query->where(function($query) use($teams){
+                        $query->where('win_team_id', '=', $teams[1])
+                              ->orWhere('lose_team_id', '=', $teams[1]);
+                    })
+                    ->where('level', 2)
+                    ->where('turn', $request->turn)
+                    ->first();
+                }
                 if (!$data) {
                     $data = new Result();
                 }
@@ -372,6 +383,17 @@ class GameController extends Controller
 
                 $id = $request->id;
                 $data = Result::find($id);
+                // 重複チェック
+                if (!$data) {
+                    $query = Result::query()->where('event_id', $event);
+                    $data = $query->where(function($query) use($teams){
+                        $query->where('win_team_id', '=', $teams[1])
+                              ->orWhere('lose_team_id', '=', $teams[1]);
+                    })
+                    ->where('level', 1)
+                    ->where('turn', $request->turn)
+                    ->first();
+                }
                 if (!$data) {
                     $data = new Result();
                 }
@@ -592,6 +614,17 @@ class GameController extends Controller
 
                 $id = $request->id;
                 $data = Result::find($id);
+                // 重複チェック
+                if (!$data) {
+                    $query = Result::query()->where('event_id', $event);
+                    $data = $query->where(function($query) use($teams){
+                        $query->where('win_team_id', '=', $teams[1])
+                              ->orWhere('lose_team_id', '=', $teams[1]);
+                    })
+                    ->where('level', NULL)
+                    ->where('turn', $request->turn)
+                    ->first();
+                }
                 if (!$data) {
                     $data = new Result();
                 }
@@ -1044,7 +1077,8 @@ class GameController extends Controller
         ->where('sheet', $sheet)
         ->count();
 
-        if ($cnt >= Team::getGameCnt($event_id, $block, $sheet)) {
+        $gameCnt = Team::getGameCnt($event_id, $block, $sheet);
+        if ($cnt >= $gameCnt) {
             $teams = Team::where('event_id', $event_id)
             ->where('block', $block)
             ->where('sheet', $sheet)
@@ -1056,6 +1090,24 @@ class GameController extends Controller
                 if ($event->passing_order < $key + 1) {
                     $team->main_game = 0;
                 } else {
+                    $team->main_game = 1;
+                }
+                $team->update();
+            }
+        } else {
+            // 全勝しているチームは１位確定
+            $teams = Team::where('event_id', $event_id)
+            ->where('block', $block)
+            ->where('sheet', $sheet)
+            ->orderBy('pre_rank')
+            ->get();
+            foreach ($teams as $key => $value) {
+                $resultCnt = Result::where('event_id', $event->id)
+                ->where('win_team_id', $value->id)
+                ->where('level', NULL)
+                ->count();
+                $team = Team::find($value->id);
+                if ($resultCnt == (count($teams) - 1)) {
                     $team->main_game = 1;
                 }
                 $team->update();
