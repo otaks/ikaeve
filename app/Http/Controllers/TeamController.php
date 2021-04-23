@@ -351,6 +351,18 @@ class TeamController extends Controller
                 $event_id = $request->session()->get('event');
                 $event = Event::find($event_id);
 
+                $teams = Team::where('event_id', $event_id)->get();
+                foreach ($teams as $v) {
+                    $data = Team::find($v->id);
+                    foreach ($data::members($data->id) as $v => $member) {
+                        $target = Member::find($member->id);
+                        $target->delete();
+                    }
+                    $data->delete();
+                }
+                // Member::where('event_id', $event_id)->delete();
+                // Team::where('event_id', $event_id)->delete();
+
                 setlocale(LC_ALL, 'ja_JP.UTF-8');
 
                 // アップロードしたファイルを取得
@@ -385,7 +397,11 @@ class TeamController extends Controller
                         $num = 2;
                         $data->friend_code = preg_replace("/[^0-9]/","",$row[$num]);
                         $num++;
+                        $xp_total = 0;
                         for ($i =0; $i < $event->team_member; $i++) {
+                        $xp = $row[$num];
+                        $xp_total += $row[$num];
+                        $num++;
                             $memberName = $row[$num];
                             $num++;
                             $twitterName = $row[$num];
@@ -398,6 +414,7 @@ class TeamController extends Controller
                                 $user->twitter_nickname = $twitterName;
                                 $user->save();
                             }
+                            $member->xp = $xp;
                             $member->user_id = $user->id;
                             $member->team_id = $data->id;
                             $member->name = $memberName;
@@ -410,6 +427,7 @@ class TeamController extends Controller
                             }
                         }
                         $data->note = $row[$num];
+                        $data->xp_total = $xp_total;
                         $data->update();
 
                         $num += 2;
