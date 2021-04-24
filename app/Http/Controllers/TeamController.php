@@ -462,7 +462,12 @@ class TeamController extends Controller
             config('twitter.consumer_secret')
         );
         $userData=$connection->get("users/show", ["screen_name" => $name]);
-        return ($userData) ? $userData->id : null;
+        if (isset($userData->id)) {
+            return $userData->id;
+        } else {
+            return null;
+        }
+        // return ($userData) ? $userData->id : null;
     }
 
     private function updateResult($team)
