@@ -103,7 +103,9 @@ class TeamController extends Controller
                         $twitterName = str_replace('@', '', $twitters[$k]);
                         $twitterName = str_replace('＠', '', $twitterName);
                         $twId = $this->getTwitterId($twitterName);
-                        $user = User::where('twitter_id', $twId)->first();
+                        if ($twId) {
+                            $user = User::where('twitter_id', $twId)->first();
+                        }
                         if (!$user) {
                             $user = User::where('twitter_nickname', $twitterName)->first();
                             if (!$user) {

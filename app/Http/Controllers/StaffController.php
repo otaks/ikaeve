@@ -22,7 +22,11 @@ class StaffController extends Controller
     {
         $search['name'] = $request->name;
         $search['mail'] = $request->mail;
-        $query = User::query()->where('role', config('user.role.staff'));
+        $query = User::query();
+        $query->where(function($query) use($search){
+            $query->where('role', config('user.role.staff'))
+                  ->orWhere('role', config('user.role.admin'));
+        });
         if (isset($search['name'])) {
             $query->where('name', 'LIKE', '%'.$search['name'].'%');
         }
@@ -46,8 +50,9 @@ class StaffController extends Controller
                 $data = new User();
                 $data->name = $request->name;
                 $data->email = $request->mail;
+                $data->role = $request->role;
                 $data->password = Hash::make($request->password);
-                $data->role = config('user.role.staff');
+                //$data->role = config('user.role.staff');
                 $data->save();
                 FlashMessageService::success('登録が完了しました');
             });
@@ -74,6 +79,7 @@ class StaffController extends Controller
                 $data = User::find($request->user_id);
                 $data->name = $request->name;
                 $data->email = $request->mail;
+                $data->role = $request->role;
                 $data->save();
                 FlashMessageService::success('編集が完了しました');
             });

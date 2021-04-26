@@ -18,6 +18,16 @@
         @if($errors->has('mail')) <span class="text-danger">{{ $errors->first('mail') }}</span> @endif
     </div>
 </div>
+<div class="form-group row">
+    <label for="role" class="col-md-4 col-form-label text-md-right required">権限</label>
+
+    <div class="col-md-4">
+      <select name="role" class="form-control col-md-10">
+          <option value="2">スタッフ</option>
+          <option value="1">管理者</option>
+      </select>
+    </div>
+</div>
 @if (empty($data))
     <div class="form-group row">
         <label for="password" class="col-md-4 col-form-label text-md-right required">パスワード</label>

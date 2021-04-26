@@ -29,7 +29,7 @@
                                 <th></th>
                                 <th>名前</th>
                                 <th>mail</th>
-                                <th>登録日時</th>
+                                <th>権限</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -40,7 +40,7 @@
                                     </td>
                                     <td>{{ $data->name }}</td>
                                     <td>{{ $data->email }}</td>
-                                    <td>{{ $data->created_at->format('Y/m/d H:i') }}</td>
+                                    <td>@if ($data->role == config('user.role.staff')) スタッフ @else 管理者 @endif</td>
                                 </tr>
                               @endforeach
                             </tbody>
