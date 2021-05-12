@@ -13,6 +13,25 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-md-2">
+                            <select name="xp_import" id="xp_import" class="form-control">
+                                <option value="0">XP列なし</option>
+                                <option value="1">XP列あり</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="form-group row">
+                        <div class="col-md-2">
+                            <select name="block_cnt" id="block_cnt" class="form-control">
+                              @for($cnt = 1; $cnt <= 16; $cnt++)
+                                <option value="{{ $cnt }}">{{ $cnt }}ブロック</option>
+                              @endfor
+                            </select>
+                        </div>
+                    </div>
+                  -->
+                    <div class="form-group row">
+                        <div class="col-md-2">
                             <button type="submit" class="btn btn-primary">登録</button>
                             <a href="javascript:history.back()" class="btn btn-outline-secondary">戻る</a>
                         </div>

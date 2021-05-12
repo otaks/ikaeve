@@ -401,9 +401,11 @@ class TeamController extends Controller
                         $num++;
                         $xp_total = 0;
                         for ($i =0; $i < $event->team_member; $i++) {
-                        $xp = $row[$num];
-                        $xp_total += $row[$num];
-                        $num++;
+                            if ($request->xp_import == 1) {
+                                $xp = $row[$num];
+                                $xp_total += $row[$num];
+                                $num++;
+                            }
                             $memberName = $row[$num];
                             $num++;
                             $twitterName = $row[$num];
@@ -416,7 +418,9 @@ class TeamController extends Controller
                                 $user->twitter_nickname = $twitterName;
                                 $user->save();
                             }
-                            $member->xp = $xp;
+                            if ($request->xp_import == 1) {
+                                $member->xp = $xp;
+                            }
                             $member->user_id = $user->id;
                             $member->team_id = $data->id;
                             $member->name = $memberName;
@@ -429,7 +433,9 @@ class TeamController extends Controller
                             }
                         }
                         $data->note = $row[$num];
-                        $data->xp_total = $xp_total;
+                        if ($request->xp_import == 1) {
+                            $data->xp_total = $xp_total;
+                        }
                         $data->update();
 
                         $num += 2;
