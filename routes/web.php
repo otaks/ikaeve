@@ -152,5 +152,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('ranking')->name('ranking.')
     ->group(function() {
         Route::get('', 'RankingController@index')->name('index');
+        Route::get('point', 'RankingController@point')->name('point');
     });
 });

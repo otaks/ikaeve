@@ -12,6 +12,9 @@
                     <a href="{{ route('tournament.make') }}" class="btn btn-success">対戦表作成</a>
                     <a href="{{ route('tournament.edit') }}" class="btn btn-success">対戦表編集</a>
                 @endif
+                @if (Auth::user()->role == config('user.role.admin'))
+                    <a href="{{ route('ranking.point') }}" class="btn btn-info">ポイント付与</a>
+                @endif
                 @if (Auth::user()->role == config('user.role.member'))
                     @if ($member)
                         <div class="card mt-1 mx-auto text-center text-white bg-info" style="width: 100%;">
