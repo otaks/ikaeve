@@ -428,11 +428,11 @@ class GameController extends Controller
                             }
                         }
                     }
-                    // $gameCnt = $this->getMainGameCnt($tmpAll);
-                    //
-                    // if ($request->turn == $gameCnt) {
-                    //     $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
-                    // }
+                    $gameCnt = $this->getMainGameCnt($tmpAll);
+
+                    if ($request->turn == $gameCnt) {
+                        $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
+                    }
 
             });
 

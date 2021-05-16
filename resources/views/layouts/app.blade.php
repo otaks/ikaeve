@@ -46,6 +46,7 @@
         <nav class="hamburger">
           <div class="inner">
             <ul>
+              <li><a href="{{ route('ranking.index') }}">ランキング</a></li>
               <li><a href="{{ route('event.index') }}">大会一覧</a></li>
               @if (session('event'))
                 <li><a href="{{ route('event.detail', ['id' => session('event')]) }}">大会詳細</a></li>
@@ -75,11 +76,11 @@
         </div>
 
         <div id="mask"></div>
-
-        <main>
-          <h4 class="eventTitle">{{ session('eventName') ?? '' }}</h4>
-        </main>
-
+        @if (!Route::is('ranking.*'))
+            <main>
+              <h4 class="eventTitle">{{ session('eventName') ?? '' }}</h4>
+            </main>
+        @endif
       </div>
     @endif
     @if (Route::is('login') || Route::is('register') || Route::is('home') ||

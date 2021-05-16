@@ -147,4 +147,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('rank_reset/{block?}/{sheet?}', 'GameController@rankReset')->name('rankReset');
         Route::get('rank_set/{block?}/{sheet?}', 'GameController@rankSet')->name('rankSet');
     });
+
+    // ランキング
+    Route::prefix('ranking')->name('ranking.')
+    ->group(function() {
+        Route::get('', 'RankingController@index')->name('index');
+    });
 });
