@@ -74,4 +74,11 @@ class RankingController extends Controller
         return redirect()->route('event.index');
     }
 
+    public function history(Request $request)
+    {
+        $datas = Point::where('user_id', $request->id)
+        ->orderBy('created_at', 'DESC')->get();
+        return view('ranking.history', compact('datas'));
+    }
+
 }
