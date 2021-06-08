@@ -76,8 +76,9 @@ class RankingController extends Controller
 
     public function history(Request $request)
     {
-        $datas = Point::where('user_id', $request->id)
-        ->orderBy('created_at', 'DESC')->get();
+        $datas = Point::where('points.user_id', $request->id)
+        ->join('events', 'events.id', '=', 'points.event_id')
+        ->orderBy('from_date')->get();
         return view('ranking.history', compact('datas'));
     }
 
