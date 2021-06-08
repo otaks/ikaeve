@@ -19,7 +19,11 @@
                               @foreach ($datas as $v => $data)
                                 <tr>
                                     <td class="text-center">{{ ($v+1) }}</td>
-                                    <td>{{ $data->user->twitter_nickname }}
+                                    <td>
+                                      @if($data->user->name)
+                                        {{ $data->user->name }} /
+                                      @endif
+                                      {{ $data->user->twitter_nickname }}
                                       @if($data->user->twitter_nickname)
                                       &nbsp;&nbsp;<a href="https://twitter.com/{{ $data->user->twitter_nickname }}" target="_blank"><i class="fab fa-twitter-square fa-2x"></i></a>
                                       @endif
