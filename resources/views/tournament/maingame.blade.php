@@ -256,6 +256,9 @@
         @if (Auth::user()->role != config('user.role.member') || (!$isMobile && isset($member)))
           <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
           <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm mt-1">報告</a>
+            @if ($event->shuffle == 1)
+              <a href="{{ route('tournament.mainfirstgame', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">本戦1回戦</a>
+            @endif
         @endif
       </div>
         <!--

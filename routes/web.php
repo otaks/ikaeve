@@ -120,6 +120,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit/{block?}', 'TournamentController@editStore');
         Route::get('progress/{block?}', 'TournamentController@progress')->name('progress');
         Route::get('maingame/{block?}', 'TournamentController@maingame')->name('maingame');
+        Route::get('mainfirstgame/{block?}', 'TournamentController@mainfirstgame')->name('mainfirstgame');
         Route::get('finalgame', 'TournamentController@finalgame')->name('finalgame');
         Route::get('teamlist/{block?}', 'TournamentController@teamlist')->name('teamlist');
         Route::get('result', 'TournamentController@result')->name('result');

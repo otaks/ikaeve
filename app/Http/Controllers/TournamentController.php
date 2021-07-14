@@ -13,6 +13,7 @@ use App\Models\Event;
 use App\Models\Member;
 use App\Models\MainGame;
 use App\Models\Result;
+use App\Models\MainSecond;
 // use App\Models\User;
 
 class TournamentController extends Controller
@@ -690,7 +691,7 @@ class TournamentController extends Controller
             );
     }
 
-    public function maingame(Request $request)
+    public function mainfirstgame(Request $request)
     {
         $event_id = $request->session()->get('event');
         if (!$event_id) {
@@ -745,13 +746,13 @@ class TournamentController extends Controller
                             $cnt--;
                             continue;
                         } else {
-                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'）なし';
+                            $teams[$cnt]['name'] = 'なし';
                             $teams[$cnt]['id'] = null;
                             $teams[$cnt]['fcode'] = null;
                             $tmpKey = $key;
                         }
                     } elseif ($team) {
-                        $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$team->name;
+                        $teams[$cnt]['name'] = $team->name;
                         if ($team->abstention == 1) {
                             $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
                         }
@@ -799,6 +800,222 @@ class TournamentController extends Controller
             } else {
                 foreach ($result as $k => $v) {
                   if ($v->turn == 1) {
+                      $i = floor($key/2);
+                  } else {
+                      $h = 2;
+                      $division = 4;
+                      $tmp = count($teams) / 2;
+                      $tmpNum = $tmp;
+                      while($h < $v->turn) {
+                          $tmpNum += $tmp / 2;
+                          $tmp = $tmp / 2;
+                          $division = $division * 2;
+                          // $all += $tmpNum;
+                          $h++;
+                      }
+
+                      $tmpNum += floor($key/$division);
+
+                      $i = $tmpNum;
+                      if ($v->turn == 5 && $event->id == 2) {
+                          $i = 23;
+                      }
+                  }
+                  if ($v->win_team_id == $value['id']) {
+                      $scores[$i][] = $v->win_score;
+                  } elseif ($v->lose_team_id == $value['id']) {
+                      $scores[$i][] = $v->lose_score;
+                  }
+                }
+            }
+        }
+
+        if (0 < count($scores)) {
+            ksort($scores);
+            $i = 0;
+            $last = $this->get_last_key($scores);
+            while ($i < $last) {
+                if(empty($scores[$i])) {
+                    $scores[$i][0] = '';
+                    $scores[$i][1] = '';
+                }
+                $i++;
+            }
+
+            ksort($scores);
+        }
+
+        // シャッフル用dbチェック
+        $this->secondDbChk($event_id, $teams, $selectBlock);
+        //$num = range(1, count($teams)/2);
+        //print_r($num);
+
+        return view('tournament.mainfirstgame',
+        compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
+    }
+
+    public static function secondDbChk ($event_id, $teams, $block) {
+        $cnt = MainSecond::where('event_id', $event_id)->where('block', $block)->count();
+        if ($cnt == 0) {
+            //$num = range(1, count($teams)/2);
+            foreach ($teams as $key => $value) {
+                if (!$value['id']) {
+                    $maxNum = MainSecond::where('event_id', $event_id)
+                    ->where('block', $block)
+                    ->orderBy('num', 'DESC')->first();
+                    $second = new MainSecond();
+                    $second->event_id = $event_id;
+                    $second->block = $block;
+                    if ($maxNum) {
+                        $second->num = ($maxNum->num + 1);
+                    } else {
+                        $second->num = 1;
+                    }
+                    if ($key%2 == 0) {
+                        $second->team_id = $teams[($key+1)]['id'];
+                    } else {
+                        $second->team_id = $teams[($key-1)]['id'];
+                    }
+                    $second->save();
+                }
+            }
+        }
+    }
+
+    // public static function getRandNum () {
+    //     $maxNum = MainSecond::where('event_id', $event_id)->orderBy('num', 'DESC')->first();
+    //     return ($maxNum + 1);
+    // }
+
+    public function maingame(Request $request)
+    {
+        $event_id = $request->session()->get('event');
+        if (!$event_id) {
+            return redirect()->route('event.index');
+        }
+        $event = Event::find($event_id);
+        // 参加している対戦表のチェック
+        $member = null;
+        if (Auth::user()->role == config('user.role.member')) {
+            $member = Member::join('teams', 'teams.id', 'members.team_id')
+            ->where('event_id', $event->id)
+            ->where('user_id', Auth::id())->first();
+        }
+
+        if ($member && !$request->block) {
+            $selectBlock = $member->team->block;
+        } else {
+            $selectBlock = $request->block;
+        }
+        if (!$selectBlock) {
+            $selectBlock = 'A';
+        }
+        $selectSheet = 'maingame';
+
+        $blocks = Team::getBlocks($event->id);
+        $sheets = Team::getSheets($event->id, $selectBlock);
+
+        $teams = array();
+        $cnt = 0;
+        if ($event_id == 2) {
+            $config = $this->event2gameAry();
+        } else {
+            $config = config('game.main'.$event->passing_order);
+        }
+        $tmpKey = null;
+        if ($event->shuffle == 1) {
+            $team = MainSecond::where('event_id', $event->id)
+            ->where('block', $selectBlock)
+            ->get();
+            if (($event->passing_order == 2 && (count($team) == 16))
+            or ($event->passing_order == 1 && (count($team) == 8))) {
+                foreach ($team as $key => $value) {
+                    $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$value->team->name;
+                    $teams[$cnt]['id'] = $value->team->id;
+                    $teams[$cnt]['fcode'] = $value->team->friend_code;
+                    $cnt++;
+                }
+            }
+        } else {
+            foreach ($config as $key => $value) {
+                foreach ($value as $v) {
+                    foreach ($v as $k => $val) {
+                        $chkBlock = Team::where('event_id', $event->id)
+                        ->where('block', $selectBlock)
+                        ->where('sheet', $k)
+                        ->count();
+                        $team = Team::where('event_id', $event->id)
+                        ->where('block', $selectBlock)
+                        ->where('sheet', $k)
+                        ->where('pre_rank', $val)
+                        ->where('main_game', 1)
+                        ->first();
+                        if ($chkBlock == 0) {
+                            if (isset($teams[$cnt-1]) && $teams[$cnt-1]['name'] == 'なし' && $tmpKey == $key) {
+                                unset($teams[$cnt-1]);
+                                $cnt--;
+                                continue;
+                            } else {
+                                $teams[$cnt]['name'] = floor(($cnt+2)/2).'）なし';
+                                $teams[$cnt]['id'] = null;
+                                $teams[$cnt]['fcode'] = null;
+                                $tmpKey = $key;
+                            }
+                        } elseif ($team) {
+                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$team->name;
+                            if ($team->abstention == 1) {
+                                $teams[$cnt]['name'] = '(棄権)'.$teams[$cnt]['name'];
+                            }
+                            $teams[$cnt]['id'] = $team->id;
+                            $teams[$cnt]['fcode'] = $team->friend_code;
+                        } else {
+                            $teams[$cnt]['name'] = floor(($cnt+2)/2).'）'.$k.'-'.$val.'位通過';
+                            $teams[$cnt]['id'] = null;
+                            $teams[$cnt]['fcode'] = null;
+                        }
+                        $cnt++;
+                    }
+                }
+            }
+        }
+        $tmpNum = 0;
+        $scores = array();
+        $teamNum = count($teams);
+        if ($teamNum / 8 == 3) {
+            $scores[($teamNum-2)][0] = $event->main_score;
+            $scores[($teamNum-2)][1] = '0';
+        }
+
+        foreach ($teams as $key => $value) {
+            $result = null;
+            $query = Result::query()->where('event_id', $event->id)
+            ->where('block', $selectBlock)
+            ->where('level', 1);
+            if ($value['id']) {
+                $result = $query->where(function($query) use($value){
+                    $query->where('win_team_id', '=', $value['id'])
+                          ->orWhere('lose_team_id', '=', $value['id']);
+                })->orderBy('turn', 'ASC')->get();
+            }
+            if (!$result) {
+                preg_match('/[0-9+].[な][し]/u', $value['name'], $m);
+                if ($m) {
+                    if ($key%2 == 0) {
+                        $scores[floor($key/2)][0] = '0';
+                        $scores[floor($key/2)][1] = $event->main_score;
+                    } else {
+                        $scores[floor($key/2)][0] = $event->main_score;
+                        $scores[floor($key/2)][1] = '0';
+                    }
+                }
+            } else {
+                foreach ($result as $k => $v) {
+                  if ($event->shuffle == 1) {
+                      if ($v->turn == 1) {
+                          continue;
+                      }
+                  }
+                  if ($v->turn == 1 || ($event->shuffle == 1 && $v->turn == 2)) {
                       $i = floor($key/2);
                   } else {
                       $h = 2;
