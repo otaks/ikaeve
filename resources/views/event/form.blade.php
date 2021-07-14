@@ -134,3 +134,21 @@
       </select>
     </div>
 </div>
+<div class="form-group row">
+    <label for="view" class="col-md-3 col-5 col-form-label text-md-right">ポイント追加</label>
+
+    <div class="col-md-2 col-6">
+      <select name="point" class="form-control">
+        <option value="0" {{ old('point', isset($data->point) && $data->point == 0 ? 'selected' : '') }}>非対象</option>
+        <option value="1" {{ old('point', isset($data->point) && $data->point == 1 ? 'selected' : '') }}>対象</option>
+      </select>
+    </div>
+    <label for="view" class="col-md-2 col-5 col-form-label text-md-right">本戦シャッフル</label>
+
+    <div class="col-md-2 col-6">
+      <select name="shuffle" class="form-control">
+        <option value="0" {{ old('point', isset($data->shuffle) && $data->shuffle == 0 ? 'selected' : '') }}>非対象</option>
+        <option value="1" {{ old('point', isset($data->shuffle) && $data->shuffle == 1 ? 'selected' : '') }}>対象</option>
+      </select>
+    </div>
+</div>

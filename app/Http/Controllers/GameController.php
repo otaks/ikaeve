@@ -12,6 +12,7 @@ use App\Models\Event;
 use App\Models\Member;
 use App\Models\MainGame;
 use App\Models\Result;
+use App\Models\MainSecond;
 
 class GameController extends Controller
 {
@@ -429,6 +430,28 @@ class GameController extends Controller
                         }
                     }
                     $gameCnt = $this->getMainGameCnt($tmpAll);
+
+                    if ($eventDetail->shuffle == 1 && $request->turn == 1) {
+                        $data = MainSecond::where('event_id', $event)
+                        ->where('team_id', $win_team)
+                        ->first();
+                        if (!$data) {
+                            $maxNum = MainSecond::where('event_id', $event)
+                            ->where('block', $request->block)
+                            ->orderBy('num', 'DESC')
+                            ->first();
+                            $second = new MainSecond();
+                            $second->event_id = $event;
+                            $second->block = $request->block;
+                            if ($maxNum) {
+                                $second->num = ($maxNum->num + 1);
+                            } else {
+                                $second->num = 1;
+                            }
+                            $second->team_id = $win_team;
+                            $second->save();
+                        }
+                    }
 
                     if ($request->turn == $gameCnt) {
                         $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);

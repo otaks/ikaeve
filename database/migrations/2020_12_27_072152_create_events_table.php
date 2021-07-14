@@ -44,6 +44,8 @@ class CreateEventsTable extends Migration
             $table->unsignedInteger('final_score')->comment('決勝先取点')->default(0);
             $table->boolean('view')->comment('表示(0:表示/1:非表示)')->default(0);
             $table->unsignedInteger('grade')->comment('大会グレード')->nullable();
+            $table->boolean('point')->comment('ポイント追加するか否か(0:非対象/1:対象)')->default(0);
+            $table->boolean('shuffle')->comment('本戦2回戦のシャッフル(0:非対象/1:対象)')->default(0);
 
             $table->timestamps();
             $table->softDeletes();

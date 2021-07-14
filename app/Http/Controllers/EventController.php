@@ -62,7 +62,9 @@ class EventController extends Controller
                 $data->final_score = $request->final_score;
                 $data->note = $request->note;
                 $data->view = $request->view;
+                $data->point = $request->point;
                 $data->grade = $request->grade;
+                $data->shuffle = $request->shuffle;
                 $data->save();
 
             });
@@ -108,6 +110,8 @@ class EventController extends Controller
                 $data->note = $request->note;
                 $data->view = $request->view;
                 $data->grade = $request->grade;
+                $data->point = $request->point;
+                $data->shuffle = $request->shuffle;
                 $data->update();
 
             });
