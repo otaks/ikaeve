@@ -13,6 +13,7 @@ use App\Models\Member;
 use App\Models\MainGame;
 use App\Models\Result;
 use App\Models\MainSecond;
+use App\Models\Point;
 
 class GameController extends Controller
 {
@@ -333,6 +334,11 @@ class GameController extends Controller
                         }
                         $turn--;
                     }
+
+                    $eventDetail = Event::find($event);
+                    if ($eventDetail->point == true) {
+                        $this->addPoint($eventDetail);
+                    }
                 }
 
             });
@@ -452,10 +458,7 @@ class GameController extends Controller
                             $second->save();
                         }
                     }
-
-                    if ($request->turn == $gameCnt) {
-                        $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
-                    }
+                    $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
 
             });
 
@@ -1141,67 +1144,137 @@ class GameController extends Controller
     private function updateMainorFinalRank($event, $block, $gameCnt)
     {
         $blockNum = count(Team::getBlocks($event->id));
+        $updateFlg = false;
+        $selectTeams = array();
+        $cnt = 0;
         // ブロックが単数ならfinal_rankを更新する
-        // if ($blockNum == 1) {
-        //     $target_rank = 'final_rank';
-        // } else {
-        //     $target_rank = 'main_rank';
-        // }
+        if ($blockNum == 1) {
+          $config = config('game.main'.$event->passing_order);
+          foreach ($config as $key => $value) {
+              foreach ($value as $v) {
+                  foreach ($v as $k => $val) {
+                      $team = Team::where('event_id', $event->id)
+                      ->where('block', $block)
+                      ->where('sheet', $k)
+                      ->where('pre_rank', $val)
+                      ->where('main_game', 1)
+                      ->first();
+                      if ($team) {
+                          $chk = Result::where('event_id', $event->id)
+                          ->where('block', $block)
+                          ->where('level', 1)
+                          ->where('lose_team_id', $team->id)
+                          ->count();
+                          if (0 < $chk) continue;
+                          $selectTeams[$cnt]['name'] = $team->name;
+                          $selectTeams[$cnt]['id'] = $team->id;
+                          $cnt++;
+                      }
+                  }
+              }
+              if (count($selectTeams) == 1) {
+                  $updateFlg = true;
+              }
+          }
+        } else {
+            // $cnt = 0;
+            // $whereTurn = $startTurn;
+            // $result = Result::where('event_id', $event->id)
+            // ->where('level', 2)
+            // ->where('turn', ($whereTurn - 1))
+            // ->get();
+            // foreach ($result as $key => $value) {
+            //     $selectTeams[$cnt]['name'] = $value->winteam->name;
+            //     $selectTeams[$cnt]['id'] = $value->winteam->id;
+            //     $cnt++;
+            // }
+            // if (count($selectTeams) == 1) {
+            //     $updateFlg = true;
+            // }
+        }
 
-        $teams = Team::where('event_id', $event->id)
-        ->where('block', $block)
-        ->where('main_game', 1)
-        ->get();
-
-        $rank = 1;
-        $turn = $gameCnt;
-        for ($i = 0; $i < $gameCnt; $i++) {
-            $results = Result::where('event_id', $event->id)
+        if ($updateFlg == true) {
+            $teams = Team::where('event_id', $event->id)
             ->where('block', $block)
-            ->where('level', 1)
-            ->where('turn', $turn)
+            ->where('main_game', 1)
             ->get();
 
-            if ($gameCnt == $turn) {
-                $result = Result::where('event_id', $event->id)
+            $rank = 1;
+            $turn = $gameCnt;
+            for ($i = 0; $i < $gameCnt; $i++) {
+                $results = Result::where('event_id', $event->id)
                 ->where('block', $block)
                 ->where('level', 1)
                 ->where('turn', $turn)
-                ->first();
-                $first = Team::find($result->win_team_id);
-                if ($blockNum == 1) {
-                    $first->final_rank = $rank;
-                } else {
-                    $first->main_rank = $rank;
-                }
-                $first->update();
-                $rank++;
-                $second = Team::find($result->lose_team_id);
-                if ($blockNum == 1) {
-                    $second->final_rank = $rank;
-                } else {
-                    $second->main_rank = $rank;
-                }
-                $second->update();
-                $rank++;
-            } else {
-                foreach ($results as $ky => $val) {
-                    $team = Team::find($val->lose_team_id);
-                    if ($blockNum == 1) {
-                        $team->final_rank = $rank;
-                    } else {
-                        $team->main_rank = $rank;
-                    }
-                    $team->update();
-                }
-                // echo $rank;
-                // echo '/'.count($results);
-                // echo '<br>';
-                $rank += count($results);
-            }
-            $turn--;
-        }
+                ->get();
 
+                if ($gameCnt == $turn) {
+                    $result = Result::where('event_id', $event->id)
+                    ->where('block', $block)
+                    ->where('level', 1)
+                    ->where('turn', $turn)
+                    ->first();
+                    $first = Team::find($result->win_team_id);
+                    if ($blockNum == 1) {
+                        $first->final_rank = $rank;
+                    } else {
+                        $first->main_rank = $rank;
+                    }
+                    $first->update();
+                    $rank++;
+                    $second = Team::find($result->lose_team_id);
+                    if ($blockNum == 1) {
+                        $second->final_rank = $rank;
+                    } else {
+                        $second->main_rank = $rank;
+                    }
+                    $second->update();
+                    $rank++;
+                } else {
+                    foreach ($results as $ky => $val) {
+                        $team = Team::find($val->lose_team_id);
+                        if ($blockNum == 1) {
+                            $team->final_rank = $rank;
+                        } else {
+                            $team->main_rank = $rank;
+                        }
+                        $team->update();
+                    }
+                    $rank += count($results);
+                }
+                $turn--;
+            }
+
+            if ($event->point == true) {
+                $this->addPoint($event);
+            }
+        }
+    }
+
+    private function addPoint($event) {
+        Point::where('event_id', $event->id)->delete();
+        $teams = Team::where('event_id', $event->id)->whereBetween('final_rank', [1, 8])->get();
+        foreach ($teams as $key => $value) {
+            $target = Team::find($value->id);
+            $point = 1;
+            if ($target->final_rank == 1) {
+                $point = 8;
+            } elseif ($target->final_rank == 2) {
+                $point = 4;
+            } elseif ($target->final_rank <= 4 && 2 <= $target->final_rank) {
+                $point = 2;
+            }
+            $members = $target->members($target->id);
+            foreach ($members as $v) {
+                $member = Member::find($v->id);
+                $data = new Point();
+                $data->user_id = $member->user_id;
+                $data->member_id = $member->id;
+                $data->event_id = $event->id;
+                $data->point = $point;
+                $data->save();
+            }
+        }
     }
 
 }
