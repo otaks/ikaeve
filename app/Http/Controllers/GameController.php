@@ -458,7 +458,7 @@ class GameController extends Controller
                             $second->save();
                         }
                     }
-                    $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt);
+                    $this->updateMainorFinalRank($eventDetail, $request->block, $gameCnt, $request->turn);
 
             });
 
@@ -1141,8 +1141,9 @@ class GameController extends Controller
         }
     }
 
-    private function updateMainorFinalRank($event, $block, $gameCnt)
+    private function updateMainorFinalRank($event, $block, $gameCnt, $turn)
     {
+      /*
         $blockNum = count(Team::getBlocks($event->id));
         $updateFlg = false;
         $selectTeams = array();
@@ -1189,7 +1190,7 @@ class GameController extends Controller
             //     $cnt++;
             // }
             // if (count($selectTeams) == 1) {
-            //     $updateFlg = true;
+                $updateFlg = true;
             // }
         }
 
@@ -1214,19 +1215,23 @@ class GameController extends Controller
                     ->where('level', 1)
                     ->where('turn', $turn)
                     ->first();
-                    $first = Team::find($result->win_team_id);
-                    if ($blockNum == 1) {
-                        $first->final_rank = $rank;
-                    } else {
-                        $first->main_rank = $rank;
+                    if ($result) {
+                      $first = Team::find($result->win_team_id);
+                      if ($blockNum == 1) {
+                          $first->final_rank = $rank;
+                      } else {
+                          $first->main_rank = $rank;
+                      }
+                      $first->update();
                     }
-                    $first->update();
                     $rank++;
-                    $second = Team::find($result->lose_team_id);
-                    if ($blockNum == 1) {
-                        $second->final_rank = $rank;
-                    } else {
-                        $second->main_rank = $rank;
+                    if ($result) {
+                        $second = Team::find($result->lose_team_id);
+                        if ($blockNum == 1) {
+                            $second->final_rank = $rank;
+                        } else {
+                            $second->main_rank = $rank;
+                        }
                     }
                     $second->update();
                     $rank++;
@@ -1248,6 +1253,68 @@ class GameController extends Controller
             if ($event->point == true) {
                 $this->addPoint($event);
             }
+        }
+        */
+                $blockNum = count(Team::getBlocks($event->id));
+        // ブロックが単数ならfinal_rankを更新する
+        // if ($blockNum == 1) {
+        //     $target_rank = 'final_rank';
+        // } else {
+        //     $target_rank = 'main_rank';
+        // }
+
+        $teams = Team::where('event_id', $event->id)
+        ->where('block', $block)
+        ->where('main_game', 1)
+        ->get();
+
+        $rank = 1;
+        // $turn = $gameCnt;
+        for ($i = 0; $i < $gameCnt; $i++) {
+            $results = Result::where('event_id', $event->id)
+            ->where('block', $block)
+            ->where('level', 1)
+            ->where('turn', $turn)
+            ->get();
+
+            if ($gameCnt == $turn) {
+                $result = Result::where('event_id', $event->id)
+                ->where('block', $block)
+                ->where('level', 1)
+                ->where('turn', $turn)
+                ->first();
+                $first = Team::find($result->win_team_id);
+                if ($blockNum == 1) {
+                    $first->final_rank = $rank;
+                } else {
+                    $first->main_rank = $rank;
+                }
+                $first->update();
+                $rank++;
+                $second = Team::find($result->lose_team_id);
+                if ($blockNum == 1) {
+                    $second->final_rank = $rank;
+                } else {
+                    $second->main_rank = $rank;
+                }
+                $second->update();
+                $rank++;
+            } else {
+                foreach ($results as $ky => $val) {
+                    $team = Team::find($val->lose_team_id);
+                    if ($blockNum == 1) {
+                        $team->final_rank = $rank;
+                    } else {
+                        $team->main_rank = $rank;
+                    }
+                    $team->update();
+                }
+                // echo $rank;
+                // echo '/'.count($results);
+                // echo '<br>';
+                $rank += count($results);
+            }
+            $turn--;
         }
     }
 

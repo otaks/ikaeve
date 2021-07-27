@@ -180,8 +180,9 @@ class TournamentController extends Controller
                 }
             }
         }
+        $event = $eventDetail;
         return view('tournament.index',
-        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'scores', 'rule'));
+        compact('selectBlock', 'selectSheet', 'sheets', 'teams', 'blocks', 'member', 'vs', 'scores', 'rule', 'event'));
     }
 
     public function result(Request $request) {
@@ -714,7 +715,7 @@ class TournamentController extends Controller
         if (!$selectBlock) {
             $selectBlock = 'A';
         }
-        $selectSheet = 'maingame';
+        $selectSheet = 'mainfirstgame';
 
         $blocks = Team::getBlocks($event->id);
         $sheets = Team::getSheets($event->id, $selectBlock);
@@ -1010,31 +1011,48 @@ class TournamentController extends Controller
                 }
             } else {
                 foreach ($result as $k => $v) {
-                  if ($event->shuffle == 1) {
-                      if ($v->turn == 1) {
-                          continue;
-                      }
+                  if ($event->shuffle == 1 && $v->turn == 1) {
+                      continue;
                   }
-                  if ($v->turn == 1 || ($event->shuffle == 1 && $v->turn == 2)) {
+                  if (($v->turn == 1 && $event->shuffle != 1) ||
+                      ($v->turn == 2 && $event->shuffle == 1)) {
                       $i = floor($key/2);
                   } else {
-                      $h = 2;
-                      $division = 4;
-                      $tmp = count($teams) / 2;
-                      $tmpNum = $tmp;
-                      while($h < $v->turn) {
-                          $tmpNum += $tmp / 2;
-                          $tmp = $tmp / 2;
-                          $division = $division * 2;
-                          // $all += $tmpNum;
-                          $h++;
-                      }
+                      if ($event->shuffle == 1) {
+                          $h = 3;
+                          $division = 4;
+                          $tmp = count($teams) / 2;
+                          $tmpNum = $tmp;
+                          while($h < $v->turn) {
+                              $tmpNum += $tmp / 2;
+                              $tmp = $tmp / 2;
+                              $division = $division * 2;
+                              // $all += $tmpNum;
+                              $h++;
+                          }
 
-                      $tmpNum += floor($key/$division);
+                          $tmpNum += floor($key/$division);
 
-                      $i = $tmpNum;
-                      if ($v->turn == 5 && $event->id == 2) {
-                          $i = 23;
+                          $i = $tmpNum;
+                      } else {
+                          $h = 2;
+                          $division = 4;
+                          $tmp = count($teams) / 2;
+                          $tmpNum = $tmp;
+                          while($h < $v->turn) {
+                              $tmpNum += $tmp / 2;
+                              $tmp = $tmp / 2;
+                              $division = $division * 2;
+                              // $all += $tmpNum;
+                              $h++;
+                          }
+
+                          $tmpNum += floor($key/$division);
+
+                          $i = $tmpNum;
+                          if ($v->turn == 5 && $event->id == 2) {
+                              $i = 23;
+                          }
                       }
                   }
                   if ($v->win_team_id == $value['id']) {
@@ -1060,7 +1078,8 @@ class TournamentController extends Controller
 
             ksort($scores);
         }
-
+//         print_r($scores);
+// exit;
         return view('tournament.maingame',
         compact('selectBlock', 'selectSheet', 'blocks', 'sheets', 'teams', 'event', 'scores', 'member'));
     }

@@ -253,7 +253,7 @@
         @else
           @include('tournament/nav')
         @endif
-        @if (Auth::user()->role != config('user.role.member') || (!$isMobile && isset($member)))
+        @if (Auth::user()->role != config('user.role.member') || !$isMobile)
           <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1 ml-4">報告一覧</a>
           <a href="{{ route('game.mainResult', ['block' => $selectBlock]) }}" class="btn btn-success btn-sm mt-1">報告</a>
             @if ($event->shuffle == 1)
