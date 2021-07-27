@@ -18,6 +18,10 @@
           <option value="teamlist" {{ ($selectSheet == 'teamlist') ? 'selected' : ''}}>チーム一覧</option>
           <option value="progress" {{ ($selectSheet == 'progress') ? 'selected' : ''}}>進行表</option>
           <option value="all" {{ ($selectSheet == 'all') ? 'selected' : ''}}>予選</option>
+          @if ($event->shuffle == 1)
+            <a href="{{ route('tournament.mainfirstgame', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">本戦1回戦</a>
+            <option value="mainfirstgame" {{ ($selectSheet == 'mainfirstgame') ? 'selected' : ''}}>本戦1回戦</option>
+          @endif
           <option value="maingame" {{ ($selectSheet == 'maingame') ? 'selected' : ''}}>本戦</option>
           @if (1 == count($blocks))
             <!-- <option value="result" {{ ($selectBlock == 'result' || $selectSheet == 'result') ? 'selected' : ''}}>結果</option> -->
@@ -28,7 +32,8 @@
         </select>
       </div>
     @endif
-    @if(($selectSheet == 'maingame' || ($selectSheet == 'finalgame' || $selectBlock == 'finalgame')) && (isset($member) || Auth::user()->role != config('user.role.member')))
+    @if($selectSheet == 'mainfirstgame' ||($selectSheet == 'maingame' || ($selectSheet == 'finalgame' || $selectBlock == 'finalgame'))
+    && (isset($member) || Auth::user()->role != config('user.role.member')))
       <div class="col-4 mt-1 p-1">
         <!-- <a href="{{ route('game.mainResultlist', ['block' => $selectBlock]) }}" class="btn btn-info btn-sm mt-1">報告一覧</a> -->
         @if ($selectSheet == 'finalgame' || $selectBlock == 'finalgame')
